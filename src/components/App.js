@@ -1,29 +1,21 @@
-import { useState } from 'react';
 import './App.css';
-import VolleyDisplay from './VolleyDisplay';
-import OrganizerInput from './OrganizerInput';
-import { exampleRounds, getRounds } from '../rounds';
+import { Outlet, Link } from 'react-router-dom';
 
 function App() {
-  const [rounds, setRounds] = useState([]);
-
-  const updateParams = (courts, players, playersPerTeam) => {
-    console.log(courts + " courts");
-    console.log(players + " partial teams");
-    console.log(playersPerTeam + " partials per team");
-    const newRounds = getRounds(courts, players, playersPerTeam);
-    setRounds(newRounds);
-  };
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <OrganizerInput updateParams={updateParams} />
-        <p>
-          Volley App
-        </p>
-        <VolleyDisplay rounds={rounds}/>
-      </header>
+    <div>
+        <header className="App-header">
+          <p>
+            <Link to="/" className="plaintext-link"><strong>Volley App</strong></Link>
+          </p>
+          <nav>
+            <Link to="/rotation">Rotation Schedule</Link> |{" "}
+            <Link to="/players">Players</Link>
+          </nav>
+          <p>___________________________________</p>
+        </header>
+        <Outlet />
     </div>
   );
 }
