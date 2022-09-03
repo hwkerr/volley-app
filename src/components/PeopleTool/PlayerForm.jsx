@@ -1,14 +1,14 @@
 import { useState } from "react";
 import './PeopleTool.css';
 
-import { newPlayer } from "./players";
+import { newPlayer, newPlayerObj } from "./players";
 
-export default function NewPlayerForm({ addPlayer }) {
-    const [name, setName] = useState("");
-    const [maleGender, setMaleGender] = useState(false);
-    const [femaleGender, setFemaleGender] = useState(false);
-    const [positionString, setPositionString] = useState("");
-    const [contact, setContact] = useState("");
+export default function PlayerForm({ player, onSave }) {
+    const [name, setName] = useState(player.name);
+    const [maleGender, setMaleGender] = useState(player.gender === "m");
+    const [femaleGender, setFemaleGender] = useState(player.gender === "f");
+    const [positionString, setPositionString] = useState(player.positions.join(","));
+    const [contact, setContact] = useState(player.contact);
 
     const handleChangeGenderMale = event => {
         const checked = event.target.value;
@@ -34,21 +34,32 @@ export default function NewPlayerForm({ addPlayer }) {
         setContact(event.target.value);
     };
 
-    const handleAddButton = event => {
+    const handleSaveButton = event => {
         event.preventDefault();
-        
+
+        const player = makePlayerFromForm();
+
+        onSave(player);
+        resetFormFields();
+    }
+
+    const makePlayerFromForm = () => {
         let gender = "";
         if (maleGender) gender = "m";
         else if (femaleGender) gender = "f";
 
         let positions = positionString.replaceAll(" ", "").split(",");
 
-        const player = newPlayer(name, gender, positions, contact);
+        let id = (player.id === newPlayerObj.id ? undefined : player.id);
 
-        // TODO: use API call to send new player to database
-        addPlayer(player); // add player locally
-
-        console.log("Saved");
+        const p = newPlayer({
+            id,
+            name,
+            gender,
+            positions,
+            contact
+        });
+        return p;
     }
 
     const resetFormFields = () => {
@@ -89,7 +100,7 @@ export default function NewPlayerForm({ addPlayer }) {
                         <option value="other">Other</option>
                     </select>
                 </div>
-                <button className="btn btn-primary" onClick={handleAddButton}>Add Player</button>
+                <button className="btn btn-primary" onClick={handleSaveButton}>Save</button>
             </div>
         </>
     );

@@ -13,10 +13,8 @@ export default function PlayerSearch({ players, onChangeSelectedPlayer }) {
     const handlePlayerClick = newPlayer => {
         if (newPlayer === selectedPlayer) {
             setSelectedPlayer({});
-            console.log({});
         } else {
             setSelectedPlayer(newPlayer);
-            console.log(newPlayer);
         }
         onChangeSelectedPlayer(newPlayer);
     }

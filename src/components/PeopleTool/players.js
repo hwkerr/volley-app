@@ -1,15 +1,15 @@
 export const playerList = [
     {
-        name: 'Harrison Kerr',
         id: 'hakerr',
+        name: 'Harrison Kerr',
         gender: 'm',
         positions: ['Wing', 'M'],
-        contact: 'self',
+        contact: 'other',
         timesPlayed: 1
     },
     {
-        name: 'Danielle Isbell',
         id: 'daisbell',
+        name: 'Danielle Isbell',
         gender: 'f',
         positions: ['S', 'Wing'],
         contact: 'phone',
@@ -22,15 +22,20 @@ export const newPlayerObj = {
     name: "New Player"
 };
 
-export const newPlayer = (name, gender, positions, contact) => {
+export const newPlayer = ({id, name, gender, positions, contact}) => {
     const names = name.split(' ');
-    const id = name.substring(0,2).toLowerCase() + names[names.length-1].toLowerCase();
+    let newId;
+    if (!id || id === undefined)
+        newId = name.substring(0,2).toLowerCase() + names[names.length-1].toLowerCase();
+    else
+        newId = id;
     
     return {
-        name,
         id,
+        name,
         gender,
         positions,
-        contact
+        contact,
+        timesPlayed: 0
     };
 }

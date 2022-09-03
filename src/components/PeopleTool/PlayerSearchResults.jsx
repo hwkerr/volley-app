@@ -13,7 +13,6 @@ export default function PlayerSearchResults({ searchTerm, players, onClick }) {
     }
 
     const handleNewPlayerButton = () => {
-        console.log(JSON.stringify(players));
         if (newPlayerObj === selectedPlayer)
             setSelectedPlayer({});
         else
