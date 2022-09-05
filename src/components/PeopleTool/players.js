@@ -19,7 +19,11 @@ export const playerList = [
 
 export const newPlayerObj = {
     id: "?newPlayer",
-    name: "New Player"
+    name: "",
+    gender: "",
+    positions: [],
+    contact: "other",
+    timesPlayed: -1
 };
 
 export const newPlayer = ({id, name, gender, positions, contact}) => {
@@ -30,8 +34,9 @@ export const newPlayer = ({id, name, gender, positions, contact}) => {
     else
         newId = id;
     
+    console.log("new player id: ", newId, name);
     return {
-        id,
+        id: newId,
         name,
         gender,
         positions,

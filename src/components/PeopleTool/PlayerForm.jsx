@@ -3,7 +3,7 @@ import './PeopleTool.css';
 
 import { newPlayer, newPlayerObj } from "./players";
 
-export default function PlayerForm({ player, onSave }) {
+export default function PlayerForm({ player, onSave, onDelete }) {
     const [name, setName] = useState(player.name);
     const [maleGender, setMaleGender] = useState(player.gender === "m");
     const [femaleGender, setFemaleGender] = useState(player.gender === "f");
@@ -41,6 +41,12 @@ export default function PlayerForm({ player, onSave }) {
 
         onSave(player);
         resetFormFields();
+    }
+
+    const handleDeleteButton = event => {
+        event.preventDefault();
+
+        onDelete(player);
     }
 
     const makePlayerFromForm = () => {
@@ -101,6 +107,7 @@ export default function PlayerForm({ player, onSave }) {
                     </select>
                 </div>
                 <button className="btn btn-primary" onClick={handleSaveButton}>Save</button>
+                {player !== newPlayerObj && <button className="btn btn-danger" onClick={handleDeleteButton}>Delete</button>}
             </div>
         </>
     );

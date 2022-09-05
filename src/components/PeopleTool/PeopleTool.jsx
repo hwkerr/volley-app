@@ -5,15 +5,21 @@ import PlayerSearch from './PlayerSearch';
 
 import { playerList } from './players'; // TODO: Use database
 
+const ADDED_DELAY = 10;
+
 export default function PeopleTool() {
     const [players, setPlayers] = useState(playerList);
     const [selectedPlayer, setSelectedPlayer] = useState({});
+    const [loadedDetails, setLoadedDetails] = useState(false);
 
     const handleChangeSelectedPlayer = player => {
         if (player === selectedPlayer)
             setSelectedPlayer({});
-        else
+        else {
             setSelectedPlayer(player);
+            setLoadedDetails(false);
+            setTimeout(() => setLoadedDetails(true), ADDED_DELAY);
+        }
     }
 
     const addPlayer = player => {
@@ -31,13 +37,31 @@ export default function PeopleTool() {
         playerToUpdate.timesPlayed = player.timesPlayed;
     }
 
+    const PlayerKit = {
+        save: player => {
+            console.log("Save player", player.id);
+            addOrUpdatePlayer(player); // local
+            // TODO: add or update in database
+            setSelectedPlayer(player);
+            return true;
+        },
+        delete: player => {
+            console.log("Remove player", player.id);
+            alert("Will delete player: " + player.name);
+            const result = removePlayer(player); // local
+            // TODO: remove in database
+            setSelectedPlayer({});
+            return result;
+        }
+    }
+
     const addOrUpdatePlayer = player => {
         const idToUpdate = player.id;
         const playerToUpdate = players.find(p => p.id === idToUpdate);
-        if (playerToUpdate === undefined) {
+        if (playerToUpdate === undefined) { // doesn't exist yet -> ADD
             const newPlayers = [...players, player];
             setPlayers(newPlayers);
-        } else {
+        } else { // aleady exists -> UPDATE
             playerToUpdate.name = player.name;
             playerToUpdate.gender = player.gender;
             playerToUpdate.positions = player.positions;
@@ -46,8 +70,17 @@ export default function PeopleTool() {
         }
     }
 
+    const removePlayer = player => {
+        const originalSize = players.length;
+        const idToRemove = player.id;
+        const newPlayers = players.filter(p => p.id !== idToRemove);
+        setPlayers(newPlayers);
+        return originalSize > newPlayers.length; // removed any
+    }
+
     const handleSavePlayer = (player) => {
         addOrUpdatePlayer(player);
+        console.log("Save player", player);
         // TODO: add or update in database
         setSelectedPlayer(player);
     };
@@ -58,14 +91,17 @@ export default function PeopleTool() {
             <div className="container">
                 <div className="row">
                     <div className="col-sm">
-                        <PlayerSearch players={players} onChangeSelectedPlayer={handleChangeSelectedPlayer} />
+                        <PlayerSearch players={players} selectedPlayerId={selectedPlayer.id} onChangeSelectedPlayer={handleChangeSelectedPlayer} />
                     </div>
                     <div className="col-sm">
-                        {selectedPlayer && Object.keys(selectedPlayer).length > 0 ? (
-                            <PlayerDetails player={selectedPlayer} onSave={handleSavePlayer} />
-                        ) : (
-                            <p>No player selected.</p>
-                        )}
+                        {loadedDetails ?
+                            selectedPlayer && Object.keys(selectedPlayer).length > 0 ? (
+                                <PlayerDetails player={selectedPlayer} onSave={PlayerKit.save} onDelete={PlayerKit.delete} />
+                            ) : (
+                                <p>No player selected.</p>
+                            ) :
+                            <p></p>
+                        }
                     </div>
                 </div>
             </div>

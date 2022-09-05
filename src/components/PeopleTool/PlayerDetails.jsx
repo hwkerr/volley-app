@@ -1,10 +1,20 @@
 import { useState } from "react";
 import { newPlayerObj } from "./players";
 import PlayerForm from "./PlayerForm";
+import { useEffect } from "react";
 
-export default function PlayerDetails({ player, onSave }) {
-    const [currentPlayer, setCurrentPlayer] = useState(player)
+export default function PlayerDetails({ player, onSave, onDelete }) {
+    const [loaded, setLoaded] = useState(true);
     const [editMode, setEditMode] = useState(player === newPlayerObj);
+
+    useEffect(() => {
+        console.log("Set player", player.name);
+        if (player !== newPlayerObj && editMode) {
+            setEditMode(false);
+        } else if (player === newPlayerObj && !editMode) {
+            setEditMode(true);
+        }
+    }, [player]);
 
     const getGenderSpan = gender => {
         if (gender) {
@@ -16,14 +26,24 @@ export default function PlayerDetails({ player, onSave }) {
         return <span style={{color: 'purple'}}>⚥</span>
     }
 
+    const startLoading = duration => {
+        setLoaded(false);
+        if (duration !== undefined)
+            setTimeout(() => setLoaded(true), duration);
+    }
+
     const handleEdit = () => {
         setEditMode(true);
     }
 
+    const handleDelete = (player) => {
+        onDelete(player);
+    }
+
     const handleSave = (newPlayer) => {
         onSave(newPlayer);
-        setCurrentPlayer(newPlayer);
-        setEditMode(false);
+        if (newPlayer !== newPlayerObj)
+            setEditMode(false);
     }
 
     const getDetails = (player) => {
@@ -43,10 +63,14 @@ export default function PlayerDetails({ player, onSave }) {
 
     return (
         <div className="container" style={{backgroundColor: "#888888"}}>
-            {
-                editMode ?
-                <PlayerForm player={currentPlayer} onSave={handleSave} onEdit={handleEdit} /> :
-                getDetails(player)
+            {loaded ? (
+                    editMode ?
+                    <PlayerForm player={player} onSave={handleSave} onEdit={handleEdit} onDelete={handleDelete} /> :
+                    getDetails(player)
+                ) :
+                (
+                    <p>...</p>
+                )
             }
         </div>
     );

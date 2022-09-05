@@ -2,20 +2,14 @@ import { useState } from 'react';
 import PlayerSearchBar from './PlayerSearchBar';
 import PlayerSearchResults from './PlayerSearchResults';
 
-export default function PlayerSearch({ players, onChangeSelectedPlayer }) {
+export default function PlayerSearch({ players, selectedPlayerId, onChangeSelectedPlayer }) {
     const [searchTerm, setSearchTerm] = useState("");
-    const [selectedPlayer, setSelectedPlayer] = useState({});
     
     const handleInputChange = newValue => {
         setSearchTerm(newValue);
     }
 
     const handlePlayerClick = newPlayer => {
-        if (newPlayer === selectedPlayer) {
-            setSelectedPlayer({});
-        } else {
-            setSelectedPlayer(newPlayer);
-        }
         onChangeSelectedPlayer(newPlayer);
     }
     
@@ -24,7 +18,7 @@ export default function PlayerSearch({ players, onChangeSelectedPlayer }) {
             <h3>Player Search</h3>
             <div className="container">
                 <PlayerSearchBar onChange={handleInputChange} />
-                <PlayerSearchResults searchTerm={searchTerm} players={players} onClick={handlePlayerClick} />
+                <PlayerSearchResults searchTerm={searchTerm} players={players} selectedPlayerId={selectedPlayerId} onClick={handlePlayerClick} />
             </div>
         </div>
     )
