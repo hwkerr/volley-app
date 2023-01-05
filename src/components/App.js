@@ -11,7 +11,8 @@ function App() {
           </p>
           <nav>
             <Link to="/rotation">Rotation Schedule</Link> |{" "}
-            <Link to="/players">Players</Link>
+            <Link to="/players">Players</Link> |{" "}
+            <Link to="/league">League Schedule</Link>
           </nav>
           <p>___________________________________</p>
         </header>
