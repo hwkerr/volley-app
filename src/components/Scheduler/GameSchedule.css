@@ -1,0 +1,144 @@
+body{
+    margin-top:20px;
+}
+.bg-light-gray {
+    background-color: #f7f7f7;
+}
+.table-bordered thead td, .table-bordered thead th {
+    border-bottom-width: 2px;
+}
+.table thead th {
+    vertical-align: bottom;
+    border-bottom: 2px solid #dee2e6;
+}
+.table-bordered td, .table-bordered th {
+    border: 1px solid #dee2e6;
+}
+
+
+.bg-sky.box-shadow {
+    box-shadow: 0px 5px 0px 0px #00a2a7
+}
+
+.bg-orange.box-shadow {
+    box-shadow: 0px 5px 0px 0px #af4305
+}
+
+.bg-green.box-shadow {
+    box-shadow: 0px 5px 0px 0px #4ca520
+}
+
+.bg-yellow.box-shadow {
+    box-shadow: 0px 5px 0px 0px #dcbf02
+}
+
+.bg-pink.box-shadow {
+    box-shadow: 0px 5px 0px 0px #e82d8b
+}
+
+.bg-purple.box-shadow {
+    box-shadow: 0px 5px 0px 0px #8343e8
+}
+
+.bg-lightred.box-shadow {
+    box-shadow: 0px 5px 0px 0px #d84213
+}
+
+
+.bg-sky {
+    background-color: #02c2c7;
+    color: white;
+}
+
+.bg-orange {
+    background-color: #e95601;
+    color: white;
+}
+
+.bg-green {
+    background-color: #5bbd2a;
+    color: white;
+}
+
+.bg-yellow {
+    background-color: #f0d001;
+    color: #444444;
+}
+
+.bg-pink {
+    background-color: #ff48a4;
+    color: white;
+}
+
+.bg-purple {
+    background-color: #9d60ff;
+    color: white;
+}
+
+.bg-lightred {
+    background-color: #fc7668;
+    color: white;
+}
+
+.bg-smoke {
+    background-color: #333333;
+    color: white;
+}
+
+.bg-darkred {
+    background-color: darkred;
+    color: white;
+}
+
+.bg-ivory {
+    background-color: ivory;
+    color: #444444;
+}
+
+.padding-15px-lr {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+.padding-5px-tb {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+.margin-10px-bottom {
+    margin-bottom: 10px;
+}
+.border-radius-5 {
+    border-radius: 5px;
+}
+
+.margin-10px-top {
+    margin-top: 10px;
+}
+.font-size14 {
+    font-size: 14px;
+}
+
+.text-light-gray {
+    color: #d6d5d5;
+}
+.font-size13 {
+    font-size: 13px;
+}
+
+.table-bordered td, .table-bordered th {
+    border: 1px solid #dee2e6;
+}
+.table td, .table th {
+    padding: .75rem;
+    vertical-align: top;
+    border-top: 1px solid #dee2e6;
+}
+
+tbody>tr:hover {
+    background-color: lightgray;
+}
+
+/* fit to content */
+td.round-number {
+    width: 1%;
+    white-space: nowrap;
+}

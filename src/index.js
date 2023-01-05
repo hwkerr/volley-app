@@ -9,6 +9,7 @@ import {
 import App from './components/App';
 import RotationSchedule from './components/RotationSchedule/RotationSchedule';
 import PeopleTool from './components/PeopleTool/PeopleTool';
+import Scheduler from './components/Scheduler/Scheduler';
 
 console.clear();
 
@@ -22,6 +23,7 @@ root.render(
       <Route path="/" element={<App />}>
         <Route path="rotation" element={<RotationSchedule />} />
         <Route path="players" element={<PeopleTool />} />
+        <Route path="scheduler" element={<Scheduler />} />
         <Route path="*" element={<div className="App-body">There's nothing here</div>}/>
       </Route>
     </Routes>
