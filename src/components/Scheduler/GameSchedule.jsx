@@ -136,7 +136,7 @@ export default function GameSchedule({rounds, format}) {
                 <div className="table-responsive">
                     <table className="table table-bordered text-center">
                         {getTableHeader()}
-                        <tbody>
+                        <tbody className="GameSchedule">
                             {rounds.map(getTableRow)}
                             {showExpectedTimes && (
                                 <tr>

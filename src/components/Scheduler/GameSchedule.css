@@ -133,7 +133,7 @@ body{
     border-top: 1px solid #dee2e6;
 }
 
-tbody>tr:hover {
+tbody.GameSchedule>tr:hover {
     background-color: lightgray;
 }
 
