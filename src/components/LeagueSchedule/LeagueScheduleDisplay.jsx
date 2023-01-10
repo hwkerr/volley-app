@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import isEmpty from "lodash/isEmpty";
 
 export default function LeagueScheduleDisplay({ schedule }) {
     const [selectedTeam, setSelectedTeam] = useState("");
@@ -82,7 +83,7 @@ export default function LeagueScheduleDisplay({ schedule }) {
     
     return (
         <React.Fragment>
-            {schedule.weeks.map((week, num) => (
+            {!isEmpty(schedule) && schedule.weeks.map((week, num) => (
                 <div key={num+1} className="">
                     <h3>Week {num+1}</h3>
                     <div className="row">
@@ -116,7 +117,7 @@ export default function LeagueScheduleDisplay({ schedule }) {
                                     </tr>
                                 </tbody>
                             </table>
-                        </div> {/*col*/}
+                        </div>
                         <div className="col">
                             <table style={tableStyles.tableRight}>
                                 <tbody>
@@ -147,8 +148,8 @@ export default function LeagueScheduleDisplay({ schedule }) {
                                     </tr>
                                 </tbody>
                             </table>
-                        </div> {/*col*/}
-                    </div> {/*row*/}
+                        </div>
+                    </div>
                     <br />
                 </div>
             ))}
