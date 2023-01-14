@@ -1,28 +1,106 @@
-import { schedule as twelveTeamSchedule } from "./12Teams";
+import { Schedule, Week } from "./ScheduleClasses";
+import premadeSchedules from "./premadeSchedules";
 
-export const getSchedule = (teamCount) => {
-    switch (teamCount) {
+const courtCount = 3;
+const BYE = "BYE";
+
+export const getSchedule = (teams) => {
+    switch (teams) {
         case 12:
-            return twelveTeamSchedule;
+            return new Schedule(premadeSchedules[12]);
         default:
-            return generateSchedule(teamCount);
+            let teamsList = teams;
+            if (typeof teams !== Array) {
+                teamsList = [...Array(teams+1).keys()];
+                teamsList.shift();
+            }
+            return generateSchedule(teamsList);
     }
 };
 
-const courts = 3;
-
 // code for even number of teams first
+// TODO: number of teams > courtCount * 2
 // TODO: odd number of teams
-const generateSchedule = (teamCount) => {
-    if (teamCount % 2 != 0) // if odd
-        return {};
-    if (teamCount <= 6) { // only need 1 block per day. use normal round robin
-        
+const generateSchedule = (teams) => {
+    if (teams.length % 2 != 0) // if odd
+        return new Schedule([]);
+    if (teams.length <= (courtCount*2)) { // only need 1 block per day. use normal round robin
+        const weeks = [];
+        const rr = normalRoundRobin(teams);
+        let i = 7;
+        while (i > 0) {
+            const round1 = rr.next().value;
+            const round2 = rr.next().value;
+            const blocks = [[round1, round2]];
+            weeks.push(new Week(blocks));
+            i--;
+        }
+        return new Schedule(weeks);
+    }
+    if ((teams.length > courtCount*2) && (teams.length <= 12)) {
+        const weeks = [];
+        return new Schedule(weeks);
     }
 }
 
-const normalRoundRobin = () => {
+function* normalRoundRobin(teams) {
+    let teamsCopy = [...teams];
+    if (teams.length % 2 == 1) teamsCopy.push(BYE);
+    while (true) {
+        yield listToRound(teamsCopy);
+        teamsCopy = rotateTeams(teamsCopy);
+    }
+}
 
+// round robin with an early and late block
+// all teams play 2 matches in their pool, then pools are "shuffled"
+// function* blockRoundRobin(teams) {
+//     let teamsCopy = [...teams];
+//     if (teams.length % 2 == 1) teamsCopy.push(BYE);
+    
+//     while (true) {
+//         // get round 1 - 4 (week 1 and 2)
+//         let [group1, group2] = splitTeamsIntoBlocks(teamsCopy);
+//         const rr = normalRoundRobin(group1);
+//         const g1round1 = rr.next().value();
+//         const g1round2 = rr.
+//     }
+// }
+
+const splitTeamsIntoBlocks = teams => {
+    const teamsCopy = [...teams];
+    const group1 = [], group2 = [];
+    if (teams.length % 4 == 0) { // 8, 12 teams
+        group1 = teamsCopy.slice(0, teams.length/2);
+        group2 = teamsCopy.slice(teams.length/2);
+    } else if (teams.length % 2 == 0) { // 10 teams
+        group1 = teamsCopy.slice(0, (teams.length/2)+1);
+        group2 = teamsCopy.slice((teams.length/2)+1);
+    }
+    return [group1, group2];
+}
+
+const listToRound = list => {
+    const round = [];
+    const listCopy = [...list];
+    while (listCopy.length > 0) {
+        const team1 = listCopy.shift();
+        const team2 = listCopy.pop();
+        const match = [team1, team2];
+        round.push(match);
+    }
+    return round;
+}
+
+const rotateTeams = teams => {
+    const unfrozenTeams = [...teams];
+    const frozenTeam = unfrozenTeams.shift();
+
+    // move last element to front
+    const end = unfrozenTeams.pop();
+    unfrozenTeams.unshift(end);
+
+    return [frozenTeam, ...unfrozenTeams];
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
