@@ -72,6 +72,14 @@ const gameList = (round) => ({
 //     ]
 // ]
 
+export const initWeeksList = (weekCount, blockCount, roundCount, courtCount, teamsPerCourt) => {
+    return Array(weekCount).fill(Array(blockCount).fill(Array(roundCount).fill(Array(courtCount).fill(Array(teamsPerCourt).fill("")))));
+}
+
+const matchIsEmpty = (match) => {
+    return (match.every(team => (team === undefined || team === '')))
+}
+
 export class Week {
     constructor(blocks) {
         this.blocks = blocks.map(block => (
@@ -89,13 +97,18 @@ export class Week {
         else return undefined;
     }
 
-    getAllMatches() {
+    // team = optional parameter to filter out matches for a specific team
+    getAllMatches(team) {
         let allMatches = [];
         for (let i = 0; i < this.blocks.length; i++) {
             const block = this.blocks[i];
             for (let j = 0; j < block.length; j++) {
                 const round = block[j].matches;
-                allMatches = [...allMatches, round];
+                for (let k = 0; k < round.length; k++) {
+                    const match = round[k];
+                    if ((!(team && team !== undefined) || match.includes(team)) && !matchIsEmpty(match) )
+                        allMatches = [...allMatches, match];
+                }
             }
         }
         return allMatches;
@@ -124,11 +137,12 @@ export class Schedule {
             return week.blocks[0];
     }
 
-    getAllMatches() {
+    // team = optional parameter to filter out matches for a specific team
+    getAllMatches(team) {
         let allMatches = [];
         for (let i = 0; i < this.weeks.length; i++) {
             const week = this.weeks[i];
-            allMatches = [...allMatches, ...(week.getAllMatches())]
+            allMatches = [...allMatches, ...(week.getAllMatches(team))];
         }
         return allMatches
     }
