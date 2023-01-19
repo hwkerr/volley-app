@@ -31,7 +31,7 @@ export default function LeagueSchedule() {
     
     return (
         <div className="App-body">
-            <p>League Schedule component</p>
+            <h2>League Schedule component</h2>
 
             <input type="number"
                     placeholder="Number of teams"

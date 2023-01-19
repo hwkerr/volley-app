@@ -13,44 +13,48 @@ export const tableStyles = {
     earlyA: {
         backgroundColor: "lightgreen",
         color: "black",
-        borderRight: "1px solid white",
-        width: "100px"
+        borderRight: "1px solid white"
     },
     earlyB: {
         backgroundColor: "lightseagreen",
         color: "black",
-        borderRight: "1px solid white",
-        width: "100px"
+        borderRight: "1px solid white"
     },
     lateA: {
         backgroundColor: "plum",
         color: "white",
-        borderLeft: "1px solid white",
-        width: "100px"
+        borderLeft: "1px solid white"
     },
     lateB: {
         backgroundColor: "purple",
         color: "white",
-        borderLeft: "1px solid white",
-        width: "100px"
+        borderLeft: "1px solid white"
     },
     selected: {
         backgroundColor: "black",
-        color: "white",
-        width: "100px"
+        color: "white"
+    },
+    all: {
+        width: "10px"
     }
 }
 
 export const getColStyles = (index, block) => {
+    let styles = {};
     if (block === "early") {
         if (index % 2 === 0)
-            return tableStyles.earlyA;
-        else return tableStyles.earlyB;
+            styles = tableStyles.earlyA;
+        else styles = tableStyles.earlyB;
     } else if (block === "late") {
         if (index % 2 === 0)
-            return tableStyles.lateA;
-        else return tableStyles.lateB;
+            styles = tableStyles.lateA;
+        else styles = tableStyles.lateB;
     }
+    styles = {
+        ...styles,
+        ...tableStyles.all
+    }
+    return styles;
 }
 
 export default function LeagueScheduleDisplay({ schedule, empty }) {

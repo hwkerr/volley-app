@@ -9,36 +9,14 @@ const teamsPerCourt = 2;
 export default function ManualSchedulingTool({ teamCount, weekCount, blockCount }) {
     const [schedule, setSchedule] = useState(new Schedule({}));
     const [cellValues, setCellValues] = useState({});
-    
-    const getCell = (week, block, round, court, teamnum) => {
-        let style = {};
-        style = getColStyles(court, block);
-        const blockIndex = (block === "early" ? 0 : 1);
 
-        const cellKey = getCellKey(week, blockIndex, round, court, teamnum);
-        
-        return (
-            <td key={court} style={style} onClick={() => console.log(cellKey, cellValues[cellKey])}>
-                <input type="number"
-                        style={{width: "8rem", backgroundColor: "transparent", border: "none", textAlign: "center"}}
-                        onChange={handleCellValueChange}
-                        placeholder="-"
-                        data-week={week}
-                        data-block={block}
-                        data-round={round}
-                        data-court={court}
-                        data-teamnum={teamnum}
-                        value={cellValues[cellKey] || ""}
-                />
-            </td>
-        );
-    }
-
-    // UNEXPECTED BEHAVIOR - TODO: cellValues changes multiple values to the same thing
     const handleCellValueChange = event => {
         const { value, dataset: { week, block, round, court, teamnum } } = event.target;
+        updateCell({week, block, round, court, teamnum}, value);
+    };
+
+    const updateCell = ({week, block, round, court, teamnum}, value) => {
         const blockIndex = (block === "early" ? 0 : 1);
-        console.log("New Cell Value:", value, "(Week "+week+")");
         setCellValues((prevState) => {
             const newState = prevState;
             // newState[week][blockIndex][round][court][teamnum] = value;
@@ -46,7 +24,7 @@ export default function ManualSchedulingTool({ teamCount, weekCount, blockCount 
             updateSchedule(newState);
             return newState;
         });
-    };
+    }
 
     const delim = ';';
     const getCellKey = (week, block, round, court, teamNum) => {
@@ -90,8 +68,6 @@ export default function ManualSchedulingTool({ teamCount, weekCount, blockCount 
         }
     }
     const updateSchedule = cellValues => {
-        console.log("cellValues", cellValues);
-
         let weeks; // = initWeeksList(weekCount, blockCount, roundCount, courtCount, teamsPerCourt);
 
         const cells = cellKeyGenerator();
@@ -112,6 +88,16 @@ export default function ManualSchedulingTool({ teamCount, weekCount, blockCount 
         ));
     };
 
+    const formatSchedule = schedule => {
+        return schedule.csvFormat();
+    }
+    
+    const exportSchedule = e => {
+        let text = formatSchedule(schedule);
+        navigator.clipboard.writeText(text); // copy to clipboard
+        console.log("Copied to clipboard")
+    }
+
 
     const range = (n) => { // 4 => 0 1 2 3
         return [...Array(n).keys()];
@@ -123,85 +109,130 @@ export default function ManualSchedulingTool({ teamCount, weekCount, blockCount 
     }
 
     courtCount = Math.ceil(teamCount/4);
+
+    const makeCell = (week, block, round, court, teamnum) => {
+        let style = getColStyles(court, block);
+        style = {
+            ...style,
+            padding: "0",
+            minWidth: "4rem"
+        }
+        const blockIndex = (block === "early" ? 0 : 1);
+
+        const cellKey = getCellKey(week, blockIndex, round, court, teamnum);
+        
+        return (
+            <td key={court} style={style}>
+                <input type="number"
+                        className="no-arrows"
+                        style={{width: "100%", backgroundColor: "transparent", border: "none", textAlign: "center"}}
+                        onChange={handleCellValueChange}
+                        placeholder="-"
+                        data-week={week}
+                        data-block={block}
+                        data-round={round}
+                        data-court={court}
+                        data-teamnum={teamnum}
+                        value={cellValues[cellKey] || ""}
+                />
+            </td>
+        );
+    }
+
+    const makeTableRow = (week, block, round, teamnum) => (
+        <tr key={teamnum}>
+            {range(Math.ceil(courtCount)).map((cell, court) => 
+                makeCell(week, block, round, court, teamnum)
+            )}
+        </tr>
+    )
+
+    const makeClearButton = (week, block, round) => {
+        const handleClick = e => {
+            for (let court = 0; court < courtCount; court++)
+                for (let teamnum = 0; teamnum < teamsPerCourt; teamnum++)
+                    updateCell({week, block, round, court, teamnum}, 0);
+        };
+        const styles = {
+            padding: "1em",
+            margin: "0",
+            border: "0",
+            borderRadius: "5px",
+            fontSize: "0.5em",
+            textAlign: "left"
+        };
+        return (
+            <button onClick={handleClick} style={styles}>clr</button>
+        )
+    };
     
     return (
-        <div className="container row">
-            <div className="col" style={{overflowY: "scroll", height: "calc(100vh)"}}>
+        <div className="container-xl row">
+            <div className="col-6" style={{overflowY: "scroll", height: "calc(100vh)"}}>
                 {range(teamCount).map(week => (
                     <div key={week}>
                         <h3>Week {week+1}</h3>
                         <div className="row">
                             <div className="col" style={tableStyles.tableLeft}>
                                 <h6 style={{textAlign: "left"}}>Early</h6>
-                                <table>
-                                    <tbody>
-                                        <tr>
-                                            {range(Math.ceil(courtCount)).map((cell, court) => 
-                                                getCell(week, "early", 0, court, 0)
-                                            )}
-                                        </tr>
-                                        <tr>
-                                            {range(Math.ceil(courtCount)).map((cell, court) => 
-                                                getCell(week, "early", 0, court, 1)
-                                            )}
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <div className="row">
+                                    <table className="col">
+                                        <tbody>
+                                            {range(teamsPerCourt).map(i => (
+                                                makeTableRow(week, "early", 0, i)
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                    <div className="col">{makeClearButton(week, "early", 0)}</div>
+                                </div>
                                 <br />
-                                <table>
-                                    <tbody>
-                                        <tr>
-                                            {range(Math.ceil(courtCount)).map((cell, court) => 
-                                                getCell(week, "early", 1, court, 0)
-                                            )}
-                                        </tr>
-                                        <tr>
-                                            {range(Math.ceil(courtCount)).map((cell, court) => 
-                                                getCell(week, "early", 1, court, 1)
-                                            )}
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <div className="row">
+                                    <table className="col">
+                                        <tbody>
+                                            {range(teamsPerCourt).map(i => (
+                                                makeTableRow(week, "early", 1, i)
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                    <div className="col">{makeClearButton(week, "early", 1)}</div>
+                                </div>
                             </div>
                             <div className="col" style={tableStyles.tableRight}>
                                 <h6 style={{textAlign: "left"}}>Late</h6>
-                                <table>
-                                    <tbody>
-                                        <tr>
-                                            {range(Math.ceil(courtCount)).map((cell, court) => 
-                                                getCell(week, "late", 0, court, 0)
-                                            )}
-                                        </tr>
-                                        <tr>
-                                            {range(Math.ceil(courtCount)).map((cell, court) => 
-                                                getCell(week, "late", 0, court, 1)
-                                            )}
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <div className="row">
+                                    <table className="col">
+                                        <tbody>
+                                            {range(teamsPerCourt).map(i => (
+                                                makeTableRow(week, "late", 0, i)
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                    <div className="col">{makeClearButton(week, "late", 0)}</div>
+                                </div>
                                 <br />
-                                <table>
-                                    <tbody>
-                                        <tr>
-                                            {range(Math.ceil(courtCount)).map((cell, court) => 
-                                                getCell(week, "late", 1, court, 0)
-                                            )}
-                                        </tr>
-                                        <tr>
-                                            {range(Math.ceil(courtCount)).map((cell, court) => 
-                                                getCell(week, "late", 1, court, 1)
-                                            )}
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <div className="row">
+                                    <table className="col">
+                                        <tbody>
+                                            {range(teamsPerCourt).map(i => (
+                                                makeTableRow(week, "late", 1, i)
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                    <div className="col">{makeClearButton(week, "late", 1)}</div>
+                                </div>
                             </div>
                         </div>
                         <br />
                     </div>
                 ))}
             </div>
-            <div className="col">
+            <div className="col-6">
                 <MatchupTracker schedule={schedule} />
+            </div>
+            <hr />
+            <div>
+                <h2>Export</h2>
+                <button onClick={exportSchedule}>Export</button>
             </div>
         </div>
     );

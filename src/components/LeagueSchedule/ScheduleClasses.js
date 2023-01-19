@@ -27,6 +27,8 @@
 //     };
 // }
 
+import { round } from "lodash";
+
 // const scheduleConstructor = (weeksObj) => {
 //     const schedule = {
 //         weeks: weeksObj,
@@ -115,6 +117,9 @@ export class Week {
     }
 }
 
+const delim = "|", nl = "\n";
+const csvFormatHeader = `Week${delim}Block${delim}Round${delim}Court 1${delim}${delim}Court 2${delim}${delim}Court 3${nl}`;
+
 export class Schedule {
     constructor(weeksList) {
         this.weeks = weeksList;
@@ -157,6 +162,31 @@ export class Schedule {
             if (!allTeams.includes(team2) && team2 !== undefined)
                 allTeams.push(team2)
         }
-        return allTeams;
+        return allTeams.filter(team => team !== "");
+    }
+
+    csvFormat() {
+        let rows = [];
+        for (let w = 0; w < this.weeks.length; w++) {
+            const week = this.weeks[w];
+            for (let b = 0; b < week.blocks.length; b++) {
+                const block = week.blocks[b];
+                for (let r = 0; r < block.length; r++) {
+                    const round = block[r];
+                    let row = "" + (w+1) + delim + (b===0?"Early":"Late") + delim + (r+1) + delim;
+                    console.log(round.matches);
+                    for (let c = 0; c < round.matches.length; c++) {
+                        const court = round.matches[c];
+                        for (let t = 0; t < court.length; t++) {
+                            const team = court[t];
+                            row = row + team.toString() + delim;
+                        }
+                    }
+                    rows.push(row);
+                }
+            }
+        }
+
+        return csvFormatHeader + rows.join(nl);
     }
 }
