@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 
-export default function MatchupTracker({ schedule }) {
+export default function MatchupTracker({ schedule, setSelectedTeam: passUpSelectedTeam }) {
     const [targetTeam, setTargetTeam] = useState('');
+    const [selectedTeam, setSelectedTeam] = useState('');
 
     const handleClick = event => {
         if (targetTeam) console.log("Target", targetTeam);
@@ -13,6 +14,17 @@ export default function MatchupTracker({ schedule }) {
         if (targetTeam) {
             const opponents = matches.map(match => getOtherTeamInMatch(match, targetTeam));
             console.log("Opponents", opponents);
+        }
+    }
+
+    const handleTeamClicked = event => {
+        const team = event.target.dataset.team;
+        if (selectedTeam === team && team !== '') {
+            setSelectedTeam('');
+            passUpSelectedTeam('');
+        } else {
+            setSelectedTeam(team);
+            passUpSelectedTeam(team);
         }
     }
 
@@ -48,13 +60,20 @@ export default function MatchupTracker({ schedule }) {
         return repeats;
     }
 
+    const cmpNumeric = (a, b) => {
+        if (isNaN(a) || isNaN(b))
+            return a < b ? -1 : (a > b ? 1 : 0)
+        const aInt = parseInt(a);
+        const bInt = parseInt(b);
+        return aInt - bInt;
+    }
     const tdStyle = {
         width: "1%",
         whiteSpace: "nowrap",
         margin: "0"
     };
     const makeTeamRows = () => {
-        const allTeams = schedule.getAllTeams().sort();
+        const allTeams = schedule.getAllTeams().sort(cmpNumeric);
         const separator = ", ";
         return (
             allTeams.map(team => {
@@ -62,11 +81,11 @@ export default function MatchupTracker({ schedule }) {
                 const uniqueOpponents = getUnique(opponents);
                 const repeats = getRepeatTeams(team, opponents);
                 return (
-                    <tr key={team}>
-                        <td style={tdStyle}>{team}</td>
-                        <td style={tdStyle}>{uniqueOpponents.join(separator)}</td>
-                        <td style={tdStyle}>{allTeams.filter(otherteam => !opponents.includes(otherteam)).join(separator)}</td>
-                        <td style={tdStyle}>{repeats.join(separator)}</td>
+                    <tr key={team} style={selectedTeam===team ? {backgroundColor: "forestgreen"} : {}}>
+                        <td style={{...tdStyle, fontWeight: selectedTeam===team?900:'', cursor: "pointer"}} onClick={handleTeamClicked} data-team={team}>{team}</td>
+                        <td style={tdStyle}>{uniqueOpponents.sort(cmpNumeric).join(separator)}</td>
+                        <td style={tdStyle}>{allTeams.filter(otherteam => (!opponents.includes(otherteam) && otherteam !== team)).sort(cmpNumeric).join(separator)}</td>
+                        <td style={tdStyle}>{repeats.sort(cmpNumeric).join(separator)}</td>
                     </tr>
                 );
             })

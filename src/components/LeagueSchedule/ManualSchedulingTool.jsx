@@ -9,6 +9,7 @@ const teamsPerCourt = 2;
 export default function ManualSchedulingTool({ teamCount, weekCount, blockCount }) {
     const [schedule, setSchedule] = useState(new Schedule({}));
     const [cellValues, setCellValues] = useState({});
+    const [selectedTeam, setSelectedTeam] = useState('');
 
     const handleCellValueChange = event => {
         const { value, dataset: { week, block, round, court, teamnum } } = event.target;
@@ -111,15 +112,23 @@ export default function ManualSchedulingTool({ teamCount, weekCount, blockCount 
     courtCount = Math.ceil(teamCount/4);
 
     const makeCell = (week, block, round, court, teamnum) => {
-        let style = getColStyles(court, block);
+        const blockIndex = (block === "early" ? 0 : 1);
+
+        const cellKey = getCellKey(week, blockIndex, round, court, teamnum);
+
+        const team = cellValues[cellKey] || "";
+        let style, selected;
+        if (selectedTeam && team && selectedTeam.toString() === team.toString()) {
+            style = tableStyles.selected;
+            selected = true;
+        }
+        else
+            style = getColStyles(court, block);
         style = {
             ...style,
             padding: "0",
             minWidth: "4rem"
         }
-        const blockIndex = (block === "early" ? 0 : 1);
-
-        const cellKey = getCellKey(week, blockIndex, round, court, teamnum);
         
         return (
             <td key={court} style={style}>
@@ -127,6 +136,7 @@ export default function ManualSchedulingTool({ teamCount, weekCount, blockCount 
                         className="no-arrows"
                         style={{width: "100%", backgroundColor: "transparent", border: "none", textAlign: "center"}}
                         onChange={handleCellValueChange}
+                        onWheel={e => e.target.blur()}
                         placeholder="-"
                         data-week={week}
                         data-block={block}
@@ -162,18 +172,18 @@ export default function ManualSchedulingTool({ teamCount, weekCount, blockCount 
             textAlign: "left"
         };
         return (
-            <button onClick={handleClick} style={styles}>clr</button>
+            <button onClick={handleClick} style={styles}>clear</button>
         )
     };
     
     return (
         <div className="container-xl row">
-            <div className="col-6" style={{overflowY: "scroll", height: "calc(100vh)"}}>
+            <div className="col-4" style={{overflowY: "scroll", height: "calc(100vh)"}}>
                 {range(teamCount).map(week => (
                     <div key={week}>
                         <h3>Week {week+1}</h3>
                         <div className="row">
-                            <div className="col" style={tableStyles.tableLeft}>
+                            <div className="" style={tableStyles.tableLeft}> {/* col */}
                                 <h6 style={{textAlign: "left"}}>Early</h6>
                                 <div className="row">
                                     <table className="col">
@@ -197,7 +207,7 @@ export default function ManualSchedulingTool({ teamCount, weekCount, blockCount 
                                     <div className="col">{makeClearButton(week, "early", 1)}</div>
                                 </div>
                             </div>
-                            <div className="col" style={tableStyles.tableRight}>
+                            <div className="" style={tableStyles.tableLeft}> {/* col */}
                                 <h6 style={{textAlign: "left"}}>Late</h6>
                                 <div className="row">
                                     <table className="col">
@@ -226,8 +236,8 @@ export default function ManualSchedulingTool({ teamCount, weekCount, blockCount 
                     </div>
                 ))}
             </div>
-            <div className="col-6">
-                <MatchupTracker schedule={schedule} />
+            <div className="col-8">
+                <MatchupTracker schedule={schedule} setSelectedTeam={setSelectedTeam}/>
             </div>
             <hr />
             <div>

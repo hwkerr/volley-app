@@ -31,8 +31,8 @@ export const tableStyles = {
         borderLeft: "1px solid white"
     },
     selected: {
-        backgroundColor: "black",
-        color: "white"
+        backgroundColor: "gray",
+        color: "black"
     },
     all: {
         width: "10px"
