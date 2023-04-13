@@ -117,7 +117,7 @@ export class Week {
     }
 }
 
-const delim = "|", nl = "\n";
+const delim = ",", nl = "\n";
 const csvFormatHeader = `Week${delim}Block${delim}Round${delim}Court 1${delim}${delim}Court 2${delim}${delim}Court 3${nl}`;
 
 export class Schedule {

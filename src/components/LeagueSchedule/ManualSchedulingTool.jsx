@@ -10,6 +10,7 @@ export default function ManualSchedulingTool({ teamCount, weekCount, blockCount 
     const [schedule, setSchedule] = useState(new Schedule({}));
     const [cellValues, setCellValues] = useState({});
     const [selectedTeam, setSelectedTeam] = useState('');
+    const [importText, setImportText] = useState('');
 
     const handleCellValueChange = event => {
         const { value, dataset: { week, block, round, court, teamnum } } = event.target;
@@ -17,7 +18,8 @@ export default function ManualSchedulingTool({ teamCount, weekCount, blockCount 
     };
 
     const updateCell = ({week, block, round, court, teamnum}, value) => {
-        const blockIndex = (block === "early" ? 0 : 1);
+        console.log("Update cell to "+ value);
+        const blockIndex = (block.toLowerCase() === "early" ? 0 : 1);
         setCellValues((prevState) => {
             const newState = prevState;
             // newState[week][blockIndex][round][court][teamnum] = value;
@@ -97,6 +99,47 @@ export default function ManualSchedulingTool({ teamCount, weekCount, blockCount 
         let text = formatSchedule(schedule);
         navigator.clipboard.writeText(text); // copy to clipboard
         console.log("Copied to clipboard")
+        alert('Copied to clipboard');
+    }
+
+    const importSchedule = e => {
+        // const blocks = [
+        //     [ // early
+        //         [[1,2], [3,4], [5,6]],
+        //         [[1,6], [2,5], [3,4]]
+        //     ],
+        //     [ // late
+        //         [[1,2], [3,4], [5,6]],
+        //         [[1,6], [2,5], [3,4]]
+        //     ]
+        // ]
+        console.log("Imported schedule");
+        const allRows = importText.split('\n').slice(1).map(row => row.split(','));
+        console.log(allRows);
+        const maxWeekNumber = allRows.reduce((max, row) => row[0]>max ? row[0] : max);
+        const newSchedule = [];
+        for (let weekNumber = 0; weekNumber < maxWeekNumber; weekNumber++) {
+            const week = [];
+            for (let blockNumber = 0; blockNumber < 2; blockNumber++) {
+                const blockName = (blockNumber === 0 ? "Early" : "Late");
+                const block = [];
+                for (let roundNumber = 0; roundNumber < 2; roundNumber++) {
+                    const row = allRows.filter(row => ((parseInt(row[0]) === (weekNumber+1) && row[1] === blockName && parseInt(row[2]) === (roundNumber+1))))[0];
+                    const matches = [];
+                    let court = 0;
+                    console.log(row, row.length);
+                    for (let i = 3; i+1 < row.length; i+=2) {
+                        updateCell({week: weekNumber, block: blockName, round: roundNumber, court, teamnum: 0}, row[i]);
+                        updateCell({week: weekNumber, block: blockName, round: roundNumber, court, teamnum: 1}, row[i+1]);
+                        court++;
+                    }
+                    block.push(matches);
+                }
+                week.push(block);
+            }
+            newSchedule.push(new Week(week));
+        }
+        // setSchedule(new Schedule(newSchedule));
     }
 
 
@@ -243,6 +286,11 @@ export default function ManualSchedulingTool({ teamCount, weekCount, blockCount 
             <div>
                 <h2>Export</h2>
                 <button onClick={exportSchedule}>Export</button>
+            </div>
+            <div>
+                <h2>Import</h2>
+                <textarea value={importText} onChange={e => setImportText(e.target.value)} />
+                <button onClick={importSchedule}>Import</button>
             </div>
         </div>
     );
