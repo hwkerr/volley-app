@@ -1,38 +1,74 @@
 import { useState } from "react";
 import './PeopleTool.css';
+import Form from 'react-bootstrap/Form';
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
+import ToggleButton from 'react-bootstrap/ToggleButton';
+import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 
 import { newPlayer, newPlayerObj } from "./players";
 
 export default function PlayerForm({ player, onSave, onDelete }) {
-    const [name, setName] = useState(player.name);
-    const [maleGender, setMaleGender] = useState(player.gender === "m");
-    const [femaleGender, setFemaleGender] = useState(player.gender === "f");
-    const [positionString, setPositionString] = useState(player.positions.join(","));
+    const [firstName, setFirstName] = useState(player.name.first);
+    const [lastName, setLastName] = useState(player.name.last);
+    const [gender, setGender] = useState(player.gender);
+    const [handedness, setHandedness] = useState(player.handedness);
+    const [roles, setRoles] = useState(player.roles);
+    const [contactType, setContactType] = useState(player.contact.type);
+    const [contactInfo, setContactInfo] = useState(player.contact.info);
+    const [affiliation, setAffiliation] = useState([]);
+    const [notes, setNotes] = useState("");
+
     const [contact, setContact] = useState(player.contact);
+    const [nickChecked, setNickChecked] = useState(false);
 
-    const handleChangeGenderMale = event => {
-        const checked = event.target.value;
-        if (checked) {
-            setFemaleGender(false);
-            setMaleGender(true);
-        }
+    const contactTypesWithInfo = ["Phone", "Add", ""];
+
+    const handleChangeFirstName = event => {
+        const firstName = event.target.value;
+        console.log(firstName);
+        setFirstName(firstName);
+    }
+
+    const handleChangeLastName = event => {
+        const lastName = event.target.value;
+        console.log(lastName);
+        setLastName(lastName);
+    }
+
+    const handleNickChecked = event => {
+        const checked = event.currentTarget.checked;
+        setNickChecked(checked);
+    }
+
+    const handleChangeHandedness = val => {
+        setHandedness(val);
+    }
+
+    const handleChangeGender = val => {
+        setGender(val);
+    }
+
+    const handleChangeRoles = val => {
+        setRoles(val);
+    }
+
+    const handleChangeContactType = val => {
+        console.log(val);
+        setContactType(val);
     };
 
-    const handleChangeGenderFemale = event => {
-        const checked = event.target.value;
-        if (checked) {
-            setMaleGender(false);
-            setFemaleGender(true);
-        }
-    };
+    const handleChangeContactInfo = event => {
+        const info = event.target.value;
+        console.log(info);
+        setContactInfo(info);
+    }
 
-    const handleChangePositionString = event => {
-        setPositionString(event.target.value);
-    };
-
-    const handleContactChange = event => {
-        setContact(event.target.value);
-    };
+    const handleChangePhoneNumber = event => {
+        const phoneNumber = event.target.value;
+        console.log(phoneNumber);
+        setContactInfo(phoneNumber);
+    }
 
     const handleSaveButton = event => {
         event.preventDefault();
@@ -50,35 +86,179 @@ export default function PlayerForm({ player, onSave, onDelete }) {
     }
 
     const makePlayerFromForm = () => {
-        let gender = "";
-        if (maleGender) gender = "m";
-        else if (femaleGender) gender = "f";
-
-        let positions = positionString.replaceAll(" ", "").split(",");
-
-        let id = (player.id === newPlayerObj.id ? undefined : player.id);
+        let fullName = (player.fullName === newPlayerObj.fullName ? undefined : player.fullName);
+        let skills = {};
 
         const p = newPlayer({
-            id,
-            name,
-            gender,
-            positions,
-            contact
+            fullName: firstName + " " + lastName,
+            gender: gender,
+            handedness: handedness,
+            name: {
+                first: firstName,
+                last: lastName
+            },
+            roles: roles,
+            skills: {
+                setting: skills.setting,
+                hitting: skills.hitting,
+                defense: skills.defense,
+                blocking: skills.blocking,
+                chemistry: skills.chemistry,
+                leadership: skills.leadership
+            },
+            contact: {
+                type: "",
+                info: ""
+            },
+            affiliation: affiliation,
+            notes: notes
         });
         return p;
     }
 
     const resetFormFields = () => {
-        setName("");
-        setMaleGender(false);
-        setFemaleGender(false);
-        setPositionString("");
+        setFirstName("");
+        setLastName("");
+        setNickChecked(false);
+        setGender(null);
+        setRoles([]);
         setContact("");
     }
 
     return (
         <>
-            <div className="row form-group">
+            <Form id="react-bootstrap-forms-test" className="pt-3 pb-3">
+                <Form.Group as={Row} className={nickChecked ? "" : "mb-3"}>
+                    <Form.Label column sm={2}>
+                        Name
+                    </Form.Label>
+                    <Col sm={4}>
+                        <Form.Control placeholder="First" value={firstName} onChange={handleChangeFirstName} />
+                    </Col>
+                    <Col sm={4}>
+                        <Form.Control placeholder="Last" value={lastName} onChange={handleChangeLastName} />
+                    </Col>
+                    <Col>
+                    <ToggleButton
+                        className="mb-2"
+                        id="toggle-check"
+                        type="checkbox"
+                        variant="outline-light"
+                        checked={nickChecked}
+                        value="1"
+                        onChange={(e) => setNickChecked(e.currentTarget.checked)}
+                    >
+                        +
+                    </ToggleButton>
+                    </Col>
+                </Form.Group>
+                {nickChecked && /* TODO: Use CSS instead to add a transition to the Nickname form group */
+                <Form.Group as={Row} className="mb-3">
+                    <Form.Label column sm={2}>
+                        Nickname(s)
+                    </Form.Label>
+                    <Col sm={"10"}>
+                        <Form.Control placeholder="For multiple nicknames, separate with ;" />
+                    </Col>
+                </Form.Group>}
+                <hr />
+                <Form.Group as={Row} className="mb-3">
+                    <Form.Label column sm={2}>
+                        Sex
+                    </Form.Label>
+                    <Col sm={10}>
+                        <ToggleButtonGroup column type="radio" name="gender" value={gender} onChange={handleChangeGender}>
+                            <ToggleButton id="tbg-radio-male" value={"Male"}>
+                                Male
+                            </ToggleButton>
+                            <ToggleButton id="tbg-radio-female" value={"Female"}>
+                                Female
+                            </ToggleButton>
+                        </ToggleButtonGroup>
+                    </Col>
+                </Form.Group>
+                <Form.Group as={Row} className="mb-3">
+                    <Form.Label column sm={2}>
+                        Handedness
+                    </Form.Label>
+                    <Col sm={10}>
+                        <ToggleButtonGroup column type="radio" name="handedness" value={handedness} onChange={handleChangeHandedness}>
+                            <ToggleButton id="tbg-radio-left" value={"Left"}>
+                                Left
+                            </ToggleButton>
+                            <ToggleButton id="tbg-radio-right" value={"Right"}>
+                                Right
+                            </ToggleButton>
+                        </ToggleButtonGroup>
+                    </Col>
+                </Form.Group>
+                <Form.Group as={Row} className="mb-3">
+                    <Form.Label column sm={2}>
+                        Roles
+                    </Form.Label>
+                    <Col sm={10}>
+                        <ToggleButtonGroup type="checkbox" value={roles} onChange={handleChangeRoles}>
+                            <ToggleButton id="tbg-check-pin" value={"Pin"}>
+                                Pin
+                            </ToggleButton>
+                            <ToggleButton id="tbg-check-middle" value={"Middle"}>
+                                Middle
+                            </ToggleButton>
+                            <ToggleButton id="tbg-check-libero" value={"Libero"}>
+                                Libero
+                            </ToggleButton>
+                            <ToggleButton id="tbg-check-setter" value={"Setter"}>
+                                Setter
+                            </ToggleButton>
+                        </ToggleButtonGroup>
+                    </Col>
+                </Form.Group>
+                <hr />
+                <Form.Group as={Row} className={contactTypesWithInfo.includes(contactType) ? "mb-2" : "mb-3"}>
+                    <Form.Label column sm={2}>
+                        Contact
+                    </Form.Label>
+                    <Col sm={10}>
+                        <ToggleButtonGroup column type="radio" name="contact-type" value={contactType} onChange={handleChangeContactType}>
+                            <ToggleButton id="tbg-radio-phone" value={"Phone"}>
+                                Phone
+                            </ToggleButton>
+                            <ToggleButton id="tbg-radio-facebook" value={"Facebook"}>
+                                Facebook
+                            </ToggleButton>
+                            <ToggleButton id="tbg-radio-groupme" value={"GroupMe"}>
+                                GroupMe
+                            </ToggleButton>
+                            <ToggleButton id="tbg-radio-add" value={"Add"}>
+                                Add
+                            </ToggleButton>
+                            <ToggleButton id="tbg-radio-other" value={""}>
+                                &#60;&#62;
+                            </ToggleButton>
+                        </ToggleButtonGroup>
+                    </Col>
+                </Form.Group>
+                {contactTypesWithInfo.includes(contactType) &&
+                <Form.Group as={Row} className="mb-3">
+                    <Form.Label column sm={2}>
+                        {contactType}
+                    </Form.Label>
+                    {contactType === "Phone" ?
+                        <Col sm={10}>
+                            <Form.Control value={contactInfo} onChange={handleChangePhoneNumber} />
+                        </Col> :
+                    contactType === "Add" ?
+                        <Col sm={10}>
+                            <Form.Control value={contactInfo} onChange={handleChangeContactInfo} />
+                        </Col> :
+                    // contactType - other
+                        <Col sm={10}>
+                            <Form.Control value={contactInfo} onChange={handleChangeContactInfo} />
+                        </Col>
+                    }
+                </Form.Group>}
+            </Form>
+            {/* <div className="row form-group">
                 <input className="col-12 form-control form-control-lg header-input" placeholder="New Player" onChange={e => setName(e.target.value)} value={name}></input>
                 <div className="col-6">
                     <p className="mb-0">Gender:</p>
@@ -108,7 +288,7 @@ export default function PlayerForm({ player, onSave, onDelete }) {
                 </div>
                 <button className="btn btn-primary" onClick={handleSaveButton}>Save</button>
                 {player !== newPlayerObj && <button className="btn btn-danger" onClick={handleDeleteButton}>Delete</button>}
-            </div>
+            </div> */}
         </>
     );
 }
