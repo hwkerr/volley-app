@@ -19,20 +19,26 @@ export default function PlayerSearchResults({ searchTerm, players, selectedPlaye
         );
         return (
             <div key={i} className={`listitem-name ${isSelected ? "selected" : ""}`} onClick={() => handlePlayerClicked(player)}>
-                <p>{i+1}. {player.name}</p>
+                <p>{i+1}. {player.name.first + ' ' + player.name.last}</p>
             </div>
         );
     };
 
+    const fullName = (nameObj) => (nameObj.first + ' ' + nameObj.last);
+
     const getFilteredPlayersList = () => {
         let filteredPlayers = players;
         if (searchTerm !== "" && searchTerm !== undefined)
-            filteredPlayers = players.filter(player => player.name.toLowerCase().includes(searchTerm.toLowerCase()));
+            filteredPlayers = players.filter(player => fullName(player.name).toLowerCase().includes(searchTerm.toLowerCase()));
         
         const comparePlayersByName = (a, b) => {
-            if (a.name < b.name) return -1;
+            if (a.name.first < b.name.first) return -1;
             else if (a.name > b.name) return 1;
-            else return 0;
+            else {
+                if (a.name.last < b.name.last) return -1;
+                else if (a.name.last > b.name.last) return 1;
+                else return 0;
+            }
         }
 
         filteredPlayers.sort(comparePlayersByName);

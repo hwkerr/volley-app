@@ -1,6 +1,8 @@
 import { useState } from "react";
 import './PeopleTool.css';
 import Form from 'react-bootstrap/Form';
+import InputGroup from "react-bootstrap/InputGroup";
+import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import ToggleButton from 'react-bootstrap/ToggleButton';
@@ -16,7 +18,8 @@ export default function PlayerForm({ player, onSave, onDelete }) {
     const [roles, setRoles] = useState(player.roles);
     const [contactType, setContactType] = useState(player.contact.type);
     const [contactInfo, setContactInfo] = useState(player.contact.info);
-    const [affiliation, setAffiliation] = useState([]);
+    const [newAffiliation, setNewAffiliation] = useState("");
+    const [affiliations, setAffiliations] = useState([]);
     const [notes, setNotes] = useState("");
 
     const [contact, setContact] = useState(player.contact);
@@ -54,20 +57,34 @@ export default function PlayerForm({ player, onSave, onDelete }) {
     }
 
     const handleChangeContactType = val => {
-        console.log(val);
+        console.log("Change Contact Type", val);
         setContactType(val);
     };
 
     const handleChangeContactInfo = event => {
         const info = event.target.value;
-        console.log(info);
+        console.log("Change Contact Info", info);
         setContactInfo(info);
     }
 
     const handleChangePhoneNumber = event => {
         const phoneNumber = event.target.value;
-        console.log(phoneNumber);
+        console.log("Change Phone Number", phoneNumber);
         setContactInfo(phoneNumber);
+    }
+
+    const handleNewAffiliationButton = event => {
+        console.log("Add New Affiliation:", newAffiliation);
+        if (!affiliations.includes(newAffiliation))
+            setAffiliations(prev => [...prev, newAffiliation]);
+        setNewAffiliation("");
+    }
+
+    // remove an affiliation if it is clicked
+    const handleAffiliationButton = event => {
+        const affiliationToRemove = event.target.dataset.value;
+        console.log("Remove Affiliation:", affiliationToRemove);
+        setAffiliations(prev => prev.filter(item => item !== affiliationToRemove));
     }
 
     const handleSaveButton = event => {
@@ -86,11 +103,11 @@ export default function PlayerForm({ player, onSave, onDelete }) {
     }
 
     const makePlayerFromForm = () => {
-        let fullName = (player.fullName === newPlayerObj.fullName ? undefined : player.fullName);
+        let id = (player.id === newPlayerObj.id ? undefined : player.id);
         let skills = {};
 
-        const p = newPlayer({
-            fullName: firstName + " " + lastName,
+        const p = {
+            id: firstName + " " + lastName,
             gender: gender,
             handedness: handedness,
             name: {
@@ -110,9 +127,9 @@ export default function PlayerForm({ player, onSave, onDelete }) {
                 type: "",
                 info: ""
             },
-            affiliation: affiliation,
+            affiliation: affiliations,
             notes: notes
-        });
+        };
         return p;
     }
 
@@ -129,7 +146,7 @@ export default function PlayerForm({ player, onSave, onDelete }) {
         <>
             <Form id="react-bootstrap-forms-test" className="pt-3 pb-3">
                 <Form.Group as={Row} className={nickChecked ? "" : "mb-3"}>
-                    <Form.Label column sm={2}>
+                    <Form.Label column="true" sm={2}>
                         Name
                     </Form.Label>
                     <Col sm={4}>
@@ -148,13 +165,13 @@ export default function PlayerForm({ player, onSave, onDelete }) {
                         value="1"
                         onChange={(e) => setNickChecked(e.currentTarget.checked)}
                     >
-                        +
+                        ...
                     </ToggleButton>
                     </Col>
                 </Form.Group>
                 {nickChecked && /* TODO: Use CSS instead to add a transition to the Nickname form group */
                 <Form.Group as={Row} className="mb-3">
-                    <Form.Label column sm={2}>
+                    <Form.Label column="true" sm={2}>
                         Nickname(s)
                     </Form.Label>
                     <Col sm={"10"}>
@@ -163,26 +180,26 @@ export default function PlayerForm({ player, onSave, onDelete }) {
                 </Form.Group>}
                 <hr />
                 <Form.Group as={Row} className="mb-3">
-                    <Form.Label column sm={2}>
+                    <Form.Label column="true" sm={2}>
                         Sex
                     </Form.Label>
                     <Col sm={10}>
-                        <ToggleButtonGroup column type="radio" name="gender" value={gender} onChange={handleChangeGender}>
-                            <ToggleButton id="tbg-radio-male" value={"Male"}>
+                        <ToggleButtonGroup column="true" type="radio" name="gender" value={gender} onChange={handleChangeGender}>
+                            <ToggleButton id="tbg-radio-male" value={"M"}>
                                 Male
                             </ToggleButton>
-                            <ToggleButton id="tbg-radio-female" value={"Female"}>
+                            <ToggleButton id="tbg-radio-female" value={"F"}>
                                 Female
                             </ToggleButton>
                         </ToggleButtonGroup>
                     </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
-                    <Form.Label column sm={2}>
+                    <Form.Label column="true" sm={2}>
                         Handedness
                     </Form.Label>
                     <Col sm={10}>
-                        <ToggleButtonGroup column type="radio" name="handedness" value={handedness} onChange={handleChangeHandedness}>
+                        <ToggleButtonGroup column="true" type="radio" name="handedness" value={handedness} onChange={handleChangeHandedness}>
                             <ToggleButton id="tbg-radio-left" value={"Left"}>
                                 Left
                             </ToggleButton>
@@ -193,7 +210,7 @@ export default function PlayerForm({ player, onSave, onDelete }) {
                     </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
-                    <Form.Label column sm={2}>
+                    <Form.Label column="true" sm={2}>
                         Roles
                     </Form.Label>
                     <Col sm={10}>
@@ -215,11 +232,11 @@ export default function PlayerForm({ player, onSave, onDelete }) {
                 </Form.Group>
                 <hr />
                 <Form.Group as={Row} className={contactTypesWithInfo.includes(contactType) ? "mb-2" : "mb-3"}>
-                    <Form.Label column sm={2}>
+                    <Form.Label column="true" sm={2}>
                         Contact
                     </Form.Label>
                     <Col sm={10}>
-                        <ToggleButtonGroup column type="radio" name="contact-type" value={contactType} onChange={handleChangeContactType}>
+                        <ToggleButtonGroup column="true" type="radio" name="contact-type" value={contactType} onChange={handleChangeContactType}>
                             <ToggleButton id="tbg-radio-phone" value={"Phone"}>
                                 Phone
                             </ToggleButton>
@@ -240,7 +257,7 @@ export default function PlayerForm({ player, onSave, onDelete }) {
                 </Form.Group>
                 {contactTypesWithInfo.includes(contactType) &&
                 <Form.Group as={Row} className="mb-3">
-                    <Form.Label column sm={2}>
+                    <Form.Label column="true" sm={2}>
                         {contactType}
                     </Form.Label>
                     {contactType === "Phone" ?
@@ -257,6 +274,30 @@ export default function PlayerForm({ player, onSave, onDelete }) {
                         </Col>
                     }
                 </Form.Group>}
+                <hr />
+                <div>
+                    <InputGroup className="mb-3">
+                        <Form.Control
+                            placeholder="Add Affiliation"
+                            aria-label="Add New Affiliation"
+                            aria-describedby="basic-addon2"
+                            value={newAffiliation}
+                            onChange={e => setNewAffiliation(e.target.value)}
+                        />
+                        <Button variant="outline-light" id="button-addon2" onClick={handleNewAffiliationButton}>+</Button>
+                    </InputGroup>
+                    {affiliations.map(affiliationName => (
+                        <span key={affiliationName}>
+                            <Button variant="secondary" data-value={affiliationName} onClick={handleAffiliationButton}>
+                                {affiliationName}
+                            </Button>{' '}
+                        </span>
+                    ))}
+                </div>
+                <hr />
+                <div className="d-grid gap-2">
+                    <Button variant="primary" size="lg" type="submit" onClick={handleSaveButton}>Done</Button>
+                </div>
             </Form>
             {/* <div className="row form-group">
                 <input className="col-12 form-control form-control-lg header-input" placeholder="New Player" onChange={e => setName(e.target.value)} value={name}></input>

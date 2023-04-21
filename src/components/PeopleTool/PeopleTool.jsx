@@ -100,7 +100,7 @@ export default function PeopleTool() {
                             ) : (
                                 <p>No player selected.</p>
                             ) :
-                            <p></p>
+                            <p>not loadedDetails</p>
                         }
                     </div>
                 </div>

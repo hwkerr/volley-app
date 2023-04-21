@@ -1,46 +1,98 @@
 export const playerList = [
     {
-        id: 'hakerr',
-        name: 'Harrison Kerr',
-        gender: 'm',
-        positions: ['Wing', 'M'],
-        contact: 'other',
-        timesPlayed: 1
+        id: 'Harrison Kerr',
+        name: {
+            first: 'Harrison',
+            last: 'Kerr'
+        },
+        gender: 'M',
+        handedness: 'Right',
+        roles: ['Pin', 'Setter'],
+        skills: {
+            setting: 6,
+            hitting: 6,
+            defense: 5,
+            blocking: 5,
+            chemistry: 6,
+            leadership: 8
+        },
+        contact: {
+            type: 'Phone',
+            info: '8437540696'
+        },
+        affiliation: ['PPVC'],
+        notes: 'Self'
     },
     {
-        id: 'daisbell',
-        name: 'Danielle Isbell',
-        gender: 'f',
-        positions: ['S', 'Wing'],
-        contact: 'phone',
-        timesPlayed: 1
+        id: 'Danielle Isbell',
+        name: {
+            first: 'Danielle',
+            last: 'Isbell'
+        },
+        gender: 'F',
+        handedness: 'Left',
+        roles: ['Setter'],
+        skills: {
+            setting: 8,
+            hitting: 3,
+            defense: 6,
+            blocking: 3,
+            chemistry: 9,
+            leadership: 7
+        },
+        contact: {
+            type: 'Phone',
+            info: '7602718017'
+        },
+        affiliation: ['PPVC'],
+        notes: ''
     }
 ];
 
 export const newPlayerObj = {
-    id: "?newPlayer",
-    name: "",
-    gender: "",
-    positions: [],
-    contact: "other",
-    timesPlayed: -1
+    id: '?newPlayer',
+    name: {
+        first: '',
+        last: ''
+    },
+    gender: '',
+    handedness: '',
+    roles: [],
+    skills: {
+        setting: 0,
+        hitting: 0,
+        defense: 0,
+        blocking: 0,
+        chemistry: 0,
+        leadership: 0
+    },
+    contact: {
+        type: 'other',
+        info: ''
+    },
+    affiliation: [],
+    notes: ''
 };
 
-export const newPlayer = ({id, name, gender, positions, contact}) => {
-    const names = name.split(' ');
+export const newPlayer = ({id, name: {first, last}, gender, handedness, roles, skills, contact, affiliation, notes}) => {
     let newId;
     if (!id || id === undefined)
-        newId = name.substring(0,2).toLowerCase() + names[names.length-1].toLowerCase();
+        newId = first + ' ' + last;
     else
         newId = id;
     
-    console.log("new player id: ", newId, name);
     return {
-        id: newId,
-        name,
+        id: first + ' ' + last,
+        name: {
+            first,
+            last
+        }, // must be explicit here- name keyword is reserved
         gender,
-        positions,
+        handedness,
+        roles,
+        skills,
         contact,
-        timesPlayed: 0
+        affiliation,
+        notes
     };
 }

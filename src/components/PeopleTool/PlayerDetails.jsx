@@ -49,12 +49,11 @@ export default function PlayerDetails({ player, onSave, onDelete }) {
     const getDetails = (player) => {
         return (
             <>
-                <h3>{player.name}</h3>
+                <h3>{player.name.first + ' ' + player.name.last}</h3>
                 <div className="row">
                     <p className="col-6">Gender: {player.gender.toUpperCase()} {getGenderSpan(player.gender)}</p>
-                    <p className="col-6">Positions: {player.positions.join(', ')}</p>
-                    <p className="col-6">Contact: {player.contact}</p>
-                    <p className="col-6">Played: {player.timesPlayed} time(s)</p>
+                    <p className="col-6">Roles: {player.roles.join(', ')}</p>
+                    <p className="col-6">Contact: {player.contact.info}</p>
                 </div>
                 <button className="btn btn-secondary" onClick={handleEdit}>Edit</button>
             </>

@@ -12,7 +12,7 @@ const event = {
 };
 
 const player = {
-    fullName: "Harrison Kerr",
+    id: "Harrison Kerr",
     gender: "M",
     handedness: "Right",
     name: {
@@ -29,7 +29,7 @@ const player = {
         leadership: 8
     },
     contact: {
-        type: "phone",
+        type: "Phone",
         info: "8437540696"
     },
     affiliation: ["PPVC"],
