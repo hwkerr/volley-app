@@ -126,8 +126,8 @@ export default function PlayerForm({ player, onSave, onDelete }) {
             roles: roles,
             skills: mySkills,
             contact: {
-                type: "",
-                info: ""
+                type: contactType,
+                info: contactInfo
             },
             affiliation: affiliations,
             notes: notes

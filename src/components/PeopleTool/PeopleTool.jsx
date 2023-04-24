@@ -5,7 +5,7 @@ import PlayerSearch from './PlayerSearch';
 
 import { playerList } from './players'; // TODO: Use database
 
-const ADDED_DELAY = 10;
+const ADDED_DELAY = 100;
 
 export default function PeopleTool() {
     const [players, setPlayers] = useState(playerList);
@@ -43,6 +43,7 @@ export default function PeopleTool() {
             addOrUpdatePlayer(player); // local
             // TODO: add or update in database
             setSelectedPlayer(player);
+            console.log(player);
             return true;
         },
         delete: player => {
@@ -59,14 +60,11 @@ export default function PeopleTool() {
         const idToUpdate = player.id;
         const playerToUpdate = players.find(p => p.id === idToUpdate);
         if (playerToUpdate === undefined) { // doesn't exist yet -> ADD
-            const newPlayers = [...players, player];
-            setPlayers(newPlayers);
+            setPlayers(prev => ([...prev, player]))
         } else { // aleady exists -> UPDATE
-            playerToUpdate.name = player.name;
-            playerToUpdate.gender = player.gender;
-            playerToUpdate.positions = player.positions;
-            playerToUpdate.contact = player.contact;
-            playerToUpdate.timesPlayed = player.timesPlayed;
+            for (const property in playerToUpdate) {
+                playerToUpdate[property] = player[property];
+            }
         }
     }
 
@@ -100,7 +98,7 @@ export default function PeopleTool() {
                             ) : (
                                 <p>No player selected.</p>
                             ) :
-                            <p>not loadedDetails</p>
+                            <p>loading...</p>
                         }
                     </div>
                 </div>
