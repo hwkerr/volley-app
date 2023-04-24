@@ -46,6 +46,7 @@ export default function PlayerDetails({ player, onSave, onDelete }) {
             setEditMode(false);
     }
 
+    // TODO: improve visuals of Player Detail card
     const getDetails = (player) => {
         return (
             <>
