@@ -7,8 +7,11 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
+import RangeSlider from 'react-bootstrap-range-slider';
 
 import { newPlayer, newPlayerObj } from "./players";
+
+const USE_SKILL_SLIDERS = true;
 
 export default function PlayerForm({ player, onSave, onDelete }) {
     const [firstName, setFirstName] = useState(player.name.first);
@@ -16,6 +19,7 @@ export default function PlayerForm({ player, onSave, onDelete }) {
     const [gender, setGender] = useState(player.gender);
     const [handedness, setHandedness] = useState(player.handedness);
     const [roles, setRoles] = useState(player.roles);
+    const [skills, setSkills] = useState(player.skills);
     const [contactType, setContactType] = useState(player.contact.type);
     const [contactInfo, setContactInfo] = useState(player.contact.info);
     const [newAffiliation, setNewAffiliation] = useState("");
@@ -24,8 +28,10 @@ export default function PlayerForm({ player, onSave, onDelete }) {
 
     const [contact, setContact] = useState(player.contact);
     const [nickChecked, setNickChecked] = useState(false);
+    const [skillsChecked, setSkillsChecked] = useState(false);
 
     const contactTypesWithInfo = ["Phone", "Add", ""];
+    const skillTypes = ["Setting", "Hitting", "Defense", "Blocking", "Chemistry", "Leadership"];
 
     const handleChangeFirstName = event => {
         const firstName = event.target.value;
@@ -104,7 +110,10 @@ export default function PlayerForm({ player, onSave, onDelete }) {
 
     const makePlayerFromForm = () => {
         let id = (player.id === newPlayerObj.id ? undefined : player.id);
-        let skills = {};
+        let mySkills = {};
+        skillTypes.forEach(skillType => {
+            mySkills[skillType.toLowerCase()] = skills[skillType.toLowerCase()];
+        });
 
         const p = {
             id: firstName + " " + lastName,
@@ -115,14 +124,7 @@ export default function PlayerForm({ player, onSave, onDelete }) {
                 last: lastName
             },
             roles: roles,
-            skills: {
-                setting: skills.setting,
-                hitting: skills.hitting,
-                defense: skills.defense,
-                blocking: skills.blocking,
-                chemistry: skills.chemistry,
-                leadership: skills.leadership
-            },
+            skills: mySkills,
             contact: {
                 type: "",
                 info: ""
@@ -130,6 +132,7 @@ export default function PlayerForm({ player, onSave, onDelete }) {
             affiliation: affiliations,
             notes: notes
         };
+
         return p;
     }
 
@@ -137,8 +140,11 @@ export default function PlayerForm({ player, onSave, onDelete }) {
         setFirstName("");
         setLastName("");
         setNickChecked(false);
+        setSkillsChecked(false);
         setGender(null);
+        setHandedness(null);
         setRoles([]);
+        setSkills({});
         setContact("");
     }
 
@@ -156,17 +162,17 @@ export default function PlayerForm({ player, onSave, onDelete }) {
                         <Form.Control placeholder="Last" value={lastName} onChange={handleChangeLastName} />
                     </Col>
                     <Col>
-                    <ToggleButton
-                        className="mb-2"
-                        id="toggle-check"
-                        type="checkbox"
-                        variant="outline-light"
-                        checked={nickChecked}
-                        value="1"
-                        onChange={(e) => setNickChecked(e.currentTarget.checked)}
-                    >
-                        ...
-                    </ToggleButton>
+                        <ToggleButton
+                            className="mb-2"
+                            id="toggle-check-nick"
+                            type="checkbox"
+                            variant="outline-light"
+                            checked={nickChecked}
+                            value="1"
+                            onChange={(e) => setNickChecked(e.currentTarget.checked)}
+                        >
+                            ...
+                        </ToggleButton>
                     </Col>
                 </Form.Group>
                 {nickChecked && /* TODO: Use CSS instead to add a transition to the Nickname form group */
@@ -294,6 +300,80 @@ export default function PlayerForm({ player, onSave, onDelete }) {
                         </span>
                     ))}
                 </div>
+                <hr />
+                <Form.Group as={Row} className="mb-3">
+                    <Form.Label column="true" sm={2}>
+                        Skills
+                    </Form.Label>
+                    <Col>
+                        <ToggleButton
+                            className="mb-2"
+                            id="toggle-check-skills"
+                            type="checkbox"
+                            variant="outline-light"
+                            checked={skillsChecked}
+                            value="1"
+                            onChange={(e) => setSkillsChecked(e.currentTarget.checked)}
+                        >
+                            {skillsChecked ? "Hide" : "Show"}
+                        </ToggleButton>
+                    </Col>
+                </Form.Group>
+                {skillsChecked && (USE_SKILL_SLIDERS ? (skillTypes.map(skillType => (
+                    <Form.Group key={skillType} as={Row} className="mb-3">
+                        <Col sm={1} />
+                        <Form.Label column="true" sm={2}>
+                            {skillType}
+                        </Form.Label>
+                        <Col sm={6}>
+                            <RangeSlider
+                                value={skills[skillType.toLowerCase()] || 0}
+                                onChange={e => setSkills(skills => ({
+                                    ...skills,
+                                    [skillType.toLowerCase()]: e.target.value
+                                }))}
+                                min={0}
+                                max={10}
+                            />
+                        </Col>
+                        <Col sm={2}>
+                            <Form.Control
+                                className="text-center"
+                                placeholder="Value"
+                                type="number"
+                                value={skills[skillType.toLowerCase()] || ""}
+                                onChange={e => setSkills(skills => ({
+                                    ...skills,
+                                    [skillType.toLowerCase()]: e.target.value
+                                }))}
+                                min={0}
+                                max={10}
+                            />
+                        </Col>
+                    </Form.Group>
+                ))) : (
+                    skillTypes.map(skillType => (
+                    <Form.Group key={skillType} as={Row} className="mb-3">
+                        <Col sm={1} />
+                        <Form.Label column="true" sm={2}>
+                            {skillType}
+                        </Form.Label>
+                        <Col sm={8}>
+                            <ToggleButtonGroup type="radio" name={`skill-value-${skillType}`}
+                                value={skills[skillType.toLowerCase()] || 0}
+                                onChange={val => setSkills(skills => ({
+                                    ...skills,
+                                    [skillType.toLowerCase()]: val
+                            }))}>
+                                {[...Array(11).keys()].map(num => (
+                                    <ToggleButton key={num} id={`tbg-radio-${skillType}-${num}`} value={num}>
+                                        {num}
+                                    </ToggleButton>
+                                ))}
+                            </ToggleButtonGroup>
+                        </Col>
+                    </Form.Group>
+                ))))}
                 <hr />
                 <div className="d-grid gap-2">
                     <Button variant="primary" size="lg" type="submit" onClick={handleSaveButton}>Done</Button>
