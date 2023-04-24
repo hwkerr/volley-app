@@ -43,7 +43,6 @@ export default function PeopleTool() {
             addOrUpdatePlayer(player); // local
             // TODO: add or update in database
             setSelectedPlayer(player);
-            console.log(player);
             return true;
         },
         delete: player => {
