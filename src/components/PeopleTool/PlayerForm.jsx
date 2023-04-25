@@ -126,7 +126,7 @@ export default function PlayerForm({ player, formState, onSave, onDelete }) {
         });
 
         const p = {
-            id: firstName + " " + lastName,
+            id: firstName + "_" + lastName,
             gender: gender,
             handedness: handedness,
             name: {
