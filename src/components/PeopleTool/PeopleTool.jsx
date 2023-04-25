@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import axios from 'axios';
 import './PeopleTool.css';
 import PlayerDetails from './PlayerDetails';
 import PlayerSearch from './PlayerSearch';
@@ -35,6 +36,17 @@ export default function PeopleTool() {
         playerToUpdate.positions = player.positions;
         playerToUpdate.contact = player.contact;
         playerToUpdate.timesPlayed = player.timesPlayed;
+    }
+
+    const saveToDatabase = () => {
+        const id = 'Harrison_Kerr';
+        const url = `https://9v2zi6tk3k.execute-api.us-east-2.amazonaws.com/dev/players/${id}`;
+
+        axios.get(url).then(res => {
+            console.log(res.data);
+        }).catch(err => {
+            console.log(err);
+        });
     }
 
     const PlayerKit = {
