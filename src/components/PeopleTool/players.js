@@ -27,7 +27,8 @@ export const playerList = [
         id: 'Danielle Isbell',
         name: {
             first: 'Danielle',
-            last: 'Isbell'
+            last: 'Isbell',
+            nicks: ['Dani', 'Izzy']
         },
         gender: 'F',
         handedness: 'Left',
