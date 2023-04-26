@@ -4,7 +4,7 @@ import './PeopleTool.css';
 import PlayerDetails from './PlayerDetails';
 import PlayerSearch from './PlayerSearch';
 
-const BASE_URL_PLAYERS = `https://9v2zi6tk3k.execute-api.us-east-2.amazonaws.com/dev/players/`
+const BASE_URL_PLAYERS = `https://9v2zi6tk3k.execute-api.us-east-2.amazonaws.com/dev/players`
 const ADDED_DELAY = 100;
 
 export default function PeopleTool() {
@@ -32,41 +32,25 @@ export default function PeopleTool() {
         }
     };
 
-    const addPlayer = player => {
-        const newPlayers = [...players, player];
-        setPlayers(newPlayers);
-    };
-
-    const updatePlayer = player => {
-        const idToUpdate = player.id;
-        const playerToUpdate = players.find(p => p.id === idToUpdate);
-        playerToUpdate.name = player.name;
-        playerToUpdate.gender = player.gender;
-        playerToUpdate.positions = player.positions;
-        playerToUpdate.contact = player.contact;
-        playerToUpdate.timesPlayed = player.timesPlayed;
-    };
-
     const getFromDatabase = (id) => {
-        const url = BASE_URL_PLAYERS + id;
+        const url = BASE_URL_PLAYERS + "/" + id;
         return axios.get(url);
     };
 
     const saveToDatabase = (player) => {
         const url = BASE_URL_PLAYERS;
-
-        axios.post(url).then(res => {
-            console.log(res.data);
-        }).catch(err => {
-            console.log(err);
-        });
+        return axios.post(url, player);
     };
 
     const PlayerKit = {
         save: player => {
-            console.log("Save player", player.id);
+            console.log("Save player", player.id, player);
             addOrUpdatePlayer(player); // local
-            // TODO: add or update in database
+            saveToDatabase(player) // database
+            .catch(err => {
+                console.error("Error:", err);
+                alert("Failed to save player to database. Check console for logs");
+            });
             setSelectedPlayer(player);
             return true;
         },
@@ -82,14 +66,16 @@ export default function PeopleTool() {
 
     const addOrUpdatePlayer = player => {
         const idToUpdate = player.id;
-        const playerToUpdate = players.find(p => p.id === idToUpdate);
+        let playerToUpdate = players.find(p => p.id === idToUpdate);
         if (playerToUpdate === undefined) { // doesn't exist yet -> ADD
+            playerToUpdate = player;
             setPlayers(prev => ([...prev, player]))
         } else { // aleady exists -> UPDATE
             for (const property in playerToUpdate) {
                 playerToUpdate[property] = player[property];
             }
         }
+        return playerToUpdate;
     };
 
     const removePlayer = player => {
@@ -98,13 +84,6 @@ export default function PeopleTool() {
         const newPlayers = players.filter(p => p.id !== idToRemove);
         setPlayers(newPlayers);
         return originalSize > newPlayers.length; // removed any
-    };
-
-    const handleSavePlayer = (player) => {
-        addOrUpdatePlayer(player);
-        console.log("Save player", player);
-        // TODO: add or update in database
-        setSelectedPlayer(player);
     };
 
     return (
@@ -127,6 +106,7 @@ export default function PeopleTool() {
                     </div>
                 </div>
             </div>
+            <button onClick={e => console.log(JSON.stringify(players[0]))}>Log</button>
         </div>
     );
 }

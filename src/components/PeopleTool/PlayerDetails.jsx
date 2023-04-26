@@ -26,7 +26,7 @@ export default function PlayerDetails({ player, onSave, onDelete }) {
     const [skillsChecked, setSkillsChecked] = useState(false);
 
     useEffect(() => {
-        console.log("Set player", player.id);
+        console.log("View details for player:", player.id);
         if (player !== newPlayerObj && editMode) {
             setEditMode(false);
         } else if (player === newPlayerObj && !editMode) {
@@ -80,7 +80,7 @@ export default function PlayerDetails({ player, onSave, onDelete }) {
                     <Form.Control placeholder="Last" value={player.name.last} disabled />
                 </Col>
             </Form.Group>
-            {player.name.nicks && /* TODO: Use CSS instead to add a transition to the Nickname form group */
+            {player.name.nicks && player.name.nicks.length > 0 && /* TODO: Use CSS instead to add a transition to the Nickname form group */
             <Form.Group as={Row} className="mb-3">
                 <Form.Label column="true" sm={2}>
                     Nickname(s)

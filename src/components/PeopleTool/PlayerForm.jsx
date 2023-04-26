@@ -9,7 +9,7 @@ import ToggleButton from 'react-bootstrap/ToggleButton';
 import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 import RangeSlider from 'react-bootstrap-range-slider';
 
-import { newPlayer, newPlayerObj } from "./players";
+import { newPlayerObj } from "./players";
 
 import { CONTACT_TYPES_WITH_INFO, SKILL_TYPES, USE_SKILL_SLIDERS } from "./PlayerDetails";
 const FORM_VARIANT = "danger";
@@ -54,7 +54,7 @@ export default function PlayerForm({ player, formState, onSave, onDelete }) {
     }
 
     const handleChangeNickname = event => {
-        const nicknameValues = event.target.value.split(';');
+        const nicknameValues = event.target.value.split(';').filter(name => name !== '');
         setNicknames(nicknameValues);
     }
 
@@ -134,7 +134,8 @@ export default function PlayerForm({ player, formState, onSave, onDelete }) {
             handedness: handedness,
             name: {
                 first: firstName.trim(),
-                last: lastName.trim()
+                last: lastName.trim(),
+                nicks: nicknames
             },
             roles: roles,
             skills: mySkills,
@@ -366,7 +367,7 @@ export default function PlayerForm({ player, formState, onSave, onDelete }) {
                             value={skills[skillType.toLowerCase()] || 0}
                             onChange={e => setSkills(skills => ({
                                 ...skills,
-                                [skillType.toLowerCase()]: e.target.value
+                                [skillType.toLowerCase()]: parseInt(e.target.value)
                             }))}
                             min={0}
                             max={10}
@@ -380,7 +381,7 @@ export default function PlayerForm({ player, formState, onSave, onDelete }) {
                             value={skills[skillType.toLowerCase()] || ""}
                             onChange={e => setSkills(skills => ({
                                 ...skills,
-                                [skillType.toLowerCase()]: e.target.value <= 10 && e.target.value >= 0 ? e.target.value : skills[skillType.toLowerCase()]
+                                [skillType.toLowerCase()]: e.target.value <= 10 && e.target.value >= 0 ? parseInt(e.target.value) : skills[skillType.toLowerCase()]
                             }))}
                             min="0"
                             max="10"
@@ -398,7 +399,7 @@ export default function PlayerForm({ player, formState, onSave, onDelete }) {
                             value={skills[skillType.toLowerCase()] || 0}
                             onChange={val => setSkills(skills => ({
                                 ...skills,
-                                [skillType.toLowerCase()]: val
+                                [skillType.toLowerCase()]: parseInt(val)
                         }))}>
                             {[...Array(11).keys()].map(num => (
                                 <ToggleButton key={num} id={`tbg-radio-${skillType}-${num}`} variant={FORM_VARIANT} value={num}>
