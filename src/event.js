@@ -38,7 +38,7 @@ const player = {
 
 
 
-const item =
+const eventDBItem =
 {
     "EventId": {
       "S": "20200101"
@@ -87,6 +87,79 @@ const item =
         }
       ]
     }
+}
+
+const playerDBItem = {
+  "PlayerId": {
+    "S": "Harrison_Kerr"
+  },
+  "Affiliation": {
+    "SS": [
+      "PPVC",
+      "Savages"
+    ]
+  },
+  "Contact": {
+    "M": {
+      "Info": {
+        "S": "8437540696"
+      },
+      "Type": {
+        "S": "Phone"
+      }
+    }
+  },
+  "Gender": {
+    "S": "M"
+  },
+  "Handedness": {
+    "S": "Right"
+  },
+  "Name": {
+    "M": {
+      "First": {
+        "S": "Harrison"
+      },
+      "Last": {
+        "S": "Kerr"
+      }
+    }
+  },
+  "Notes": {
+    "S": "Organizer; Self"
+  },
+  "Roles": {
+    "L": [
+      {
+        "S": "Pin"
+      },
+      {
+        "S": "Setter"
+      }
+    ]
+  },
+  "Skills": {
+    "M": {
+      "Blocking": {
+        "N": "5"
+      },
+      "Chemistry": {
+        "N": "6"
+      },
+      "Defense": {
+        "N": "5"
+      },
+      "Hitting": {
+        "N": "6"
+      },
+      "Leadership": {
+        "N": "8"
+      },
+      "Setting": {
+        "N": "6"
+      }
+    }
+  }
 }
 
 const formatTeamsForDB = (teamsList) => {

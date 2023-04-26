@@ -1,6 +1,6 @@
 export const playerList = [
     {
-        id: 'Harrison Kerr',
+        id: 'Harrison_Kerr',
         name: {
             first: 'Harrison',
             last: 'Kerr'
@@ -24,7 +24,7 @@ export const playerList = [
         notes: 'Self'
     },
     {
-        id: 'Danielle Isbell',
+        id: 'Danielle_Isbell',
         name: {
             first: 'Danielle',
             last: 'Isbell',
