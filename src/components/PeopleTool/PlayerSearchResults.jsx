@@ -32,13 +32,13 @@ export default function PlayerSearchResults({ searchTerm, players, selectedPlaye
             filteredPlayers = players.filter(player => fullName(player.name).toLowerCase().includes(searchTerm.toLowerCase()));
         
         const comparePlayersByName = (a, b) => {
-            if (a.name.first < b.name.first) return -1;
-            else if (a.name > b.name) return 1;
-            else {
+            if (a.name.first && b.name.first) {
+                if (a.name.first < b.name.first) return -1;
+                else if (a.name.first > b.name.first) return 1;
+            } else if (a.name.last && b.name.last) {
                 if (a.name.last < b.name.last) return -1;
                 else if (a.name.last > b.name.last) return 1;
-                else return 0;
-            }
+            } else return 0;
         }
 
         filteredPlayers.sort(comparePlayersByName);
