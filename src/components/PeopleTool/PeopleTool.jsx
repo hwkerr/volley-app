@@ -122,7 +122,7 @@ export default function PeopleTool() {
                             ) : (
                                 <p>No player selected.</p>
                             ) :
-                            <p>loading...</p>
+                            <p>...</p>
                         }
                     </div>
                 </div>

@@ -119,28 +119,31 @@ export default function PlayerForm({ player, formState, onSave, onDelete }) {
     }
 
     const makePlayerFromForm = () => {
-        let id = (player.id === newPlayerObj.id ? undefined : player.id);
+        let id = (player.id === newPlayerObj.id && firstName && lastName ?
+            (firstName.trim() + "_" + lastName.trim()).replaceAll(" ", "_") :
+            player.id
+        );
         let mySkills = {};
         SKILL_TYPES.forEach(skillType => {
             mySkills[skillType.toLowerCase()] = skills[skillType.toLowerCase()];
         });
 
         const p = {
-            id: (firstName + "_" + lastName).replaceAll(" ", "_"),
+            id: id,
             gender: gender,
             handedness: handedness,
             name: {
-                first: firstName,
-                last: lastName
+                first: firstName.trim(),
+                last: lastName.trim()
             },
             roles: roles,
             skills: mySkills,
             contact: {
                 type: contactType,
-                info: contactInfo
+                info: contactInfo.trim()
             },
             affiliation: affiliations,
-            notes: notes
+            notes: notes.trim()
         };
 
         return p;
@@ -150,11 +153,15 @@ export default function PlayerForm({ player, formState, onSave, onDelete }) {
         setFirstName("");
         setLastName("");
         setNickChecked(false);
-        // formState.setSkillsChecked(false);
         setGender(null);
         setHandedness(null);
         setRoles([]);
         setSkills({});
+        setContactType(null);
+        setContactInfo("");
+        setNewAffiliation("");
+        setAffiliations([]);
+        setNotes("");
     }
 
     const renderNameFields = () => (

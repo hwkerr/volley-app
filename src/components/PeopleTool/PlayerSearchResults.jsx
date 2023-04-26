@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { newPlayerObj } from './players';
 
 export default function PlayerSearchResults({ searchTerm, players, selectedPlayerId, onClick }) {

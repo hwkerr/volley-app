@@ -26,7 +26,7 @@ export default function PlayerDetails({ player, onSave, onDelete }) {
     const [skillsChecked, setSkillsChecked] = useState(false);
 
     useEffect(() => {
-        console.log("Set player", player.name);
+        console.log("Set player", player.id);
         if (player !== newPlayerObj && editMode) {
             setEditMode(false);
         } else if (player === newPlayerObj && !editMode) {
@@ -59,9 +59,12 @@ export default function PlayerDetails({ player, onSave, onDelete }) {
     }
 
     const handleSave = (newPlayer) => {
-        onSave(newPlayer);
-        if (newPlayer !== newPlayerObj)
+        if (newPlayer.id !== newPlayerObj.id) {
+            onSave(newPlayer);
             setEditMode(false);
+        } else {
+            alert("No changes were made. Nothing to save.");
+        }
     }
     
     const renderNameFields = () => (
