@@ -17,7 +17,8 @@ const FORM_VARIANT_TAG = "info";
 const FORM_VARIANT_TOGGLE = "outline-light";
 
 // TODO: Consolidate PlayerDetails and PlayerForm using the render functions I created
-// TODO: Access API Gateway functions to save, add, and delete data
+// TODO: Add buttons for Cancel and Delete next to Save
+// TODO: Access API Gateway function to delete data
 
 export default function PlayerForm({ player, formState, onSave, onDelete }) {
     const [firstName, setFirstName] = useState(player.name.first);
