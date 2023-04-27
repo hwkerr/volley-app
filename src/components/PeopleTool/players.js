@@ -68,7 +68,7 @@ export const newPlayerObj = {
         leadership: 0
     },
     contact: {
-        type: "",
+        type: null,
         info: ""
     },
     affiliation: [],

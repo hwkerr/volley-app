@@ -6,9 +6,6 @@ import Button from 'react-bootstrap/Button';
 import { newPlayerObj } from "./players";
 import PlayerForm, { SKILL_TYPES } from "./PlayerFormFields";
 
-import { FORM_VARIANT, FORM_VARIANT_TAG, FORM_VARIANT_TOGGLE } from "./PlayerFormFields"
-
-// TODO: Consolidate PlayerDetails and PlayerForm using the render functions I created
 // TODO: Add buttons for Cancel and Delete next to Save
 // TODO: Access API Gateway function to delete data
 

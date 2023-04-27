@@ -4,7 +4,6 @@ import StaticPlayerForm from "./StaticPlayerForm";
 import EditablePlayerForm from "./EditablePlayerForm";
 
 export default function PlayerDetails({ player, onSave, onDelete }) {
-    const [loaded, setLoaded] = useState(true);
     const [editMode, setEditMode] = useState(player === newPlayerObj);
 
     const [skillsChecked, setSkillsChecked] = useState(false);
@@ -42,14 +41,9 @@ export default function PlayerDetails({ player, onSave, onDelete }) {
 
     return (
         <div className="container" style={{backgroundColor: "#888888"}}>
-            {loaded ? (
-                    editMode ?
-                    <EditablePlayerForm player={player} formState={getFormState()} onSave={handleSave} onDelete={handleDelete} /> :
-                    <StaticPlayerForm player={player} formState={getFormState()} onEdit={handleEdit} />
-                ) :
-                (
-                    <p>... not loaded</p>
-                )
+            {editMode ?
+                <EditablePlayerForm player={player} formState={getFormState()} onSave={handleSave} onDelete={handleDelete} /> :
+                <StaticPlayerForm player={player} formState={getFormState()} onEdit={handleEdit} />
             }
         </div>
     );
