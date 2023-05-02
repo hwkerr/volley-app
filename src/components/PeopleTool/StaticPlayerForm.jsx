@@ -13,8 +13,10 @@ export default function StaticPlayerForm({ player, formState, onEdit }) {
             <hr />
             <PlayerForm.Static.Contact contact={player.contact} />
             <hr />
-            <PlayerForm.Static.Affiliation affiliation={player.affiliation} />
-            <hr />
+            {player.affiliation.length > 0 && <>
+                <PlayerForm.Static.Affiliation affiliation={player.affiliation} />
+                <hr />
+            </>}
             <PlayerForm.Static.Skills skills={player.skills} skillsChecked={formState.skillsChecked} onSkillsChecked={formState.setSkillsChecked} />
             <hr />
             <PlayerForm.Static.Notes notes={player.notes} />
