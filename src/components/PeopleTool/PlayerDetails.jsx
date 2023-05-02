@@ -3,7 +3,7 @@ import { newPlayerObj } from "./players";
 import StaticPlayerForm from "./StaticPlayerForm";
 import EditablePlayerForm from "./EditablePlayerForm";
 
-export default function PlayerDetails({ player, onSave, onDelete }) {
+export default function PlayerDetails({ player, onSave, onCancel, onDelete }) {
     const [editMode, setEditMode] = useState(player === newPlayerObj);
 
     const [skillsChecked, setSkillsChecked] = useState(false);
@@ -22,17 +22,24 @@ export default function PlayerDetails({ player, onSave, onDelete }) {
     };
 
     const handleDelete = (player) => {
-        onDelete(player);
+        return onDelete(player);
     };
 
     const handleSave = (newPlayer) => {
         if (newPlayer.id !== newPlayerObj.id) {
             onSave(newPlayer);
             setEditMode(false);
+            return true;
         } else {
-            alert("No changes were made. Nothing to save.");
+            alert("Incomplete form. Could not save.");
+            return false;
         }
     };
+
+    const handleCancel = () => {
+        setEditMode(false);
+        onCancel();
+    }
 
     const getFormState = () => ({
         skillsChecked: skillsChecked,
@@ -42,7 +49,7 @@ export default function PlayerDetails({ player, onSave, onDelete }) {
     return (
         <div className="container" style={{backgroundColor: "#888888"}}>
             {editMode ?
-                <EditablePlayerForm player={player} formState={getFormState()} onSave={handleSave} onDelete={handleDelete} /> :
+                <EditablePlayerForm player={player} formState={getFormState()} onSave={handleSave} onCancel={handleCancel} onDelete={handleDelete} /> :
                 <StaticPlayerForm player={player} formState={getFormState()} onEdit={handleEdit} />
             }
         </div>

@@ -3,6 +3,7 @@ import axios from 'axios';
 import './PeopleTool.css';
 import PlayerDetails from './PlayerDetails';
 import PlayerSearch from './PlayerSearch';
+import { newPlayerObj } from './players';
 
 const BASE_URL_PLAYERS = `https://9v2zi6tk3k.execute-api.us-east-2.amazonaws.com/dev/players`
 const ADDED_DELAY = 100;
@@ -42,11 +43,17 @@ export default function PeopleTool() {
         return axios.post(url, player);
     };
 
+    const deleteFromDatabase = (id) => {
+        const url = BASE_URL_PLAYERS + "/" + id;
+        return axios.delete(url);
+    }
+
     const PlayerKit = {
         save: player => {
-            console.log("Save player", player.id, player);
+            console.log("Save player", player.id, player.name);
             addOrUpdatePlayer(player); // local
             saveToDatabase(player) // database
+            .then(console.log)
             .catch(err => {
                 console.error("Error:", err);
                 alert("Failed to save player to database. Check console for logs");
@@ -54,11 +61,23 @@ export default function PeopleTool() {
             setSelectedPlayer(player);
             return true;
         },
+        cancel: () => {
+            if (selectedPlayer.id === newPlayerObj.id)
+                setSelectedPlayer({});
+        },
         delete: player => {
+            if (!window.confirm(`Are you sure you would like to delete the player: ${player.name.first} ${player.name.last}?`)) {
+                alert("Cancelled delete");
+                return false;
+            };
             console.log("Remove player", player.id);
-            alert("Will delete player: " + player.name);
             const result = removePlayer(player); // local
-            // TODO: remove in database
+            deleteFromDatabase(player.id) // database
+            .then(console.log)
+            .catch(err => {
+                console.error("Error:", err);
+                alert("Failed to delete player from database. Check console for logs");
+            })
             setSelectedPlayer({});
             return result;
         }
@@ -97,7 +116,7 @@ export default function PeopleTool() {
                     <div className="col-sm">
                         {loadedDetails ?
                             selectedPlayer && Object.keys(selectedPlayer).length > 0 ? (
-                                <PlayerDetails player={selectedPlayer} onSave={PlayerKit.save} onDelete={PlayerKit.delete} />
+                                <PlayerDetails player={selectedPlayer} onSave={PlayerKit.save} onCancel={PlayerKit.cancel} onDelete={PlayerKit.delete} />
                             ) : (
                                 <p>No player selected.</p>
                             ) :
@@ -106,7 +125,6 @@ export default function PeopleTool() {
                     </div>
                 </div>
             </div>
-            <button onClick={e => console.log(JSON.stringify(players[0]))}>Log</button>
         </div>
     );
 }

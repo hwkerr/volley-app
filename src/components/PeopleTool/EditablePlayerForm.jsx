@@ -9,7 +9,7 @@ import PlayerForm, { SKILL_TYPES } from "./PlayerFormFields";
 // TODO: Add buttons for Cancel and Delete next to Save
 // TODO: Access API Gateway function to delete data
 
-export default function EditablePlayerForm({ player, formState, onSave, onDelete }) {
+export default function EditablePlayerForm({ player, formState, onSave, onCancel, onDelete }) {
     const [firstName, setFirstName] = useState(player.name.first);
     const [lastName, setLastName] = useState(player.name.last);
     const [nickChecked, setNickChecked] = useState(player.name.nicks ? true : false);
@@ -63,18 +63,26 @@ export default function EditablePlayerForm({ player, formState, onSave, onDelete
         setAffiliations(prev => prev.filter(item => item !== affiliationToRemove));
     };
 
-    const handleChangeNotes = event => {
-        const notesInput = event.target.value;
-        setNotes(notesInput);
-    };
-
+    const validate = () => {
+        if (firstName.length === 0) return false;
+        else if (lastName.length === 0) return false;
+        else return true;
+    }
+    
     const handleSaveButton = event => {
         event.preventDefault();
 
-        const player = makePlayerFromForm();
+        if (validate()) {
+            const player = makePlayerFromForm();
 
-        onSave(player);
-        resetFormFields();
+            if (onSave(player))
+                resetFormFields();
+            
+            return true;
+        } else {
+            alert("Please include a first and last name.")
+            return false;
+        }
     };
 
     const handleDeleteButton = event => {
@@ -105,7 +113,7 @@ export default function EditablePlayerForm({ player, formState, onSave, onDelete
             roles: roles,
             skills: mySkills,
             contact: {
-                type: contactType,
+                type: contactType || '',
                 info: contactInfo.trim()
             },
             affiliation: affiliations,
@@ -164,7 +172,11 @@ export default function EditablePlayerForm({ player, formState, onSave, onDelete
                 <PlayerForm.Editable.Notes notes={notes} onChangeNotes={e => setNotes(e.target.value)} />
                 <hr />
                 <div className="d-grid gap-2">
-                    <Button variant="success" size="lg" type="submit" onClick={handleSaveButton}>Save</Button>
+                    <div className="btn-group">
+                        <Button variant="success" size="lg" type="submit" onClick={handleSaveButton}>Save</Button>
+                        <Button variant="secondary" size="lg" type="button" onClick={onCancel}>Cancel</Button>
+                        <Button variant="danger" size="lg" type="button" onClick={handleDeleteButton}>Delete</Button>
+                    </div>
                 </div>
             </Form>
             {/* <div className="row form-group">

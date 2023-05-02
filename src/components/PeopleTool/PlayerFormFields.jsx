@@ -255,10 +255,10 @@ const PlayerForm = {
                         Name
                     </Form.Label>
                     <Col sm={4}>
-                        <Form.Control placeholder="First" value={firstName} onChange={onChangeFirstName} />
+                        <Form.Control placeholder="First" value={firstName} onChange={onChangeFirstName} required isInvalid={firstName.length === 0} />
                     </Col>
                     <Col sm={4}>
-                        <Form.Control placeholder="Last" value={lastName} onChange={onChangeLastName} />
+                        <Form.Control placeholder="Last" value={lastName} onChange={onChangeLastName} required isInvalid={lastName.length === 0} />
                     </Col>
                     <Col>
                         <ToggleButton
