@@ -33,57 +33,57 @@ export default function PeopleTool() {
         }
     };
 
-    const getFromDatabase = (id) => {
+    const getFromDatabase = async (id) => {
         const url = BASE_URL_PLAYERS + "/" + id;
-        return axios.get(url);
+        return await axios.get(url);
     };
 
-    const saveToDatabase = (player) => {
+    const saveToDatabase = async (player) => {
         const url = BASE_URL_PLAYERS;
-        return axios.post(url, player);
+        return await axios.post(url, player);
     };
 
-    const deleteFromDatabase = (id) => {
+    const deleteFromDatabase = async (id) => {
         const url = BASE_URL_PLAYERS + "/" + id;
-        return axios.delete(url);
+        return await axios.delete(url);
     }
 
     const PlayerKit = {
-        save: player => {
+        save: async player => {
             console.log("Save player", player.id, player.name);
-            saveToDatabase(player) // database
-            .then(res => {
+            try {
+                const res = await saveToDatabase(player);
                 console.log(res);
                 addOrUpdatePlayer(player); // local
                 setSelectedPlayer(player);
-            })
-            .catch(err => {
+                return true;
+            } catch (err) {
                 console.error("Error:", err);
                 alert("Failed to save player to database. Check console for logs");
-            });
-            return true;
+                return false
+            }
         },
         cancel: () => {
             if (selectedPlayer.id === newPlayerObj.id)
                 setSelectedPlayer({});
         },
-        delete: player => {
+        delete: async player => {
             if (!window.confirm(`Are you sure you would like to delete the player: ${player.name.first} ${player.name.last}?`)) {
                 alert("Cancelled delete");
                 return false;
             };
             console.log("Remove player", player.id);
-            deleteFromDatabase(player.id) // database
-            .then(res => {
+            try {
+                const res = await deleteFromDatabase(player.id); // database
                 console.log(res);
                 removePlayer(player); // local
                 setSelectedPlayer({});
-            })
-            .catch(err => {
+                return true;
+            } catch (err) {
                 console.error("Error:", err);
                 alert("Failed to delete player from database. Check console for logs");
-            });
-            return true;
+                return false;
+            }
         }
     };
 

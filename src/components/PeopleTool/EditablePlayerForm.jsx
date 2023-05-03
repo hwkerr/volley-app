@@ -2,6 +2,7 @@ import { useState } from "react";
 import './PeopleTool.css';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+import Spinner from 'react-bootstrap/Spinner';
 
 import { newPlayerObj } from "./players";
 import PlayerForm, { SKILL_TYPES } from "./PlayerFormFields";
@@ -24,6 +25,9 @@ export default function EditablePlayerForm({ player, formState, onSave, onCancel
     const [affiliations, setAffiliations] = useState(player.affiliation);
     
     const [notes, setNotes] = useState(player.notes || "");
+
+    const [saveLoading, setSaveLoading] = useState(false);
+    const [deleteLoading, setDeleteLoading] = useState(false);
 
     /** adds a list of affiliations to the existing list of affiliations
       * @ensure all added strings are:
@@ -77,26 +81,29 @@ export default function EditablePlayerForm({ player, formState, onSave, onCancel
         else return true;
     };
     
-    const handleSaveButton = event => {
+    const handleSaveButton = async event => {
         event.preventDefault();
 
         if (validate()) {
             const player = makePlayerFromForm();
 
-            if (onSave(player))
-                resetFormFields();
-            
-            return true;
+            setSaveLoading(true);
+            onSave(player)
+            .then(res => {
+                if (res)
+                    resetFormFields();
+            })
+            .finally(() => setSaveLoading(false));
         } else {
             alert("Please include a first and last name.")
-            return false;
         }
     };
 
     const handleDeleteButton = event => {
         event.preventDefault();
-
-        onDelete(player);
+        setDeleteLoading(true);
+        onDelete(player)
+        .finally(() => setDeleteLoading(false));
     };
 
     const makePlayerFromForm = () => {
@@ -148,44 +155,66 @@ export default function EditablePlayerForm({ player, formState, onSave, onCancel
 
     return (
         <>
-            <Form id="react-bootstrap-forms-test" className="pt-3 pb-3">
-                <PlayerForm.Editable.Names
-                    firstName={firstName} onChangeFirstName={e => setFirstName(e.target.value)}
-                    lastName={lastName} onChangeLastName={e => setLastName(e.target.value)}
-                    nicknames={nicknames} onChangeNicknames={e => setNicknames(e.target.value.split(';').filter(name => name !== ''))}
-                    nickChecked={nickChecked} onNickChecked={e => setNickChecked(e.currentTarget.checked)}
-                />
-                <hr />
-                <PlayerForm.Editable.Gender gender={gender} onChangeGender={val => setGender(val)} />
-                <PlayerForm.Editable.Handedness handedness={handedness} onChangeHandedness={val => setHandedness(val)} />
-                <PlayerForm.Editable.Roles roles={roles} onChangeRoles={val => setRoles(val)} />
-                <hr />
-                <PlayerForm.Editable.Contact
-                    contactType={contactType} onChangeContactType={handleChangeContactType}
-                    contactInfo={contactInfo} onChangeContactInfo={e => setContactInfo(e.target.value)}
-                    onChangePhoneNumber={handleChangePhoneNumber}
-                />
-                <hr />
-                <PlayerForm.Editable.Affiliation
-                    newAffiliation={newAffiliation} onChangeNewAffiliation={handleChangeNewAffiliation}
-                    affiliations={affiliations} onClickNewAffiliationButton={handleClickNewAffiliationButton} 
-                    onClickAffiliationTag={handleClickAffiliationTag}
-                />
-                <hr />
-                <PlayerForm.Editable.Skills
-                    skills={skills} setSkills={setSkills}
-                    skillsChecked={formState.skillsChecked} setSkillsChecked={formState.setSkillsChecked}
-                />
-                <hr />
-                <PlayerForm.Editable.Notes notes={notes} onChangeNotes={e => setNotes(e.target.value)} />
-                <hr />
-                <div className="d-grid gap-2">
-                    <div className="btn-group">
-                        <Button variant="success" size="lg" type="submit" onClick={handleSaveButton}>Save</Button>
-                        <Button variant="secondary" size="lg" type="button" onClick={onCancel}>Cancel</Button>
-                        <Button variant="danger" size="lg" type="button" onClick={handleDeleteButton}>Delete</Button>
+            <Form id="react-bootstrap-forms-player" className="pt-3 pb-3">
+                <fieldset disabled={saveLoading || deleteLoading}>
+                    <PlayerForm.Editable.Names
+                        firstName={firstName} onChangeFirstName={e => setFirstName(e.target.value)}
+                        lastName={lastName} onChangeLastName={e => setLastName(e.target.value)}
+                        nicknames={nicknames} onChangeNicknames={e => setNicknames(e.target.value.split(';').filter(name => name !== ''))}
+                        nickChecked={nickChecked} onNickChecked={e => setNickChecked(e.currentTarget.checked)}
+                    />
+                    <hr />
+                    <PlayerForm.Editable.Gender gender={gender} onChangeGender={val => setGender(val)} />
+                    <PlayerForm.Editable.Handedness handedness={handedness} onChangeHandedness={val => setHandedness(val)} />
+                    <PlayerForm.Editable.Roles roles={roles} onChangeRoles={val => setRoles(val)} />
+                    <hr />
+                    <PlayerForm.Editable.Contact
+                        contactType={contactType} onChangeContactType={handleChangeContactType}
+                        contactInfo={contactInfo} onChangeContactInfo={e => setContactInfo(e.target.value)}
+                        onChangePhoneNumber={handleChangePhoneNumber}
+                    />
+                    <hr />
+                    <PlayerForm.Editable.Affiliation
+                        newAffiliation={newAffiliation} onChangeNewAffiliation={handleChangeNewAffiliation}
+                        affiliations={affiliations} onClickNewAffiliationButton={handleClickNewAffiliationButton} 
+                        onClickAffiliationTag={handleClickAffiliationTag}
+                    />
+                    <hr />
+                    <PlayerForm.Editable.Skills
+                        skills={skills} setSkills={setSkills}
+                        skillsChecked={formState.skillsChecked} setSkillsChecked={formState.setSkillsChecked}
+                    />
+                    <hr />
+                    <PlayerForm.Editable.Notes notes={notes} onChangeNotes={e => setNotes(e.target.value)} />
+                    <hr />
+                    <div className="d-grid gap-2">
+                        <div className="btn-group">
+                            <Button variant="success" size="lg" type="submit" onClick={handleSaveButton}>
+                                {saveLoading ?
+                                    <Spinner 
+                                        as="span"
+                                        animation="border"
+                                        size="sm"
+                                        role="status"
+                                        aria-hidden="true"
+                                    /> : 'Save'
+                                }
+                            </Button>
+                            <Button variant="secondary" size="lg" type="button" onClick={onCancel}>Cancel</Button>
+                            <Button variant="danger" size="lg" type="button" onClick={handleDeleteButton}>
+                                {deleteLoading ?
+                                    <Spinner
+                                        as="span"
+                                        animation="border"
+                                        size="sm"
+                                        role="status"
+                                        aria-hidden="true"
+                                    /> : 'Delete'
+                                }
+                            </Button>
+                        </div>
                     </div>
-                </div>
+                </fieldset>
             </Form>
         </>
     );

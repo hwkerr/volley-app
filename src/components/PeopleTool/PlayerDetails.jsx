@@ -21,15 +21,11 @@ export default function PlayerDetails({ player, onSave, onCancel, onDelete }) {
         setEditMode(true);
     };
 
-    const handleDelete = (player) => {
-        return onDelete(player);
-    };
-
-    const handleSave = (newPlayer) => {
+    const handleSave = async (newPlayer) => {
         if (newPlayer.id !== newPlayerObj.id) {
-            onSave(newPlayer);
+            const res = await onSave(newPlayer);
             setEditMode(false);
-            return true;
+            return res;
         } else {
             alert("Incomplete form. Could not save.");
             return false;
@@ -49,7 +45,7 @@ export default function PlayerDetails({ player, onSave, onCancel, onDelete }) {
     return (
         <div className="container" style={{backgroundColor: "#888888"}}>
             {editMode ?
-                <EditablePlayerForm player={player} formState={getFormState()} onSave={handleSave} onCancel={handleCancel} onDelete={handleDelete} /> :
+                <EditablePlayerForm player={player} formState={getFormState()} onSave={handleSave} onCancel={handleCancel} onDelete={onDelete} /> :
                 <StaticPlayerForm player={player} formState={getFormState()} onEdit={handleEdit} />
             }
         </div>
