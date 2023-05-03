@@ -1,3 +1,13 @@
+# TODO
+
+- EditablePlayerForm: Create separate state variables for Contact Info and Contact Phone Number (when saving player, pick one to save based on Contact Type)
+- PlayerFormFields: work on form validation
+- Add responsive banners (or similar indicator) on a successful database action (save or delete) - already added loading spinner
+
+- Add events tab
+
+---
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
