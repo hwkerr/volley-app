@@ -60,11 +60,22 @@ export default function EditablePlayerForm({ player, formState, onSave, onCancel
         setAffiliations(prev => prev.filter(item => item !== affiliationToRemove));
     };
 
+    const handleChangeContactType = val => {
+        setContactType(val);
+        if (val === "Phone")
+            setContactInfo('');
+    };
+
+    const handleChangePhoneNumber = event => {
+        const phoneInput = event.target.value;
+        setContactInfo(phoneInput.replace(/\D/g,''));
+    };
+
     const validate = () => {
         if (firstName.length === 0) return false;
         else if (lastName.length === 0) return false;
         else return true;
-    }
+    };
     
     const handleSaveButton = event => {
         event.preventDefault();
@@ -150,9 +161,9 @@ export default function EditablePlayerForm({ player, formState, onSave, onCancel
                 <PlayerForm.Editable.Roles roles={roles} onChangeRoles={val => setRoles(val)} />
                 <hr />
                 <PlayerForm.Editable.Contact
-                    contactType={contactType} onChangeContactType={val => setContactType(val)}
+                    contactType={contactType} onChangeContactType={handleChangeContactType}
                     contactInfo={contactInfo} onChangeContactInfo={e => setContactInfo(e.target.value)}
-                    onChangePhoneNumber={e => setContactInfo(e.target.value)}
+                    onChangePhoneNumber={handleChangePhoneNumber}
                 />
                 <hr />
                 <PlayerForm.Editable.Affiliation
@@ -176,37 +187,6 @@ export default function EditablePlayerForm({ player, formState, onSave, onCancel
                     </div>
                 </div>
             </Form>
-            {/* <div className="row form-group">
-                <input className="col-12 form-control form-control-lg header-input" placeholder="New Player" onChange={e => setName(e.target.value)} value={name}></input>
-                <div className="col-6">
-                    <p className="mb-0">Gender:</p>
-                    <div className="form-check form-check-inline no-highlight" onChange={handleChangeGenderMale} >
-                        <input className="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="m" onChange={() => {return}} checked={maleGender} />
-                        <label className="form-check-label" htmlFor="inlineRadio1"><p>Male</p></label>
-                    </div>
-                    <div className="form-check form-check-inline no-highlight" onChange={handleChangeGenderFemale}>
-                        <input className="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="f" onChange={() => {return}} checked={femaleGender} />
-                        <label className="form-check-label" htmlFor="inlineRadio2"><p>Female</p></label>
-                    </div>
-                </div>
-                <div className="col-6">
-                    <p className="mb-0">Positions:</p>
-                    <input type="text" placeholder="S, M, L, Wing" className="form-control form-control-sm" onChange={handleChangePositionString} value={positionString}/>
-                </div>
-                <div className="col-6">
-                    <p className="mb-0">Contact:</p>
-                    <select className="form-control form-control-sm" value={contact} onChange={handleContactChange}>
-                        <option value="phone">Phone</option>
-                        <option value="facebook">Facebook</option>
-                        <option value="groupme">GroupMe</option>
-                        <option value="email">Email</option>
-                        <option value="add">Add</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-                <button className="btn btn-primary" onClick={handleSaveButton}>Save</button>
-                {player !== newPlayerObj && <button className="btn btn-danger" onClick={handleDeleteButton}>Delete</button>}
-            </div> */}
         </>
     );
 }

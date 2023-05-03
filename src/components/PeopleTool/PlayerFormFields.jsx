@@ -375,7 +375,7 @@ const PlayerForm = {
                     </Form.Label>
                     {contactType === "Phone" ?
                         <Col sm={10}>
-                            <Form.Control placeholder="Phone Number" value={contactInfo} onChange={onChangePhoneNumber} />
+                            <Form.Control placeholder="Phone Number" value={contactInfo} onChange={onChangePhoneNumber} onFocusOut={onChangePhoneNumber} />
                         </Col> :
                     contactType === "Add" ?
                         <Col sm={10}>
