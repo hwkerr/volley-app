@@ -5,7 +5,7 @@ import PlayerDetails from './PlayerDetails';
 import PlayerSearch from './PlayerSearch';
 import { newPlayerObj } from './players';
 
-const BASE_URL_PLAYERS = `https://9v2zi6tk3k.execute-api.us-east-2.amazonaws.com/dev/players`
+export const BASE_URL_PLAYERS = `https://9v2zi6tk3k.execute-api.us-east-2.amazonaws.com/dev/players`
 const ADDED_DELAY = 100;
 
 export default function PeopleTool() {

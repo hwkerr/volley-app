@@ -106,9 +106,11 @@ export default function EditablePlayerForm({ player, formState, onSave, onCancel
         .finally(() => setDeleteLoading(false));
     };
 
+    const formatName = str => str.trim().replaceAll(/[^A-Za-z]/ig, '').replaceAll(' ', '_')
+
     const makePlayerFromForm = () => {
         let id = (player.id === newPlayerObj.id && firstName && lastName ?
-            (firstName.trim() + "_" + lastName.trim()).replaceAll(" ", "_").replaceAll(/[^A-Za-z]/ig, "") :
+            (formatName(firstName) + "_" + formatName(lastName)) :
             player.id
         );
         let mySkills = {};

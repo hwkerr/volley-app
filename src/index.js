@@ -13,6 +13,7 @@ import RotationSchedule from './components/RotationSchedule/RotationSchedule';
 import PeopleTool from './components/PeopleTool/PeopleTool';
 import Scheduler from './components/Scheduler/Scheduler';
 import LeagueSchedule from './components/LeagueSchedule/LeagueSchedule';
+import BulkUploadPlayers from './components/PeopleTool/BulkUploadPlayers/BulkUploadPlayers';
 
 console.clear();
 
@@ -28,6 +29,7 @@ root.render(
         <Route path="players" element={<PeopleTool />} />
         <Route path="scheduler" element={<Scheduler />} />
         <Route path="league" element={<LeagueSchedule />} />
+        <Route path="addplayers" element={<BulkUploadPlayers />} />
         <Route path="*" element={<div className="App-body">There's nothing here</div>}/>
       </Route>
     </Routes>
