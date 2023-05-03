@@ -51,14 +51,16 @@ export default function PeopleTool() {
     const PlayerKit = {
         save: player => {
             console.log("Save player", player.id, player.name);
-            addOrUpdatePlayer(player); // local
             saveToDatabase(player) // database
-            .then(console.log)
+            .then(res => {
+                console.log(res);
+                addOrUpdatePlayer(player); // local
+                setSelectedPlayer(player);
+            })
             .catch(err => {
                 console.error("Error:", err);
                 alert("Failed to save player to database. Check console for logs");
             });
-            setSelectedPlayer(player);
             return true;
         },
         cancel: () => {
@@ -71,15 +73,17 @@ export default function PeopleTool() {
                 return false;
             };
             console.log("Remove player", player.id);
-            const result = removePlayer(player); // local
             deleteFromDatabase(player.id) // database
-            .then(console.log)
+            .then(res => {
+                console.log(res);
+                removePlayer(player); // local
+                setSelectedPlayer({});
+            })
             .catch(err => {
                 console.error("Error:", err);
                 alert("Failed to delete player from database. Check console for logs");
-            })
-            setSelectedPlayer({});
-            return result;
+            });
+            return true;
         }
     };
 
