@@ -1,4 +1,5 @@
 import { newPlayerObj } from './players';
+import Spinner from 'react-bootstrap/Spinner';
 
 export default function PlayerSearchResults({ searchTerm, players, selectedPlayerId, onClick }) {
 
@@ -45,7 +46,7 @@ export default function PlayerSearchResults({ searchTerm, players, selectedPlaye
         return (
             filteredPlayers.length ?
             filteredPlayers.map((player, i) => getRow(player, i)) :
-            <p>No players found.</p>
+            <Spinner animation="border" />
         );
     }
     
