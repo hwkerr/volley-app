@@ -51,10 +51,10 @@ export default function PlayerSearchResults({ searchTerm, players, selectedPlaye
     
     return (
         <div>
-            {getFilteredPlayersList()}
             <div className={`listitem-name ${(selectedPlayerId === newPlayerObj.id ) ? "selected" : ""}`} onClick={handleNewPlayerButton}>
                 <p>+ add player</p>
             </div>
+            {getFilteredPlayersList()}
         </div>
     );
 }
