@@ -6,9 +6,6 @@ import Button from 'react-bootstrap/Button';
 import { newPlayerObj } from "./players";
 import PlayerForm, { SKILL_TYPES } from "./PlayerFormFields";
 
-// TODO: Add buttons for Cancel and Delete next to Save
-// TODO: Access API Gateway function to delete data
-
 export default function EditablePlayerForm({ player, formState, onSave, onCancel, onDelete }) {
     const [firstName, setFirstName] = useState(player.name.first);
     const [lastName, setLastName] = useState(player.name.last);
