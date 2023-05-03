@@ -42,3 +42,8 @@
     border: none;
     background-color: darkgray;
 }
+
+.scroll {
+    height: calc(100vh - 277px);
+    overflow-y: scroll;
+}

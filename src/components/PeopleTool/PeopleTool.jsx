@@ -114,7 +114,7 @@ export default function PeopleTool() {
             <h3 className="Center" onClick={() => console.log(players)}>People Tool</h3>
             <div className="container">
                 <div className="row">
-                    <div className="col-sm">
+                    <div className="col-sm scroll">
                         <PlayerSearch players={players} selectedPlayerId={selectedPlayer.id} onChangeSelectedPlayer={handleChangeSelectedPlayer} />
                     </div>
                     <div className="col-sm">
