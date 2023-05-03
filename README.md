@@ -1,8 +1,11 @@
 # TODO
 
+- When searching players, you can also search by Gender, Role, Contact Type, Notes, Nicknames, Affiliations, etc.
+
 - EditablePlayerForm: Create separate state variables for Contact Info and Contact Phone Number (when saving player, pick one to save based on Contact Type)
 - PlayerFormFields: work on form validation
 - Add responsive banners (or similar indicator) on a successful database action (save or delete) - already added loading spinner
+- PlayerSearchResults: Spinner goes forever if 0 results returned. Fix it by adding a timeout
 
 - Add events tab
 
