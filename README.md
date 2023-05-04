@@ -8,6 +8,7 @@
 - PlayerSearchResults: Spinner goes forever if 0 results returned. Fix it by adding a timeout
 
 - Add events tab
+- Host on GitHub Pages
 
 ---
 
