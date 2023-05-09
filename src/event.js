@@ -1,12 +1,30 @@
 const event = {
     "date": "2020-01-01",
     "format": "test",
-    "teams": [
+    "players": [
         {
-            "players": ["Harrison Kerr", "Danielle Isbell", "Bailey Myers"]
+            "id": "Harrison_Kerr",
+            "status": "In",
+            "paid": "false",
+            "team": "Team 1"
         },
         {
-            "players": ["Ian Brennan", "Kristin Janssen", "Brooklin Trudell"]
+          "id": "Danielle_Isbell",
+          "status": "In",
+          "paid": "false",
+          "team": "Team 1"
+        },
+        {
+          "id": "Ian_Brennan",
+          "status": "In",
+          "paid": "false",
+          "team": "Team 2"
+        },
+        {
+          "id": "Kristin_Janssen",
+          "status": "In",
+          "paid": "false",
+          "team": "Team 2"
         }
     ]
 };
@@ -37,7 +55,7 @@ const player = {
 }
 
 
-
+// remake for new format
 const eventDBItem =
 {
     "EventId": {

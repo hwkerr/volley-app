@@ -30,9 +30,20 @@ export default function PlayerSearchResults({ searchTerm, players, selectedPlaye
         return (wordStr.includes(termStr));
     };
 
-    const SEARCH_ANYROLE = 'role:';
-    const SEARCH_ALLROLES = 'roles:';
-    const SEARCH_GENDER = 'gender:';
+    const SEARCH_ANYROLE = ['role:', 'isany:']; // OR
+    const SEARCH_ALLROLES = ['roles:', 'isall:', 'is:']; // AND
+    const SEARCH_GENDER = ['gender:', 'sex:'];
+    const SEARCH_CONTACTTYPE = ['contact:', 'via:'];
+    const SEARCH_AFFILIATION = ['affiliation:', 'aff:', 'with:', 'group:']; // AND
+
+    /**
+     * @requires arr is a list of search terms
+     * @returns true if arr contains one of the defined keywords; false otherwise
+     */
+    const matchesAll = (arr) => {
+        const allMatches = ['all', 'any', 'every', '*'];
+        return allMatches.find(s => arr.includes(s)) ? true : false;
+    };
 
     /**
      * @requires term is a string including a colon, e.g. 'gender:xyz'
@@ -53,7 +64,7 @@ export default function PlayerSearchResults({ searchTerm, players, selectedPlaye
             return playerGender === 'F';
         else
             return playerGender.toLowerCase() === searchGender;
-    }
+    };
 
     const addRoleNicknames = (roles) => {
         let allRoleNames = [...roles];
@@ -62,7 +73,7 @@ export default function PlayerSearchResults({ searchTerm, players, selectedPlaye
         if (roles.includes("Libero")) allRoleNames.push('l', 'lib', 'ds', 'short', 'small');
         if (roles.includes("Middle")) allRoleNames.push('m', 'mb', 'middle blocker', 'block', 'blocker', 'tall');
         return allRoleNames;
-    }
+    };
     
     /**
      * @requires term is a string including a colon, e.g. 'role:xyz'
@@ -74,6 +85,7 @@ export default function PlayerSearchResults({ searchTerm, players, selectedPlaye
                             .replaceAll(';', ',')
                             .split(',')
                             .filter(s => s !== '');
+        if (matchesAll(searchRoles)) return true;
         return searchRoles.find(role => allPlayerRoles.map(pr => pr.toLowerCase()).includes(role)) ? true : false;
     };
 
@@ -88,18 +100,50 @@ export default function PlayerSearchResults({ searchTerm, players, selectedPlaye
                             .split(',')
                             .filter(s => s !== '');
         return searchRoles.every(role => allPlayerRoles.map(pr => pr.toLowerCase()).includes(role)) ? true : false;
-    }
+    };
+
+    const addContactTypeNicknames = (types) => {
+        let allContactTypeNames = [...types];
+        if (types.includes("Phone")) allContactTypeNames.push('phone', 'cell', 'mobile', 'text');
+        if (types.includes("GroupMe")) allContactTypeNames.push('groupme', 'gm');
+        if (types.includes("Facebook")) allContactTypeNames.push('facebook', 'fb');
+        if (types.includes("Other")) allContactTypeNames.push('other', 'none');
+        return allContactTypeNames;
+    };
+    const matchesContactType = (playerContactType, term) => {
+        const allContactTypes = addContactTypeNicknames(playerContactType);
+        let searchContactTypes = term.split(':')[1]
+                                .replaceAll(';', ',')
+                                .split(',')
+                                .filter(s => s !== '');
+        if (matchesAll(searchContactTypes)) return true;
+        return searchContactTypes.find(type => allContactTypes.map(pct => pct.toLowerCase()).includes(type)) ? true : false;
+    };
+
+    const matchesAffiliation = (playerAffiliation, term) => {
+        const searchAffiliations = term.split(':')[1]
+                                    .replaceAll(';', ',')
+                                    .split(',')
+                                    .filter(s => s !== '')
+                                    .map(s => s.replaceAll(/[^A-Za-z]/ig, ''));
+        if (matchesAll(searchAffiliations)) return true;
+        return searchAffiliations.every(aff => playerAffiliation.map(pa => pa.toLowerCase().replaceAll(/[^A-Za-z]/ig, '')).includes(aff));
+    };
 
     const matchesTerm = (player, searchTerm) => {
         let term = searchTerm.toLowerCase();
 
         // special filters
-        if (term.startsWith(SEARCH_ANYROLE)) // Any role
+        if (SEARCH_ANYROLE.find(prefix => term.startsWith(prefix))) // Any role
             return matchesAnyRole(player.roles, term);
-        else if (term.startsWith(SEARCH_ALLROLES)) // All roles
+        else if (SEARCH_ALLROLES.find(prefix => term.startsWith(prefix))) // All roles
             return matchesAllRoles(player.roles, term);
-        else if (term.startsWith(SEARCH_GENDER) || term.startsWith('sex:')) // Gender
+        else if (SEARCH_GENDER.find(prefix => term.startsWith(prefix))) // Gender
             return matchesGender(player.gender, term);
+        else if (SEARCH_CONTACTTYPE.find(prefix => term.startsWith(prefix)))
+            return matchesContactType(player.contact.type, term);
+        else if (SEARCH_AFFILIATION.find(prefix => term.startsWith(prefix)))
+            return matchesAffiliation(player.affiliation, term);
         else { // name
             if (includesMatch(player.name.first, term) ||
                 includesMatch(player.name.last, term) ||

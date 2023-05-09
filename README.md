@@ -1,6 +1,6 @@
 # TODO
 
-- When searching players, you can also search by Gender, Role, Contact Type, Notes, Nicknames, Affiliations, etc.
+- When searching players, you can also search by Name, Nicknames, Gender, Role, Contact Type, Affiliations, | Notes, etc.
 
 - EditablePlayerForm: Create separate state variables for Contact Info and Contact Phone Number (when saving player, pick one to save based on Contact Type)
 - PlayerFormFields: work on form validation
