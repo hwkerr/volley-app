@@ -1,13 +1,17 @@
 # TODO
 
-- When searching players, you can also search by Name, Nicknames, Gender, Role, Contact Type, Affiliations, | Notes, etc.
+- Add an events tab
+    - similar to player tab in function but different in that:
+        - each event should be practically full screen when clicked
+    - main tab allows you to see a list of all events
+    - clicking on an event will open details
 
+- When searching players, you can also search by Notes (added Name, Nicknames, Gender, Role, Contact Type, Affiliations)
 - EditablePlayerForm: Create separate state variables for Contact Info and Contact Phone Number (when saving player, pick one to save based on Contact Type)
 - PlayerFormFields: work on form validation
 - Add responsive banners (or similar indicator) on a successful database action (save or delete) - already added loading spinner
 - PlayerSearchResults: Spinner goes forever if 0 results returned. Fix it by adding a timeout
 
-- Add events tab
 - Host on GitHub Pages
 
 ---
