@@ -5,7 +5,7 @@ import PlayerDetails from './PlayerDetails';
 import PlayerSearch from './PlayerSearch';
 import { newPlayerObj } from './players';
 
-export const BASE_URL_PLAYERS = `https://9v2zi6tk3k.execute-api.us-east-2.amazonaws.com/dev/players`
+export const BASE_URL_PLAYERS = `https://9v2zi6tk3k.execute-api.us-east-2.amazonaws.com/dev/players`;
 const ADDED_DELAY = 100;
 
 export default function PeopleTool() {
@@ -111,7 +111,7 @@ export default function PeopleTool() {
 
     return (
         <div className="PeopleTool" style={{backgroundColor: "#444444"}}>
-            <h3 className="Center" onClick={() => console.log(players)}>People Tool</h3>
+            <h3 className="Center">People Tool</h3>
             <div className="container">
                 <div className="row">
                     <div className="col-sm scroll">
