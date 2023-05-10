@@ -12,6 +12,7 @@ function App() {
           <nav>
             <Link to="/rotation">Rotation Schedule</Link> |{" "}
             <Link to="/players">Players</Link> |{" "}
+            <Link to="/events">Events</Link> |{" "}
             <Link to="/scheduler">Scheduler</Link> |{" "}
             <Link to="/league">League Schedule</Link>
           </nav>

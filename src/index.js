@@ -11,6 +11,7 @@ import {
 import App from './components/App';
 import RotationSchedule from './components/RotationSchedule/RotationSchedule';
 import PeopleTool from './components/PeopleTool/PeopleTool';
+import EventTool from './components/EventTool/EventTool';
 import Scheduler from './components/Scheduler/Scheduler';
 import LeagueSchedule from './components/LeagueSchedule/LeagueSchedule';
 import BulkUploadPlayers from './components/PeopleTool/BulkUploadPlayers/BulkUploadPlayers';
@@ -27,6 +28,7 @@ root.render(
       <Route path="/" element={<App />}>
         <Route path="rotation" element={<RotationSchedule />} />
         <Route path="players" element={<PeopleTool />} />
+        <Route path="events" element={<EventTool />} />
         <Route path="scheduler" element={<Scheduler />} />
         <Route path="league" element={<LeagueSchedule />} />
         <Route path="addplayers" element={<BulkUploadPlayers />} />

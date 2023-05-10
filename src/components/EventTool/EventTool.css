@@ -1,0 +1,23 @@
+.listitem-name {
+    border-radius: 5px;
+    cursor: pointer;
+    user-select: none;
+    padding: 1rem;
+}
+
+.listitem-name:hover {
+    background-color: #666666;
+}
+
+.listitem-name p {
+    margin-bottom: 0;
+}
+
+.listitem-name.selected {
+    background-color: #333333;
+}
+
+.scroll {
+    height: calc(100vh - 277px);
+    overflow-y: scroll;
+}
