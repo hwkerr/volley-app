@@ -39,6 +39,7 @@ body p,h1,h2,h3,h4,h5,h6 {
   cursor: pointer;
   user-select: none;
   padding: 1rem;
+  border-top: 2px solid darkgray;
 }
 
 .listitem-name:hover {
