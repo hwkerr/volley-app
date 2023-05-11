@@ -1,8 +1,17 @@
 import { newPlayerObj } from './players';
 import Spinner from 'react-bootstrap/Spinner';
 import { SKILL_TYPES } from './PlayerFormFields';
+import { useEffect, useState } from 'react';
 
 export default function PlayerSearchResults({ searchTerm, players, selectedPlayerId, onClick, setResultsCount }) {
+
+    const [filteredPlayers, setFilteredPlayers] = useState([]);
+
+    useEffect(() => {
+        const newFilteredPlayersList = getFilteredPlayersList(searchTerm, players);
+        setResultsCount(newFilteredPlayersList.length);
+        setFilteredPlayers(newFilteredPlayersList);
+    }, [searchTerm, players]);
 
     const handlePlayerClicked = (player) => {
         onClick(player);
@@ -194,7 +203,7 @@ export default function PlayerSearchResults({ searchTerm, players, selectedPlaye
         }
     };
     
-    const getFilteredPlayersList = () => {
+    const getFilteredPlayersList = (searchTerm, players) => {
         let filteredPlayers = players;
         if (searchTerm !== "" && searchTerm !== undefined) {
             let searchTerms = searchTerm.split(' ');
@@ -215,21 +224,18 @@ export default function PlayerSearchResults({ searchTerm, players, selectedPlaye
 
         filteredPlayers.sort(comparePlayersByName);
 
-        setResultsCount(filteredPlayers.length);
-
-        return (
-            filteredPlayers.length ?
-            filteredPlayers.map((player, i) => getRow(player, i)) :
-            <Spinner animation="border" />
-        );
-    }
+        return filteredPlayers;
+    };
     
     return (
         <div>
             <div className={`listitem-name ${(selectedPlayerId === newPlayerObj.id ) ? "selected" : ""}`} onClick={handleNewPlayerButton}>
                 <p>+ add player</p>
             </div>
-            {getFilteredPlayersList()}
+            {filteredPlayers.length ?
+                filteredPlayers.map((player, i) => getRow(player, i)) :
+                <Spinner animation="border" />
+            }
         </div>
     );
 }
