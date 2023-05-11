@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import Form from 'react-bootstrap/Form';
+import { Row, Col, Button } from 'react-bootstrap';
+import EventDetails from './EventDetails';
 
 const BASE_URL_EVENTS = `https://9v2zi6tk3k.execute-api.us-east-2.amazonaws.com/dev/events`;
 
@@ -17,14 +20,20 @@ export default function EventTool() {
         });
     }, []);
 
+    const getSelectedEvent = () => events.find(e => e.id = selection);
+
     const getFromDatabase = async (id) => {
         const url = BASE_URL_EVENTS + "/" + id;
         return await axios.get(url);
     };
+
+    const clearSelection = () => {
+        setSelection(null);
+    }
     
     const handleEventClicked = (event) => {
         if (event.id === selection)
-            setSelection(null);
+            clearSelection();
         else {
             setSelection(event.id);
         }
@@ -43,11 +52,21 @@ export default function EventTool() {
     };
     
     return (
-        <div className="EventTool" style={{backgroundColor: "#444444"}}>
+        <div className="EventTool" style={{backgroundColor: "#444444"}} onClick={e => console.log(selection)}>
             <h3 className="Center">Event Tool</h3>
-            <div className="container scroll">
-                {events.map((event, i) => getItem(event, i))}
-            </div>
+            {!selection ?
+                <div className="container scroll">
+                    {events.map((event, i) => getItem(event, i))}
+                </div> :
+                <div className="container scroll">
+                    <EventDetails event={getSelectedEvent()} />
+                    <div className="d-grid gap-2">
+                        <div className="btn-group">
+                            <Button variant="secondary" size="lg" type="button" onClick={clearSelection}>Cancel</Button>
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
     );
 }
