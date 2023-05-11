@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import './PeopleTool.css';
 import PlayerDetails from './PlayerDetails';
 import PlayerSearch from './PlayerSearch';
 import { newPlayerObj } from './players';

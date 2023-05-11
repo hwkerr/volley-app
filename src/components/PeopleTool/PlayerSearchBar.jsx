@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import './PeopleTool.css';
 
 export default function PlayerSearchBar({ onChange }) {
     const [input, setInput] = useState("");
