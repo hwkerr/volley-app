@@ -1,5 +1,6 @@
 import { newPlayerObj } from './players';
 import Spinner from 'react-bootstrap/Spinner';
+import { SKILL_TYPES } from './PlayerFormFields';
 
 export default function PlayerSearchResults({ searchTerm, players, selectedPlayerId, onClick, setResultsCount }) {
 
@@ -120,6 +121,10 @@ export default function PlayerSearchResults({ searchTerm, players, selectedPlaye
         return searchContactTypes.find(type => allContactTypes.map(pct => pct.toLowerCase()).includes(type)) ? true : false;
     };
 
+    /**
+     * @requires term is a string including a colon, e.g. 'affiliation:xyz'
+     * @returns true if playerAffiliation list includes search term; false otherwise
+     */
     const matchesAffiliation = (playerAffiliation, term) => {
         const searchAffiliations = term.split(':')[1]
                                     .replaceAll(';', ',')
@@ -130,11 +135,47 @@ export default function PlayerSearchResults({ searchTerm, players, selectedPlaye
         return searchAffiliations.every(aff => playerAffiliation.map(pa => pa.toLowerCase().replaceAll(/[^A-Za-z]/ig, '')).includes(aff));
     };
 
+    /**
+     * @requires term is a string including a colon, e.g. 'skill:5'
+     * @returns true if playerSkills matches search term; false otherwise
+     * ex: setting:>7 hitting:<5 hitting:!0 blocking:10 leadership:>=4
+     */
+    const matchesSkill = (playerSkills, term) => {
+        const [searchSkillName, searchSkillDescriptor] = term.split(':');
+        const playerSkillValue = playerSkills[searchSkillName];
+        
+        const match = searchSkillDescriptor.match(/^([^0-9]{0,2})(\d+)$/);
+        if (!match) return false;
+        const [_full, inequality, valueString] = match || [];
+        const value = parseInt(valueString);
+        switch (inequality) {
+            case '>':
+                return playerSkillValue > value;
+            case '<':
+                return playerSkillValue < value;
+            case '<=':
+                return playerSkillValue <= value;
+            case '>=':
+                return playerSkillValue >= value;
+            case '':
+            case '=':
+                return playerSkillValue === value;
+            case '!=':
+            case '!':
+            case '<>':
+                return playerSkillValue !== value;
+            default:
+                return false;
+        }
+    };
+
     const matchesTerm = (player, searchTerm) => {
         let term = searchTerm.toLowerCase();
 
         // special filters
-        if (SEARCH_ANYROLE.find(prefix => term.startsWith(prefix))) // Any role
+        if (SKILL_TYPES.find(skill => term.startsWith(skill.toLowerCase() + ":")))
+            return matchesSkill(player.skills, term);
+        else if (SEARCH_ANYROLE.find(prefix => term.startsWith(prefix))) // Any role
             return matchesAnyRole(player.roles, term);
         else if (SEARCH_ALLROLES.find(prefix => term.startsWith(prefix))) // All roles
             return matchesAllRoles(player.roles, term);
