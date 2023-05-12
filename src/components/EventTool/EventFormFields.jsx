@@ -70,16 +70,66 @@ const EventForm = {
                     <Form.Control placeholder="Additional Notes" value={notes} disabled />
                 </Col>
             </Form.Group>
-        ),
+        )
     },
     Editable: {
-        Name: ({name, onChange}) => (
+        Name: ({value, onChange}) => (
             <Form.Group as={Row} className={"mb-3"}>
                 <Form.Label column="true" sm={2}>
                     Name
                 </Form.Label>
                 <Col sm={8}>
-                    <Form.Control placeholder="First" value={name} onChange={onChange} />
+                    <Form.Control placeholder="First" value={value} onChange={onChange} />
+                </Col>
+            </Form.Group>
+        ),
+        Date: ({ value, onChange }) => (
+            <Form.Group as={Row} className={"mb-3"}>
+                <Form.Label column="true" sm={2}>
+                    Date
+                </Form.Label>
+                <Col sm={8}>
+                    <Form.Control placeholder="Event Date" type="date" value={value} onChange={onChange} />
+                </Col>
+            </Form.Group>
+        ),
+        Format: ({ value, onChange }) => (
+            <Form.Group as={Row} className={"mb-3"}>
+                <Form.Label column="true" sm={2}>
+                    Format
+                </Form.Label>
+                <Col sm={8}>
+                    <Form.Control placeholder="Event Format" value={value} onChange={onChange} />
+                </Col>
+            </Form.Group>
+        ),
+        Host: ({ value, onChange }) => (
+            <Form.Group as={Row} className={"mb-3"}>
+                <Form.Label column="true" sm={2}>
+                    Host
+                </Form.Label>
+                <Col sm={8}>
+                    <Form.Control placeholder="Event Host" value={value} onChange={onChange} />
+                </Col>
+            </Form.Group>
+        ),
+        Location: ({ value, onChange }) => (
+            <Form.Group as={Row} className={"mb-3"}>
+                <Form.Label column="true" sm={2}>
+                    Location
+                </Form.Label>
+                <Col sm={8}>
+                    <Form.Control placeholder="Event Location" value={value} onChange={onChange} />
+                </Col>
+            </Form.Group>
+        ),
+        Notes: ({ value, onChange }) => (
+            <Form.Group as={Row} className={"mb-3"}>
+                <Form.Label column="true" sm={2}>
+                    Notes
+                </Form.Label>
+                <Col sm={8}>
+                    <Form.Control placeholder="Additional Notes" value={value} onChange={onChange} />
                 </Col>
             </Form.Group>
         )
