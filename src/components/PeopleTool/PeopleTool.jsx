@@ -110,7 +110,7 @@ export default function PeopleTool() {
 
     return (
         <div className="PeopleTool" style={{backgroundColor: "#444444"}}>
-            <h3 className="Center">People Tool</h3>
+            <h3 className="center">People Tool</h3>
             <div className="container">
                 <div className="row">
                     <div className="col-sm scroll">
