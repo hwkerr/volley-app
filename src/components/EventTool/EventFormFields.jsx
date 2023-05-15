@@ -133,6 +133,68 @@ const EventForm = {
                 </Col>
             </Form.Group>
         )
+    },
+    Multipurpose: {
+        Name: ({value, onChange, disabled}) => (
+            <Form.Group as={Row} className={"mb-3"}>
+                <Form.Label column="true" sm={2}>
+                    Name
+                </Form.Label>
+                <Col sm={8}>
+                    <Form.Control placeholder="First" value={value} onChange={onChange} disabled={disabled} />
+                </Col>
+            </Form.Group>
+        ),
+        Date: ({ value, onChange, disabled }) => (
+            <Form.Group as={Row} className={"mb-3"}>
+                <Form.Label column="true" sm={2}>
+                    Date
+                </Form.Label>
+                <Col sm={8}>
+                    <Form.Control placeholder="Event Date" type="date" value={value} onChange={onChange} disabled={disabled} />
+                </Col>
+            </Form.Group>
+        ),
+        Format: ({ value, onChange, disabled }) => (
+            <Form.Group as={Row} className={"mb-3"}>
+                <Form.Label column="true" sm={2}>
+                    Format
+                </Form.Label>
+                <Col sm={8}>
+                    <Form.Control placeholder="Event Format" value={value} onChange={onChange} disabled={disabled} />
+                </Col>
+            </Form.Group>
+        ),
+        Host: ({ value, onChange, disabled }) => (
+            <Form.Group as={Row} className={"mb-3"}>
+                <Form.Label column="true" sm={2}>
+                    Host
+                </Form.Label>
+                <Col sm={8}>
+                    <Form.Control placeholder="Event Host" value={value} onChange={onChange} disabled={disabled} />
+                </Col>
+            </Form.Group>
+        ),
+        Location: ({ value, onChange, disabled }) => (
+            <Form.Group as={Row} className={"mb-3"}>
+                <Form.Label column="true" sm={2}>
+                    Location
+                </Form.Label>
+                <Col sm={8}>
+                    <Form.Control placeholder="Event Location" value={value} onChange={onChange} disabled={disabled} />
+                </Col>
+            </Form.Group>
+        ),
+        Notes: ({ value, onChange, disabled }) => (
+            <Form.Group as={Row} className={"mb-3"}>
+                <Form.Label column="true" sm={2}>
+                    Notes
+                </Form.Label>
+                <Col sm={8}>
+                    <Form.Control placeholder="Additional Notes" value={value} onChange={onChange} disabled={disabled} />
+                </Col>
+            </Form.Group>
+        )
     }
 };
 
