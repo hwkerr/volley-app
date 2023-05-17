@@ -2,36 +2,82 @@ import { useState } from 'react';
 import EventForm from "./EventFormFields";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import Spinner from "react-bootstrap/Spinner";
+import { NEW_EVENT } from './EventTool';
+import moment from 'moment';
 
-export default function EventDetails({ event, onCancel, onEdit, onCancelEdit, onSave }) {
-    const [editMode, setEditMode] = useState(false);
+const TODAY = moment().format('YYYY-MM-DD');
+
+export default function EventDetails({ event, onCancel, onSave, onDelete }) {
+    const [editMode, setEditMode] = useState(event === NEW_EVENT);
     
-    const [name, setName] = useState(event.name);
-    const [date, setDate] = useState(event.date);
-    const [format, setFormat] = useState(event.format);
-    const [host, setHost] = useState(event.host);
-    const [location, setLocation] = useState(event.location);
-    const [notes, setNotes] = useState(event.notes);
+    const [name, setName] = useState(event.name || '');
+    const [date, setDate] = useState(event.date || TODAY);
+    const [format, setFormat] = useState(event.format || '');
+    const [host, setHost] = useState(event.host || '');
+    const [location, setLocation] = useState(event.location || '');
+    const [notes, setNotes] = useState(event.notes || '');
 
-    const handleEditButtonClicked = event => {
+    const [saveLoading, setSaveLoading] = useState(false);
+    const [deleteLoading, setDeleteLoading] = useState(false);
+
+    const handleEditButtonClicked = e => {
+        e.preventDefault();
         setEditMode(true);
-        if (onEdit)
-            onEdit(event);
     };
 
-    const handleCancelEditButtonClicked = event => {
-        resetEvent();
-        setEditMode(false);
-        if (onCancelEdit)
-            onCancelEdit(event);
+    const handleCancelEditButtonClicked = e => {
+        e.preventDefault();
+        if (event === NEW_EVENT)
+            onCancel();
+        else {
+            resetEvent();
+            setEditMode(false);
+        }
     };
 
-    const handleSaveButtonClicked = event => {
+    const handleSaveButtonClicked = e => {
+        e.preventDefault();
         setEditMode(false);
-        // TODO: make object with fields from Editable form
-        const newEvent = {};
-        if (onSave)
-            onSave(newEvent);
+        const newEvent = makeEventFromForm();
+        if (onSave) {
+            setSaveLoading(true);
+            onSave(newEvent)
+            .then(res => {
+                if (res)
+                    resetEvent();
+            })
+            .finally(() => setSaveLoading(false));
+        }
+    };
+
+    const handleDeleteButtonClicked = e => {
+        e.preventDefault();
+        setEditMode(false);
+        if (onDelete) {
+            setDeleteLoading(true);
+            onDelete(event)
+            .finally(() => setDeleteLoading(false));
+        }
+    };
+
+    const makeEventFromForm = () => {
+        let id = (event.id === NEW_EVENT.id ?
+            date :
+            event.id
+        );
+
+        const e = {
+            id,
+            name,
+            date,
+            format,
+            host,
+            location,
+            notes: notes.trim()
+        };
+
+        return e;
     };
 
     const resetEvent = () => {
@@ -60,14 +106,34 @@ export default function EventDetails({ event, onCancel, onEdit, onCancelEdit, on
             {editMode ?
             <div className="d-grid gap-2">
                 <div className="btn-group">
-                    <Button variant="success" size="lg" type="button" onClick={handleSaveButtonClicked}>Save</Button>
+                    <Button variant="success" size="lg" type="button" onClick={handleSaveButtonClicked}>
+                        {saveLoading ?
+                            <Spinner 
+                                as="span"
+                                animation="border"
+                                size="sm"
+                                role="status"
+                                aria-hidden="true"
+                            /> : (event === NEW_EVENT ? 'Create Event' : 'Save')}
+                    </Button>
                     <Button variant="secondary" size="lg" type="button" onClick={handleCancelEditButtonClicked}>Cancel</Button>
+                    {event !== NEW_EVENT &&
+                    <Button variant="danger" size="lg" type="button" onClick={handleDeleteButtonClicked}>
+                        {deleteLoading ?
+                            <Spinner
+                                as="span"
+                                animation="border"
+                                size="sm"
+                                role="status"
+                                aria-hidden="true"
+                            /> : 'Delete'}
+                    </Button>}
                 </div>
             </div> :
             <div className="d-grid gap-2">
                 <div className="btn-group">
                     <Button variant="warning" size="lg" type="button" onClick={handleEditButtonClicked}>Edit</Button>
-                    <Button variant="secondary" size="lg" type="button" onClick={onCancel}>Return</Button>
+                    <Button variant="secondary" size="lg" type="button" onClick={onCancel}>Back</Button>
                 </div>
             </div>}
         </div>

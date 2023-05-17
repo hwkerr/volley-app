@@ -1,23 +1,22 @@
 # TODO
 
-- Add an events tab
-    - similar to player tab in function but different in that:
-        - each event should be practically full screen when clicked
-    - main tab allows you to see a list of all events
-    - clicking on an event will open details
+Events
+- continue testing Save/Edit/Delete
+    - console error: when using calendar date picker to set date field
+- Players section
+    - Can see and update a list of players
 
-- Upgrade navigation bar
-    - currently just text links; could use bootstrap
-
-- Improve visuals
-    - PlayerTool
-    - EventTool
-
+Players
 - When searching players, you can also search by Notes (added Name, Nicknames, Gender, Role, Contact Type, Affiliations)
 - EditablePlayerForm: Create separate state variables for Contact Info and Contact Phone Number (when saving player, pick one to save based on Contact Type)
 - PlayerFormFields: work on form validation
-- Add responsive banners (or similar indicator) on a successful database action (save or delete) - already added loading spinner
 - PlayerSearchResults: Spinner goes forever if 0 results returned. Fix it by adding a timeout
+
+Misc
+- Upgrade navigation bar
+    - currently just text links; could use bootstrap
+- Add responsive banners (or similar indicator) on a successful database action (save or delete) - already added loading spinner
+- Improve visuals on PlayerTool and EventTool
 
 - Host on GitHub Pages
 

@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import Button from 'react-bootstrap/Button';
 import EventDetails from './EventDetails';
 import { Spinner } from 'react-bootstrap';
 
+export const NEW_EVENT = {id: "new", name: "Add New Event Name"};
 const BASE_URL_EVENTS = `https://9v2zi6tk3k.execute-api.us-east-2.amazonaws.com/dev/events`;
 
 export default function EventTool() {
@@ -11,9 +11,11 @@ export default function EventTool() {
     const [selection, setSelection] = useState(null); // stores an eventId
     const [loaded, setLoaded] = useState(false);
 
-    const NEW_EVENT = {id: "new", name: "Add New Event Name"};
-
     useEffect(() => {
+        loadItems();
+    }, []);
+
+    const loadItems = () => {
         if (loaded) setLoaded(false);
         getFromDatabase("all")
         .then(res => {
@@ -24,9 +26,9 @@ export default function EventTool() {
             console.log(err);
             setLoaded(true);
         });
-    }, []);
+    };
 
-    const getSelectedEvent = () => (selection === NEW_EVENT.id ? NEW_EVENT : events.find(e => e.id = selection));
+    const getSelectedEvent = () => (selection === NEW_EVENT.id ? NEW_EVENT : events.find(e => e.id === selection));
 
     const getFromDatabase = async (id) => {
         const url = BASE_URL_EVENTS + "/" + id;
@@ -105,6 +107,7 @@ export default function EventTool() {
     };
     
     const handleEventClicked = (event) => {
+        console.log(event);
         if (event.id === selection)
             clearSelection();
         else {
@@ -140,7 +143,7 @@ export default function EventTool() {
                     </div>
             ) : (
                 <div className="container scroll">
-                    <EventDetails event={getSelectedEvent()} onCancel={clearSelection} onSave={EventKit.save} />
+                    <EventDetails event={getSelectedEvent()} onCancel={clearSelection} onSave={EventKit.save} onDelete={EventKit.delete} />
                 </div>
             )}
         </div>
