@@ -38,18 +38,19 @@ export default function EventDetails({ event, onCancel, onSave, onDelete }) {
 
     const handleSaveButtonClicked = e => {
         e.preventDefault();
-        setEditMode(false);
         const newEvent = makeEventFromForm();
         if (onSave) {
             setSaveLoading(true);
             onSave(newEvent)
-            .finally(() => setSaveLoading(false));
+            .finally(() => {
+                setSaveLoading(false);
+                setEditMode(false);
+            });
         }
     };
 
     const handleDeleteButtonClicked = e => {
         e.preventDefault();
-        setEditMode(false);
         if (onDelete) {
             setDeleteLoading(true);
             onDelete(event)
@@ -85,17 +86,18 @@ export default function EventDetails({ event, onCancel, onSave, onDelete }) {
         setNotes(event.notes);
     };
 
-    // TODO: add buttons for Edit, Save, Cancel, Delete, and connect them to the database where necessary
+    const isDisabled = () => (!editMode || saveLoading || deleteLoading);
+
     return (
         <div className="container pt-3 pb-3">
-            <fieldset disabled={!editMode}>
+            <fieldset disabled={isDisabled()}>
                 <Form id="react-bootstrap-forms-event">
-                    <EventForm.Multipurpose.Name value={name} onChange={e => setName(e.target.value)} disabled={!editMode} />
-                    <EventForm.Multipurpose.Date value={date} onChange={e => setDate(e.target.value)} disabled={!editMode} />
-                    <EventForm.Multipurpose.Format value={format} onChange={e => setFormat(e.target.value)} disabled={!editMode} />
-                    <EventForm.Multipurpose.Host value={host} onChange={e => setHost(e.target.value)} disabled={!editMode} />
-                    <EventForm.Multipurpose.Location value={location} onChange={e => setLocation(e.target.value)} disabled={!editMode} />
-                    <EventForm.Multipurpose.Notes value={notes} onChange={e => setNotes(e.target.value)} disabled={!editMode} />
+                    <EventForm.Multipurpose.Name value={name} onChange={e => setName(e.target.value)} disabled={isDisabled()} />
+                    <EventForm.Multipurpose.Date value={date} onChange={e => setDate(e.target.value)} disabled={isDisabled()} />
+                    <EventForm.Multipurpose.Format value={format} onChange={e => setFormat(e.target.value)} disabled={isDisabled()} />
+                    <EventForm.Multipurpose.Host value={host} onChange={e => setHost(e.target.value)} disabled={isDisabled()} />
+                    <EventForm.Multipurpose.Location value={location} onChange={e => setLocation(e.target.value)} disabled={isDisabled()} />
+                    <EventForm.Multipurpose.Notes value={notes} onChange={e => setNotes(e.target.value)} disabled={isDisabled()} />
                 </Form>
             </fieldset>
             <hr />
