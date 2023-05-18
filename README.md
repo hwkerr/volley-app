@@ -2,7 +2,6 @@
 
 Events
 - continue testing Save/Edit/Delete
-    - console error: when using calendar date picker to set date field
 - Players section
     - Can see and update a list of players
 

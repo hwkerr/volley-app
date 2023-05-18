@@ -43,10 +43,6 @@ export default function EventDetails({ event, onCancel, onSave, onDelete }) {
         if (onSave) {
             setSaveLoading(true);
             onSave(newEvent)
-            .then(res => {
-                if (res)
-                    resetEvent();
-            })
             .finally(() => setSaveLoading(false));
         }
     };
