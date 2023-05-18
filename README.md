@@ -3,7 +3,9 @@
 Events
 - continue testing Save/Edit/Delete
 - Players section
-    - Can see and update a list of players
+    - Add a search bar
+    - Add more buttons for the various properties of a player
+    - Buttons update database
 
 Players
 - When searching players, you can also search by Notes (added Name, Nicknames, Gender, Role, Contact Type, Affiliations)
@@ -16,6 +18,9 @@ Misc
     - currently just text links; could use bootstrap
 - Add responsive banners (or similar indicator) on a successful database action (save or delete) - already added loading spinner
 - Improve visuals on PlayerTool and EventTool
+- on all react-bootstrap imports, improve performance
+    - low-perf: import { x } from 'react-bootstrap';
+    - high-perf: import x from 'react-bootstrap/x';
 
 - Host on GitHub Pages
 

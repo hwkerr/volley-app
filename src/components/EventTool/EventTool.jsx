@@ -142,7 +142,7 @@ export default function EventTool() {
                         <Spinner animation="border" />
                     </div>
             ) : (
-                <div className="container scroll">
+                <div className="container">
                     <EventDetails event={getSelectedEvent()} onCancel={clearSelection} onSave={EventKit.save} onDelete={EventKit.delete} />
                 </div>
             )}

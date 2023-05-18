@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import EventForm from "./EventFormFields";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
-import Spinner from "react-bootstrap/Spinner";
-import { NEW_EVENT } from './EventTool';
 import moment from 'moment';
+import { Form, Button, Spinner, Row, Col } from 'react-bootstrap';
+import EventForm from "./EventFormFields";
+import EventPlayers from './EventPlayers';
+import { NEW_EVENT } from './EventTool';
 
 const TODAY = moment().format('YYYY-MM-DD');
 
@@ -89,17 +88,24 @@ export default function EventDetails({ event, onCancel, onSave, onDelete }) {
     const isDisabled = () => (!editMode || saveLoading || deleteLoading);
 
     return (
-        <div className="container pt-3 pb-3">
-            <fieldset disabled={isDisabled()}>
-                <Form id="react-bootstrap-forms-event">
-                    <EventForm.Multipurpose.Name value={name} onChange={e => setName(e.target.value)} disabled={isDisabled()} />
-                    <EventForm.Multipurpose.Date value={date} onChange={e => setDate(e.target.value)} disabled={isDisabled()} />
-                    <EventForm.Multipurpose.Format value={format} onChange={e => setFormat(e.target.value)} disabled={isDisabled()} />
-                    <EventForm.Multipurpose.Host value={host} onChange={e => setHost(e.target.value)} disabled={isDisabled()} />
-                    <EventForm.Multipurpose.Location value={location} onChange={e => setLocation(e.target.value)} disabled={isDisabled()} />
-                    <EventForm.Multipurpose.Notes value={notes} onChange={e => setNotes(e.target.value)} disabled={isDisabled()} />
-                </Form>
-            </fieldset>
+        <div className="pt-3 pb-3">
+            <Row>
+                <Col>
+                    <fieldset disabled={isDisabled()}>
+                        <Form id="react-bootstrap-forms-event">
+                            <EventForm.Multipurpose.Name value={name} onChange={e => setName(e.target.value)} disabled={isDisabled()} />
+                            <EventForm.Multipurpose.Date value={date} onChange={e => setDate(e.target.value)} disabled={isDisabled()} />
+                            <EventForm.Multipurpose.Format value={format} onChange={e => setFormat(e.target.value)} disabled={isDisabled()} />
+                            <EventForm.Multipurpose.Host value={host} onChange={e => setHost(e.target.value)} disabled={isDisabled()} />
+                            <EventForm.Multipurpose.Location value={location} onChange={e => setLocation(e.target.value)} disabled={isDisabled()} />
+                            <EventForm.Multipurpose.Notes value={notes} onChange={e => setNotes(e.target.value)} disabled={isDisabled()} />
+                        </Form>
+                    </fieldset>
+                </Col>
+                <Col>
+                    <EventPlayers players={event.players} />
+                </Col>
+            </Row>
             <hr />
             {editMode ?
             <div className="d-grid gap-2">
