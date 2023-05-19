@@ -12,9 +12,31 @@ code {
     monospace;
 } */
 
+html, .App-body {
+  background-color: #444444;
+}
 
+table td,th {
+  padding: 0 2rem;
+}
 
-body p,h1,h2,h3,h4,h5,h6 {
+/* Chrome, Safari, Edge, Opera */
+input.no-arrows::-webkit-outer-spin-button,
+input.no-arrows::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number].no-arrows {
+  -moz-appearance: textfield;
+}
+
+.App-body {
+  padding-top: 1rem;
+}
+
+label, body p,h1,h2,h3,h4,h5,h6 {
   color: white;
 }
 
@@ -35,43 +57,77 @@ body p,h1,h2,h3,h4,h5,h6 {
 }
 
 /* START List Item START */
-.listitem-name {
+.list-item {
+  padding: 1rem;
+  margin: 0;
+  color: white;
+}
+
+.list-item.sm {
+  padding: 0.2rem 1rem;
+}
+
+.list-item.item {
   cursor: pointer;
   user-select: none;
-  padding: 1rem;
+  color: white;
 }
 
-.listitem-name:first-child {
+.list-item:first-child {
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
 }
 
-.listitem-name:nth-child(odd) {
+.list-item:nth-child(odd) {
   background-color: #666688;
 }
 
-.listitem-name:nth-child(even) {
+.list-item:nth-child(even) {
   background-color: #555577;
 }
 
-.listitem-name:last-child {
+.list-item:last-child {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
 }
 
-.listitem-name:hover {
+.list-item.search-item {
+  color: black;
+  background-color: #666688;
+  padding: 0;
+}
+
+.list-item.search-item input {
+  color: white;
+  background-color: #666688;
+  padding: 1rem 1rem;
+  margin: 0;
+  width: 100%;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  outline: none;
+  border: none;
+}
+
+.list-item.item:hover, .list-item.search-item input:hover {
   background-color: #444466;
 }
 
-.listitem-name.sm {
-  padding: 0rem;
+.list-item.search-item input::placeholder {
+  color: #CED3DC;
 }
 
-.listitem-name.selected {
+.list-item.item.selected {
   background-color: #333333;
 }
 
-.listitem-name p {
+.list-item p {
   margin-bottom: 0;
 }
 /* END List Item END */
@@ -91,6 +147,10 @@ body p,h1,h2,h3,h4,h5,h6 {
   height: calc(100vh - 277px);
   overflow-y: scroll;
   overflow-x: hidden;
+}
+
+.EventTool .scroll {
+  height: calc(100vh - 100px);
 }
 
 .scroll.event-players {

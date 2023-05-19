@@ -1,23 +1,44 @@
-import './App.css';
 import { Outlet, Link } from 'react-router-dom';
+import { Navbar, Container, Nav, NavDropdown } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
 
 function App() {
 
   return (
     <div>
-        <header className="App-header">
-          <p>
-            <Link to="/" className="plaintext-link"><strong>Volley App</strong></Link>
-          </p>
-          <nav>
-            <Link to="/rotation">Rotation Schedule</Link> |{" "}
-            <Link to="/players">Players</Link> |{" "}
-            <Link to="/events">Events</Link> |{" "}
-            <Link to="/scheduler">Scheduler</Link> |{" "}
-            <Link to="/league">League Schedule</Link>
-          </nav>
-          <p>___________________________________</p>
+        <header>
+          <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark" className="fixed-top">
+            <Container>
+              <LinkContainer to="/">
+                <Navbar.Brand>Volley App</Navbar.Brand>
+              </LinkContainer>
+              <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+              <Navbar.Collapse id="responsive-navbar-nav">
+                <Nav className="me-auto">
+                  <LinkContainer to="/players">
+                    <Nav.Link>Players</Nav.Link>
+                  </LinkContainer>
+                  <LinkContainer to="/events">
+                    <Nav.Link>Events</Nav.Link>
+                  </LinkContainer>
+                  <NavDropdown title="Other" id="collasible-nav-dropdown">
+                    <LinkContainer to="/league">
+                      <NavDropdown.Item>League Schedule</NavDropdown.Item>
+                    </LinkContainer>
+                    <LinkContainer to="/scheduler">
+                      <NavDropdown.Item>Day Schedule</NavDropdown.Item>
+                    </LinkContainer>
+                    <NavDropdown.Divider />
+                    <LinkContainer to="/rotation">
+                      <NavDropdown.Item>Schedule Generator [DEAD]</NavDropdown.Item>
+                    </LinkContainer>
+                  </NavDropdown>
+                </Nav>
+              </Navbar.Collapse>
+            </Container>
+          </Navbar>
         </header>
+        <div style={{height: "55px"}}></div>
         <Outlet />
     </div>
   );

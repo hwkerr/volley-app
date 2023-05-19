@@ -28,7 +28,7 @@ export default function PlayerSearchResults({ searchTerm, players, selectedPlaye
             selectedPlayerId === player.id
         );
         return (
-            <div key={i} className={`listitem-name ${isSelected ? "selected" : ""}`} onClick={() => handlePlayerClicked(player)}>
+            <div key={i} className={`list-item item ${isSelected ? "selected" : ""}`} onClick={() => handlePlayerClicked(player)}>
                 <p>{i+1}. {player.name.first + ' ' + player.name.last}</p>
             </div>
         );
@@ -229,7 +229,7 @@ export default function PlayerSearchResults({ searchTerm, players, selectedPlaye
     
     return (
         <div>
-            <div className={`listitem-name ${(selectedPlayerId === newPlayerObj.id ) ? "selected" : ""}`} onClick={handleNewPlayerButton}>
+            <div className={`list-item item ${(selectedPlayerId === newPlayerObj.id ) ? "selected" : ""}`} onClick={handleNewPlayerButton}>
                 <p>+ add player</p>
             </div>
             {filteredPlayers.length ?

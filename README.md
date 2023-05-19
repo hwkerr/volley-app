@@ -1,11 +1,12 @@
 # TODO
 
 Events
-- continue testing Save/Edit/Delete
+- Events section
+    - Make the search bar functional
 - Players section
     - Add a search bar
     - Add more buttons for the various properties of a player
-    - Buttons update database
+    - Make Buttons update database
 
 Players
 - When searching players, you can also search by Notes (added Name, Nicknames, Gender, Role, Contact Type, Affiliations)
@@ -14,8 +15,8 @@ Players
 - PlayerSearchResults: Spinner goes forever if 0 results returned. Fix it by adding a timeout
 
 Misc
-- Upgrade navigation bar
-    - currently just text links; could use bootstrap
+- Upgrade scrollbar
+- Add x to search bars
 - Add responsive banners (or similar indicator) on a successful database action (save or delete) - already added loading spinner
 - Improve visuals on PlayerTool and EventTool
 - on all react-bootstrap imports, improve performance

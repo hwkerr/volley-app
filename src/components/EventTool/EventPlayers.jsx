@@ -5,7 +5,7 @@ import { BASE_URL_PLAYERS } from "../PeopleTool/PeopleTool";
 import { Button, Col, Row, Spinner } from "react-bootstrap";
 
 export default function EventPlayers({ players, onUpdate }) {
-    const [eventPlayers, setEventPlayers] = useState(players);
+    const [eventPlayers, setEventPlayers] = useState(players || []);
     const [allPlayers, setAllPlayers] = useState([]);
     const [loaded, setLoaded] = useState(false);
 
@@ -73,13 +73,13 @@ export default function EventPlayers({ players, onUpdate }) {
     const getRow = (player, i) => {
         const active = playerInEvent(player.id);
         return (
-            <div key={i} className="listitem-name sm p-1">
+            <div key={i} className="list-item sm">
                 <Row>
                     <Col sm={4}>
-                        <p>{player.name.first + ' ' + player.name.last}</p>
+                        <p style={{paddingTop: "2px"}}>{player.name.first + ' ' + player.name.last}</p>
                     </Col>
                     <Col sm={2}>
-                        {!active && <Button variant="success" size="sm" onClick={() => addPlayerToEvent(player.id)}>+</Button>}
+                        {!active && <Button variant="success" style={{padding: "0 8px 2px"}} onClick={() => addPlayerToEvent(player.id)}>+</Button>}
                         {active && <Button variant="danger" size="sm" onClick={() => removePlayerFromEvent(player.id)}>-</Button>}
                     </Col>
                 </Row>

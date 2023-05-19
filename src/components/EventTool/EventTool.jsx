@@ -121,19 +121,22 @@ export default function EventTool() {
             selection === event.id
         );
         return (
-            <div key={i} className={`listitem-name ${isSelected ? "selected" : ""}`} onClick={() => handleEventClicked(event)}>
+            <div key={i} className={`list-item item ${isSelected ? "selected" : ""}`} onClick={() => handleEventClicked(event)}>
                 <p>{i+1}. {event.name}</p>
             </div>
         );
     };
     
     return (
-        <div className="EventTool" style={{backgroundColor: "#444444"}}>
-            <h3 className="center" onClick={e => console.log(selection)}>Event Tool</h3>
+        <div className="EventTool App-body">
+            {/* <h3 className="center" onClick={e => console.log(selection)}>Event Tool</h3> */}
             {!selection ? (
                 loaded ?
                     <div className="container scroll">
-                        <div className={`listitem-name ${selection === NEW_EVENT.id ? "selected" : ""}`} onClick={() => handleEventClicked(NEW_EVENT)}>
+                        <div className={`list-item search-item`}>
+                            <input placeholder="Search" />
+                        </div>
+                        <div className={`list-item item ${selection === NEW_EVENT.id ? "selected" : ""}`} onClick={() => handleEventClicked(NEW_EVENT)}>
                             <p>{"+ add event"}</p>
                         </div>
                         {events.map((event, i) => getItem(event, i))}

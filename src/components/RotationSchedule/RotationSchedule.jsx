@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import '../App.css';
 import VolleyDisplay from './VolleyDisplay';
 import OrganizerInput from './OrganizerInput';
 import { exampleRounds, getRounds } from './rounds';
