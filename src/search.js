@@ -1,3 +1,4 @@
+import moment from "moment";
 import { SKILL_TYPES } from "./components/PeopleTool/PlayerFormFields";
 
 //////// Reusable Components ////////
@@ -84,7 +85,7 @@ const matchesRole = (playerRoles, terms, { any }) => {
 const matchesGender = (playerGender, term) => {
     if (matchesAll([playerGender])) return true;
     return genderAliases[playerGender.toLowerCase()].includes(term)
-}
+};
 
 /**
  * @requires terms is a string array
@@ -139,7 +140,7 @@ const matchesSkill = (playerSkills, term) => {
     }
 };
 
-export const playerMatchesTerm = (player, searchTerm) => {
+const playerMatchesTerm = (player, searchTerm) => {
     let term = searchTerm.toLowerCase();
 
     // special filters
@@ -164,15 +165,28 @@ export const playerMatchesTerm = (player, searchTerm) => {
     }
 };
 
-//////// EVENT Search ////////
-
-const matchesYear = (year, input) => {
-    const date = new Date();
-    date.setFullYear(year);
-    if (date.getFullYear() === parseInt(input) ||
-        date.getFullYear() % 100 === parseInt(input))
-            return true;
+const cmpPlayersByName = (a, b) => {
+    if (a.name.first && b.name.first) {
+        if (a.name.first < b.name.first) return -1;
+        else if (a.name.first > b.name.first) return 1;
+    } else if (a.name.last && b.name.last) {
+        if (a.name.last < b.name.last) return -1;
+        else if (a.name.last > b.name.last) return 1;
+    } else return 0;
 };
+
+export const getFilteredPlayersList = (players, searchTerm) => {
+    let filteredPlayers = players;
+    if (searchTerm !== "" && searchTerm !== undefined) {
+        let searchTerms = searchTerm.split(' ');
+        filteredPlayers = players.filter(player =>
+            searchTerms.every(st => playerMatchesTerm(player, st.toLowerCase()))
+        );
+    }
+    return filteredPlayers.sort(cmpPlayersByName);
+};
+
+//////// EVENT Search ////////
 
 const matchesMonth = (month, input) => {
     const date = new Date();
@@ -183,11 +197,29 @@ const matchesMonth = (month, input) => {
             return true;
 };
 
-export const eventMatchesTerm = (event, term) => {
-    const eventDate = new Date(Date.parse(event.date));
+const eventMatchesTerm = (event, searchTerm) => {
+    const term = searchTerm.toLowerCase();
+    const eventDate = moment(event.date);
     if (event.name.toLowerCase().includes(term.toLowerCase())) return true;
-    else if (eventDate === new Date(Date.parse(term))) return true;
-    else if (term.startsWith('year:') && matchesYear(eventDate.getFullYear(), term.split('year:')[1])) return true;
-    else if (term.startsWith('month:') && matchesMonth(eventDate.getMonth(), term.split('month:')[1])) return true;
+    else if (eventDate.isSame(term, 'day')) return true;
+    else if (term.startsWith('year:') && eventDate.isSame(term.split('year:')[1], 'year')) return true;
+    else if (term.startsWith('month:') && matchesMonth(eventDate.month(), term.split('month:')[1])) return true;
     return false;
+};
+
+const cmpEventsByDate = (a, b) => {
+    if (Date.parse(a.date) < Date.parse(b.date)) return -1;
+    else if (Date.parse(a.date) > Date.parse(b.date)) return 1;
+    else return 0;
+};
+
+export const getFilteredEventsList = (events, searchTerm) => {
+    let filteredEvents = events;
+    if (searchTerm !== "" && searchTerm !== undefined) {
+        let searchTerms = searchTerm.split(' ');
+        filteredEvents = events.filter(event =>
+            searchTerms.every(st => eventMatchesTerm(event, st))
+        );
+    }
+    return filteredEvents.sort(cmpEventsByDate);
 };

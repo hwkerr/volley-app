@@ -1,14 +1,14 @@
 import { newPlayerObj } from './players';
 import Spinner from 'react-bootstrap/Spinner';
 import { useEffect, useState } from 'react';
-import { playerMatchesTerm } from '../../search';
+import { getFilteredPlayersList } from '../../search';
 
 export default function PlayerSearchResults({ searchTerm, players, selectedPlayerId, onClick, setResultsCount }) {
 
     const [filteredPlayers, setFilteredPlayers] = useState([]);
 
     useEffect(() => {
-        const newFilteredPlayersList = getFilteredPlayersList(searchTerm, players);
+        const newFilteredPlayersList = getFilteredPlayersList(players, searchTerm);
         setResultsCount(newFilteredPlayersList.length);
         setFilteredPlayers(newFilteredPlayersList);
     }, [searchTerm, players]);
@@ -32,30 +32,6 @@ export default function PlayerSearchResults({ searchTerm, players, selectedPlaye
                 <p>{i+1}. {player.name.first + ' ' + player.name.last}</p>
             </div>
         );
-    };
-    
-    const getFilteredPlayersList = (searchTerm, players) => {
-        let filteredPlayers = players;
-        if (searchTerm !== "" && searchTerm !== undefined) {
-            let searchTerms = searchTerm.split(' ');
-            filteredPlayers = players.filter(player =>
-                searchTerms.every(st => playerMatchesTerm(player, st))
-            )
-        }
-        
-        const comparePlayersByName = (a, b) => {
-            if (a.name.first && b.name.first) {
-                if (a.name.first < b.name.first) return -1;
-                else if (a.name.first > b.name.first) return 1;
-            } else if (a.name.last && b.name.last) {
-                if (a.name.last < b.name.last) return -1;
-                else if (a.name.last > b.name.last) return 1;
-            } else return 0;
-        };
-
-        filteredPlayers.sort(comparePlayersByName);
-
-        return filteredPlayers;
     };
     
     return (

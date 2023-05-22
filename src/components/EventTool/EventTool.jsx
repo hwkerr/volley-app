@@ -2,13 +2,15 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import EventDetails from './EventDetails';
 import { Spinner } from 'react-bootstrap';
-import { eventMatchesTerm } from '../../search';
+import { getFilteredEventsList } from '../../search';
 
 export const NEW_EVENT = {id: "new", name: "Add New Event Name"};
 const BASE_URL_EVENTS = `https://9v2zi6tk3k.execute-api.us-east-2.amazonaws.com/dev/events`;
 
 export default function EventTool() {
     const [events, setEvents] = useState([]); // stores a list of all event objects
+    const [filteredEvents, setFilteredEvents] = useState([]);
+    const [resultsCount, setResultsCount] = useState(0);
     const [selection, setSelection] = useState(null); // stores an eventId
     const [searchTerm, setSearchTerm] = useState('');
     const [loaded, setLoaded] = useState(false);
@@ -16,6 +18,12 @@ export default function EventTool() {
     useEffect(() => {
         loadItems();
     }, []);
+
+    useEffect(() => {
+        const newFilteredEventsList = getFilteredEventsList(events, searchTerm);
+        setResultsCount(newFilteredEventsList.length);
+        setFilteredEvents(newFilteredEventsList);
+    }, [searchTerm, events]);
 
     const loadItems = () => {
         if (loaded) setLoaded(false);
@@ -120,16 +128,6 @@ export default function EventTool() {
             setSelection(event.id);
         }
     };
-
-    const searchFilter = event => {
-        const terms = searchTerm.split(' ');
-        if (terms.every(term => eventMatchesTerm(event, term))) return true;
-        return false;
-    };
-
-    const getFilteredItems = () => {
-        return events.filter(searchFilter).map((event, i) => getItem(event, i));
-    };
     
     const getItem = (event, i) => {
         const isSelected = (
@@ -145,18 +143,21 @@ export default function EventTool() {
     
     return (
         <div className="EventTool App-body">
-            {/* <h3 className="center" onClick={e => console.log(selection)}>Event Tool</h3> */}
             {!selection ? (
                 loaded ?
-                    <div className="container scroll">
-                        <div className={`list-item search-item`}>
-                            <input placeholder="Search" value={searchTerm} onChange={handleChangeSearchTerm} />
+                    <>
+                        <h3 className="container" onClick={e => console.log(selection)}>Events ({resultsCount})</h3>
+                        <div className="container scroll">
+                            
+                            <div className={`list-item search-item`}>
+                                <input placeholder="Search" value={searchTerm} onChange={handleChangeSearchTerm} />
+                            </div>
+                            <div className={`list-item item ${selection === NEW_EVENT.id ? "selected" : ""}`} onClick={() => handleEventClicked(NEW_EVENT)}>
+                                <p>{"+ add event"}</p>
+                            </div>
+                            {filteredEvents.map((event, i) => getItem(event, i))}
                         </div>
-                        <div className={`list-item item ${selection === NEW_EVENT.id ? "selected" : ""}`} onClick={() => handleEventClicked(NEW_EVENT)}>
-                            <p>{"+ add event"}</p>
-                        </div>
-                        {getFilteredItems()}
-                    </div> :
+                    </> :
                     <div className="container center">
                         <Spinner animation="border" />
                     </div>
