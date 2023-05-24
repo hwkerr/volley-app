@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from 'axios';
-import { Button, Col, Row, Spinner } from "react-bootstrap";
+import { Button, Col, Row, Spinner, Form } from "react-bootstrap";
 
 import { BASE_URL_PLAYERS } from "../PeopleTool/PeopleTool";
 import { getFilteredPlayersList } from "../../search";
@@ -90,10 +90,28 @@ export default function EventPlayers({ players, onUpdate }) {
                     <Col sm={4}>
                         <p style={{paddingTop: "2px"}}>{player.name.first + ' ' + player.name.last}</p>
                     </Col>
-                    <Col sm={2}>
+                    <Col sm={1}>
                         {!active && <Button variant="success" style={{padding: "0 8px 2px"}} onClick={() => addPlayerToEvent(player.id)}>+</Button>}
                         {active && <Button variant="danger" size="sm" onClick={() => removePlayerFromEvent(player.id)}>-</Button>}
                     </Col>
+                    {active && <>
+                        <Col sm={2}>
+                            <Form.Check 
+                                type="checkbox"
+                                id="paid-checkbox"
+                                label="Paid"
+                                reverse
+                            />
+                        </Col>
+                        <Col sm={3}>
+                            <Form.Select aria-label="Select Player Team">
+                                <option>Team</option>
+                                <option value="In">In</option>
+                                <option value="Out">Out</option>
+                                <option value="Other">N/A</option>
+                            </Form.Select>
+                        </Col>
+                    </>}
                 </Row>
             </div>
         );

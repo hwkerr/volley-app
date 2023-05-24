@@ -3,6 +3,9 @@
 Events
 - Players section
     - Add more buttons for the various properties of a player
+        - +/-, Paid, Team, Note
+        - Fix spacing - esp. above/below
+            - try a grouped/multi button like on the Player Form
     - Make Buttons update database
 - Events section
     - Add more search filters to EventTool
