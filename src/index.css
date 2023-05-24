@@ -51,6 +51,12 @@ label, body p,h1,h2,h3,h4,h5,h6 {
   align-items: center;
 }
 
+.vertical-center {
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
 .btn.flush-rightside-input {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;

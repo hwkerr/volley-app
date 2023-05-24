@@ -88,23 +88,24 @@ export default function EventPlayers({ players, onUpdate }) {
             <div key={i} className="list-item sm">
                 <Row>
                     <Col sm={4}>
-                        <p style={{paddingTop: "2px"}}>{player.name.first + ' ' + player.name.last}</p>
+                        <p className="vertical-center">{player.name.first + ' ' + player.name.last}</p>
                     </Col>
                     <Col sm={1}>
-                        {!active && <Button variant="success" style={{padding: "0 8px 2px"}} onClick={() => addPlayerToEvent(player.id)}>+</Button>}
-                        {active && <Button variant="danger" size="sm" onClick={() => removePlayerFromEvent(player.id)}>-</Button>}
+                        {!active && <Button variant="success" className="vertical-center" style={{padding: "0 8px 2px"}} onClick={() => addPlayerToEvent(player.id)}>+</Button>}
+                        {active && <Button variant="danger" className="vertical-center" style={{padding: "0 8px 2px"}} onClick={() => removePlayerFromEvent(player.id)}>-</Button>}
                     </Col>
                     {active && <>
                         <Col sm={2}>
                             <Form.Check 
                                 type="checkbox"
                                 id="paid-checkbox"
+                                className="vertical-center"
                                 label="Paid"
                                 reverse
                             />
                         </Col>
                         <Col sm={3}>
-                            <Form.Select aria-label="Select Player Team">
+                            <Form.Select aria-label="Select Player Team" className="vertical-center">
                                 <option>Team</option>
                                 <option value="In">In</option>
                                 <option value="Out">Out</option>
