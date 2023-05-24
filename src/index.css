@@ -115,6 +115,10 @@ label, body p,h1,h2,h3,h4,h5,h6 {
   border: none;
 }
 
+.list-item.search-item.sm input {
+  padding: 0.5rem 1rem;
+}
+
 .list-item.item:hover, .list-item.search-item input:hover {
   background-color: #444466;
 }

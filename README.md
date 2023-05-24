@@ -1,12 +1,11 @@
 # TODO
 
 Events
-- Events section
-    - Make the search bar functional
 - Players section
-    - Add a search bar
     - Add more buttons for the various properties of a player
     - Make Buttons update database
+- Events section
+    - Add more search filters to EventTool
 
 Players
 - When searching players, you can also search by Notes (added Name, Nicknames, Gender, Role, Contact Type, Affiliations)
@@ -15,6 +14,7 @@ Players
 - PlayerSearchResults: Spinner goes forever if 0 results returned. Fix it by adding a timeout
 
 Misc
+- Add Axios preset for each url (need to check notes for how to do this)
 - Upgrade scrollbar
 - Add x to search bars
 - Add responsive banners (or similar indicator) on a successful database action (save or delete) - already added loading spinner

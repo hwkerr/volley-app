@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import axios from 'axios';
+import { Button, Col, Row, Spinner } from "react-bootstrap";
 
 import { BASE_URL_PLAYERS } from "../PeopleTool/PeopleTool";
-import { Button, Col, Row, Spinner } from "react-bootstrap";
+import { getFilteredPlayersList } from "../../search";
 
 export default function EventPlayers({ players, onUpdate }) {
     const [eventPlayers, setEventPlayers] = useState(players || []);
     const [allPlayers, setAllPlayers] = useState([]);
+    const [filteredPlayers, setFilteredPlayers] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
     const [loaded, setLoaded] = useState(false);
 
     const playerInEvent = id => ((eventPlayers.find(p => p.id === id)) ? true : false);
@@ -38,6 +41,15 @@ export default function EventPlayers({ players, onUpdate }) {
             console.log(err);
         });
     }, []);
+
+    useEffect(() => {
+        const newFilteredPlayersList = getFilteredPlayersList(allPlayers, searchTerm);
+        setFilteredPlayers(newFilteredPlayersList);
+    }, [allPlayers, eventPlayers, searchTerm]);
+
+    const handleChangeSearchTerm = e => {
+        setSearchTerm(e.target.value);
+    }
 
     const reSort = () => setAllPlayers(prev => prev.sort(comparePlayersByName));
 
@@ -94,7 +106,10 @@ export default function EventPlayers({ players, onUpdate }) {
     return (
         !loaded ? <Spinner animation="border" /> :
         <div className="scroll event-players">
-            {allPlayers.sort(comparePlayersByName).map(getRow)}
+            <div className="list-item sm search-item">
+                <input placeholder="Search" value={searchTerm} onChange={handleChangeSearchTerm} />
+            </div>
+            {filteredPlayers.sort(comparePlayersByName).map(getRow)}
         </div>
     );
 }

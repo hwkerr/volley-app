@@ -148,7 +148,6 @@ export default function EventTool() {
                     <>
                         <h3 className="container" onClick={e => console.log(selection)}>Events ({resultsCount})</h3>
                         <div className="container scroll">
-                            
                             <div className={`list-item search-item`}>
                                 <input placeholder="Search" value={searchTerm} onChange={handleChangeSearchTerm} />
                             </div>
