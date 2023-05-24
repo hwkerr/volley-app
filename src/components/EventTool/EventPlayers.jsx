@@ -106,7 +106,7 @@ export default function EventPlayers({ players, onUpdate }) {
                         </Col>
                         <Col sm={3}>
                             <Form.Select aria-label="Select Player Team" className="vertical-center">
-                                <option>Team</option>
+                                <option>&#60;Team&#62;</option>
                                 <option value="In">In</option>
                                 <option value="Out">Out</option>
                                 <option value="Other">N/A</option>
