@@ -17,6 +17,8 @@ Players
 - PlayerSearchResults: Spinner goes forever if 0 results returned. Fix it by adding a timeout
 
 Misc
+- Make site work on mobile
+    - add collapsible Event Players list as well as the buttons on each player
 - Add Axios preset for each url (need to check notes for how to do this)
 - Upgrade scrollbar
 - Add x to search bars
