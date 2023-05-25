@@ -29,6 +29,7 @@ input.no-arrows::-webkit-inner-spin-button {
 
 /* Firefox */
 input[type=number].no-arrows {
+  appearance: textfield;
   -moz-appearance: textfield;
 }
 
