@@ -123,11 +123,13 @@ export default function EventPlayers({ players, onUpdate }) {
     }
     
     return (
-        !loaded ? <Spinner animation="border" /> :
-        <div className="scroll event-players">
+        <div className={`scroll event-players`}>
+            {!loaded ? <div className="list-item sm only-item">
+                <Spinner className="center" animation="border" />
+            </div> :
             <div className="list-item sm search-item">
                 <input placeholder="Search" value={searchTerm} onChange={handleChangeSearchTerm} />
-            </div>
+            </div>}
             {filteredPlayers.sort(comparePlayersByName).map(getRow)}
         </div>
     );
