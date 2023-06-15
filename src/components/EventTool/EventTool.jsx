@@ -144,10 +144,14 @@ export default function EventTool() {
     return (
         <div className="EventTool App-body">
             {!selection ? (
-                loaded ?
-                    <>
-                        <h3 className="container" onClick={e => console.log(selection)}>Events ({resultsCount})</h3>
-                        <div className="container scroll">
+                <>
+                    <h3 className="container" onClick={e => console.log(selection)}>Events ({resultsCount})</h3>
+                    <div className="container scroll">
+                        {!loaded ?
+                        <div className={`list-item only-item`}>
+                            <Spinner className="center" animation="border" />
+                        </div> :
+                        <>
                             <div className={`list-item search-item`}>
                                 <input placeholder="Search" value={searchTerm} onChange={handleChangeSearchTerm} />
                             </div>
@@ -155,11 +159,12 @@ export default function EventTool() {
                                 <p>{"+ add event"}</p>
                             </div>
                             {filteredEvents.map((event, i) => getItem(event, i))}
-                        </div>
-                    </> :
-                    <div className="container center">
-                        <Spinner animation="border" />
+                        </>
+                        }
+                        
+                        
                     </div>
+                </>
             ) : (
                 <div className="container">
                     <EventDetails event={getSelectedEvent()} onCancel={clearSelection} onSave={EventKit.save} onDelete={EventKit.delete} />

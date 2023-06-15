@@ -4,13 +4,14 @@ import { useEffect, useState } from 'react';
 import { getFilteredPlayersList } from '../../search';
 
 export default function PlayerSearchResults({ searchTerm, players, selectedPlayerId, onClick, setResultsCount }) {
-
     const [filteredPlayers, setFilteredPlayers] = useState([]);
+    const [loaded, setLoaded] = useState(false);
 
     useEffect(() => {
         const newFilteredPlayersList = getFilteredPlayersList(players, searchTerm);
         setResultsCount(newFilteredPlayersList.length);
         setFilteredPlayers(newFilteredPlayersList);
+        setLoaded(true);
     }, [searchTerm, players]);
 
     const handlePlayerClicked = (player) => {
@@ -36,12 +37,16 @@ export default function PlayerSearchResults({ searchTerm, players, selectedPlaye
     
     return (
         <div>
-            <div className={`list-item item ${(selectedPlayerId === newPlayerObj.id ) ? "selected" : ""}`} onClick={handleNewPlayerButton}>
-                <p>+ add player</p>
-            </div>
-            {filteredPlayers.length ?
-                filteredPlayers.map((player, i) => getRow(player, i)) :
-                <Spinner animation="border" />
+            {loaded ?
+                <>
+                    <div className={`list-item item ${(selectedPlayerId === newPlayerObj.id ) ? "selected" : ""}`} onClick={handleNewPlayerButton}>
+                        <p>+ add player</p>
+                    </div>
+                    {filteredPlayers.map((player, i) => getRow(player, i))}
+                </> :
+                <div className={`list-item only-item`}>
+                    <Spinner className="center" animation="border" />
+                </div>
             }
         </div>
     );

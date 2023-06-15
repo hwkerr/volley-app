@@ -102,6 +102,13 @@ label, body p,h1,h2,h3,h4,h5,h6 {
   border-bottom-right-radius: 5px;
 }
 
+.list-item.only-item {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
 .list-item.search-item {
   color: black;
   background-color: #666688;
@@ -209,4 +216,9 @@ label, body p,h1,h2,h3,h4,h5,h6 {
 
 .scroll.event-players {
   height: calc(100vh - 350px);
+}
+
+.spinner-border.center {
+  position: relative;
+  left: 50%;
 }
