@@ -72,35 +72,44 @@ export default function EventPlayers({ players, onUpdate }) {
         }));
     };
 
+    const STATUS_NONE = '<>',
+          STATUS_ASKED = '?',
+          STATUS_IN = 'In',
+          STATUS_OUT = 'Out';
     const nextStatus = {
-        'Out': '<>',
-        '<>': '?',
-        '?': 'In',
-        'In': 'Out'
+        [STATUS_OUT]: STATUS_NONE,
+        [STATUS_NONE]: STATUS_ASKED,
+        [STATUS_ASKED]: STATUS_IN,
+        [STATUS_IN]: STATUS_OUT
     };
     
     const updatePlayerStatus = id => {
         const playerStatus = getPlayerInEvent(id).status;
+        const myNextStatus = nextStatus[playerStatus];
         // TODO: update database and do this on success
-        setEventPlayers(prev => prev.map(p => {
-            if (p.id === id) {
-                return {
-                    ...p,
-                    status: nextStatus[playerStatus]
-                };
-            } else {
-                return p;
-            }
-        }));
+        if (myNextStatus === '<>') {
+            setEventPlayers(prev => prev.filter(p => p.id !== id)); // remove player
+        } else {
+            setEventPlayers(prev => prev.map(p => { // update player to next status
+                if (p.id === id) {
+                    return {
+                        ...p,
+                        status: nextStatus[playerStatus]
+                    };
+                } else {
+                    return p;
+                }
+            }));
+        }
     };
-
-    const addPlayerToEvent = id => {
+    
+    const addPlayerToEvent = (id, status) => {
         // TODO: update database and do this on success
         setEventPlayers(prev => {
             if (prev.find(p => p.id === id)) return prev;
             const playerToAdd = {
                 id,
-                status: "In",
+                status: status || "In",
                 paid: false,
                 team: null
             };
@@ -120,7 +129,7 @@ export default function EventPlayers({ players, onUpdate }) {
 
     const getRow = (player, i) => {
         const active = isPlayerInEvent(player.id);
-        const playerInEvent = getPlayerInEvent(player.id) || {};
+        const playerInEvent = getPlayerInEvent(player.id);
         return (
             <div key={i} className="list-item sm">
                 <Row>
@@ -129,7 +138,10 @@ export default function EventPlayers({ players, onUpdate }) {
                     </Col>
                     <Col>
                         <ButtonGroup>
-                            <Button variant="primary" className="custom-button-group inactive" onClick={() => updatePlayerStatus(player.id)}>{playerInEvent.status || "+"}</Button>
+                            {active ?
+                                <Button variant="primary" className="custom-button-group inactive" onClick={() => updatePlayerStatus(player.id)}>{playerInEvent.status}</Button> :
+                                <Button variant="primary" className="custom-button-group inactive" onClick={() => addPlayerToEvent(player.id, STATUS_ASKED)}>{"+"}</Button>
+                            }
 
                             {active && <>
                                 <ToggleButton
@@ -153,25 +165,6 @@ export default function EventPlayers({ players, onUpdate }) {
                             </>}
                         </ButtonGroup>
                     </Col>
-                    {/* {active && <>
-                        <Col sm={2}>
-                            <Form.Check 
-                                type="checkbox"
-                                id="paid-checkbox"
-                                className="vertical-center"
-                                label="Paid"
-                                reverse
-                            />
-                        </Col>
-                        <Col sm={3}>
-                            <Form.Select aria-label="Select Player Team" className="vertical-center">
-                                <option>&#60;Team&#62;</option>
-                                <option value="In">In</option>
-                                <option value="Out">Out</option>
-                                <option value="Other">N/A</option>
-                            </Form.Select>
-                        </Col>
-                    </>} */}
                 </Row>
             </div>
         );
