@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from 'axios';
-import { Button, Col, Row, Spinner, Form } from "react-bootstrap";
+import { Button, Col, Row, Spinner, Form, ButtonGroup, ToggleButton, DropdownButton, Dropdown } from "react-bootstrap";
 
 import { BASE_URL_PLAYERS } from "../PeopleTool/PeopleTool";
 import { getFilteredPlayersList } from "../../search";
@@ -12,11 +12,13 @@ export default function EventPlayers({ players, onUpdate }) {
     const [searchTerm, setSearchTerm] = useState('');
     const [loaded, setLoaded] = useState(false);
 
-    const playerInEvent = id => ((eventPlayers.find(p => p.id === id)) ? true : false);
-
+    const getPlayerObject = id => allPlayers.find(p => p.id === id);
+    const getPlayerInEvent = id => eventPlayers.find(p => p.id === id);
+    const isPlayerInEvent = id => ((eventPlayers.find(p => p.id === id)) ? true : false);
+    
     const comparePlayersByName = (a, b) => {
-        const aActive = playerInEvent(a.id);
-        const bActive = playerInEvent(b.id);
+        const aActive = isPlayerInEvent(a.id);
+        const bActive = isPlayerInEvent(b.id);
 
         if (aActive === bActive) {
             if (a.name.first && b.name.first) {
@@ -51,11 +53,45 @@ export default function EventPlayers({ players, onUpdate }) {
         setSearchTerm(e.target.value);
     }
 
-    const reSort = () => setAllPlayers(prev => prev.sort(comparePlayersByName));
-
     const getPlayerFromDatabase = async (id) => {
         const url = BASE_URL_PLAYERS + "/" + id;
         return await axios.get(url);
+    };
+
+    const setPlayerPaid = (id, paid) => {
+        // TODO: update database and do this on success
+        setEventPlayers(prev => prev.map(p => {
+            if (p.id === id) {
+                return {
+                    ...p,
+                    paid: paid
+                };
+            } else {
+                return p;
+            }
+        }));
+    };
+
+    const nextStatus = {
+        'Out': '<>',
+        '<>': '?',
+        '?': 'In',
+        'In': 'Out'
+    };
+    
+    const updatePlayerStatus = id => {
+        const playerStatus = getPlayerInEvent(id).status;
+        // TODO: update database and do this on success
+        setEventPlayers(prev => prev.map(p => {
+            if (p.id === id) {
+                return {
+                    ...p,
+                    status: nextStatus[playerStatus]
+                };
+            } else {
+                return p;
+            }
+        }));
     };
 
     const addPlayerToEvent = id => {
@@ -83,18 +119,41 @@ export default function EventPlayers({ players, onUpdate }) {
     };
 
     const getRow = (player, i) => {
-        const active = playerInEvent(player.id);
+        const active = isPlayerInEvent(player.id);
+        const playerInEvent = getPlayerInEvent(player.id) || {};
         return (
             <div key={i} className="list-item sm">
                 <Row>
-                    <Col sm={4}>
+                    <Col sm={4} onClick={() => console.log(playerInEvent)}>
                         <p className="vertical-center">{player.name.first + ' ' + player.name.last}</p>
                     </Col>
-                    <Col sm={1}>
-                        {!active && <Button variant="success" className="vertical-center" style={{padding: "0 8px 2px"}} onClick={() => addPlayerToEvent(player.id)}>+</Button>}
-                        {active && <Button variant="danger" className="vertical-center" style={{padding: "0 8px 2px"}} onClick={() => removePlayerFromEvent(player.id)}>-</Button>}
+                    <Col>
+                        <ButtonGroup>
+                            <Button variant="primary" className="custom-button-group inactive" onClick={() => updatePlayerStatus(player.id)}>{playerInEvent.status || "+"}</Button>
+
+                            {active && <>
+                                <ToggleButton
+                                    id={`toggle-check-${player.id}`}
+                                    className="custom-button-group"
+                                    type="checkbox"
+                                    variant="light"
+                                    checked={playerInEvent.paid}
+                                    value="1"
+                                    onChange={e => setPlayerPaid(player.id, e.currentTarget.checked)}
+                                >
+                                    {playerInEvent.paid ? 'Paid' : 'Unpaid'}
+                                </ToggleButton>
+
+                                <Form.Select aria-label="Team Select" className="custom-button-group">
+                                    <option>&#60;Team&#62;</option>
+                                    <option value="1">One</option>
+                                    <option value="2">Two</option>
+                                    <option value="3">Three</option>
+                                </Form.Select>
+                            </>}
+                        </ButtonGroup>
                     </Col>
-                    {active && <>
+                    {/* {active && <>
                         <Col sm={2}>
                             <Form.Check 
                                 type="checkbox"
@@ -112,15 +171,11 @@ export default function EventPlayers({ players, onUpdate }) {
                                 <option value="Other">N/A</option>
                             </Form.Select>
                         </Col>
-                    </>}
+                    </>} */}
                 </Row>
             </div>
         );
     };
-
-    const getPlayerObject = id => {
-        return allPlayers.find(p => p.id === id);
-    }
     
     return (
         !loaded ? <Spinner animation="border" /> :

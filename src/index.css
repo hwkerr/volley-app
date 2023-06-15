@@ -141,6 +141,49 @@ label, body p,h1,h2,h3,h4,h5,h6 {
 .list-item p {
   margin-bottom: 0;
 }
+
+.list-item .custom-button-group {
+  color: white;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border: none;
+  background-color: inherit;
+  margin: 0 10px;
+}
+
+.list-item .custom-button-group:hover {
+  background-color: #444466;
+  color: white;
+}
+
+.list-item .custom-button-group:active {
+  border: inherit;
+  color: inherit;
+  background-color: inherit;
+}
+
+/* .list-item .custom-button-group:first-child {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 0;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 0;
+}
+
+.list-item .custom-button-group:last-child {
+  border-top-left-radius: 0;
+  border-top-right-radius: 5px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 5px;
+}
+
+.list-item .custom-button-group.inactive {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+} */
 /* END List Item END */
 
 
