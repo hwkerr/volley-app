@@ -160,6 +160,13 @@ label, body p,h1,h2,h3,h4,h5,h6 {
   margin: 0 10px;
 }
 
+.list-item .player-note-input.custom-button-group,
+.list-item .player-note-input.custom-button-group:hover {
+  background-color: white;
+  color: black;
+  height: 100%;
+}
+
 .list-item .custom-button-group:hover {
   background-color: #444466;
   color: white;

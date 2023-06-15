@@ -111,7 +111,8 @@ export default function EventPlayers({ players, onUpdate }) {
                 id,
                 status: status || "In",
                 paid: false,
-                team: null
+                team: null,
+                note: ''
             };
             return [
                 ...prev,
@@ -127,6 +128,20 @@ export default function EventPlayers({ players, onUpdate }) {
         });
     };
 
+    const updatePlayerNote = (id, note) => {
+        // TODO: update database and do this on success
+        setEventPlayers(prev => prev.map(p => { // update player to next status
+            if (p.id === id) {
+                return {
+                    ...p,
+                    note: note
+                };
+            } else {
+                return p;
+            }
+        }));
+    };
+
     const getRow = (player, i) => {
         const active = isPlayerInEvent(player.id);
         const playerInEvent = getPlayerInEvent(player.id);
@@ -136,7 +151,7 @@ export default function EventPlayers({ players, onUpdate }) {
                     <Col sm={4} onClick={() => console.log(playerInEvent)}>
                         <p className="vertical-center">{player.name.first + ' ' + player.name.last}</p>
                     </Col>
-                    <Col>
+                    <Col sm={5}>
                         <ButtonGroup>
                             {active ?
                                 <Button variant="primary" className="custom-button-group inactive" onClick={() => updatePlayerStatus(player.id)}>{playerInEvent.status}</Button> :
@@ -157,13 +172,19 @@ export default function EventPlayers({ players, onUpdate }) {
                                 </ToggleButton>
 
                                 <Form.Select aria-label="Team Select" className="custom-button-group">
-                                    <option>&#60;Team&#62;</option>
+                                    {/* <option>&#60;Team&#62;</option> */}
+                                    <option>Team</option>
                                     <option value="1">One</option>
                                     <option value="2">Two</option>
                                     <option value="3">Three</option>
                                 </Form.Select>
                             </>}
                         </ButtonGroup>
+                    </Col>
+                    <Col sm={1}>
+                        {active && 
+                            <input type="text" size="10" className="player-note-input custom-button-group" placeholder="Note" value={('note' in playerInEvent) ? playerInEvent.note : ''} onChange={e => updatePlayerNote(player.id, e.target.value)} />
+                        }
                     </Col>
                 </Row>
             </div>
@@ -176,7 +197,7 @@ export default function EventPlayers({ players, onUpdate }) {
                 <Spinner className="center" animation="border" />
             </div> :
             <div className="list-item sm search-item">
-                <input placeholder="Search" value={searchTerm} onChange={handleChangeSearchTerm} />
+                <input placeholder="Search..." value={searchTerm} onChange={handleChangeSearchTerm} />
             </div>}
             {filteredPlayers.sort(comparePlayersByName).map(getRow)}
         </div>
