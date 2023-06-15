@@ -2,11 +2,13 @@
 
 Events
 - Players section
-    - Add more buttons for the various properties of a player
-        - Togglethrough: <>/?/In/Out, Paid, Team, Note
+    - Player properties (status, paid, team, etc.)
+        - Add Note textbox
         - Fix horizontal spacing
-            - done -> try a grouped/multi button like on the Player Form
     - Make Buttons update database
+- Event Details section
+    - under details, add a collapsible folder for each team (shows team when opened)
+    - add an input field that adds a new team: text box with + button
 - Events section
     - Add more search filters to EventTool
 
