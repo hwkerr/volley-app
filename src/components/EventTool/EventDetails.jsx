@@ -1,25 +1,57 @@
-import { useState } from 'react';
-import moment from 'moment';
+import { useState, useEffect } from 'react';
 import { Form, Button, Spinner, Row, Col } from 'react-bootstrap';
 import EventForm from "./EventFormFields";
 import EventPlayers from './EventPlayers';
 import { NEW_EVENT } from './EventTool';
+import EventTeams from './EventTeams';
 
-const TODAY = moment().format('YYYY-MM-DD');
+import { deleteFromDatabase, getFromDatabase, saveToDatabase } from './eventsDB';
 
-export default function EventDetails({ event, onCancel, onSave, onDelete }) {
-    const [editMode, setEditMode] = useState(event === NEW_EVENT);
+export default function EventDetails({ eventId, onCancel, onSave, onDelete }) {
+    const [editMode, setEditMode] = useState(false);
+
+    const [originalEvent, setOriginalEvent] = useState({});
+    const [event, setEvent] = useState({});
+    const [teamNames, setTeamNames] = useState([]);
+    const [newTeamNameInput, setNewTeamNameInput] = useState('');
+
+    const [loaded, setLoaded] = useState(false); // page loaded
+    const [saveLoading, setSaveLoading] = useState(false); // in saving process
+    const [deleteLoading, setDeleteLoading] = useState(false); // in deleting process
+
+
+    useEffect(() => {
+        if (eventId === NEW_EVENT.id)
+            loadEmptyEvent();
+        else
+            loadEvent(eventId);
+    }, [eventId]);
+
+    const loadEvent = (id) => {
+        if (loaded) setLoaded(false);
+        getFromDatabase(id)
+        .then(res => {
+            const loadedEvent = res.data;
+            console.log('loadedEvent', loadedEvent);
+            setEvent(loadedEvent);
+            setOriginalEvent(loadedEvent);
+            setTeamNames([...new Set(loadedEvent.players.map(p => p.team))])
+            setEditMode(loadedEvent === NEW_EVENT);
+            setLoaded(true);
+        }).catch(err => {
+            console.log(err);
+            setLoaded(true);
+        });
+    };
+
+    const loadEmptyEvent = () => {
+        if (loaded) setLoaded(false);
+        setEvent(NEW_EVENT);
+        setOriginalEvent(NEW_EVENT);
+        setEditMode(true);
+        setLoaded(true);
+    };
     
-    const [name, setName] = useState(event.name || '');
-    const [date, setDate] = useState(event.date || TODAY);
-    const [format, setFormat] = useState(event.format || '');
-    const [host, setHost] = useState(event.host || '');
-    const [location, setLocation] = useState(event.location || '');
-    const [notes, setNotes] = useState(event.notes || '');
-
-    const [saveLoading, setSaveLoading] = useState(false);
-    const [deleteLoading, setDeleteLoading] = useState(false);
-
     const handleEditButtonClicked = e => {
         e.preventDefault();
         setEditMode(true);
@@ -37,109 +69,178 @@ export default function EventDetails({ event, onCancel, onSave, onDelete }) {
 
     const handleSaveButtonClicked = e => {
         e.preventDefault();
-        const newEvent = makeEventFromForm();
-        if (onSave) {
-            setSaveLoading(true);
-            onSave(newEvent)
-            .finally(() => {
-                setSaveLoading(false);
-                setEditMode(false);
-            });
-        }
+        const newEvent = {
+            ...event,
+            id: (event.id === NEW_EVENT.id ? event.date : event.id)
+        };
+        setSaveLoading(true);
+        EventKit.save(newEvent)
+        .finally(() => {
+            setSaveLoading(false);
+            setEditMode(false);
+        });
     };
 
     const handleDeleteButtonClicked = e => {
         e.preventDefault();
-        if (onDelete) {
-            setDeleteLoading(true);
-            onDelete(event)
-            .finally(() => setDeleteLoading(false));
-        }
-    };
-
-    const makeEventFromForm = () => {
-        let id = (event.id === NEW_EVENT.id ?
-            date :
-            event.id
-        );
-
-        const e = {
-            id,
-            name,
-            date,
-            format,
-            host,
-            location,
-            notes: notes.trim()
-        };
-
-        return e;
+        setDeleteLoading(true);
+        EventKit.delete(event)
+        .finally(() => setDeleteLoading(false));
     };
 
     const resetEvent = () => {
-        setName(event.name);
-        setDate(event.date);
-        setFormat(event.format);
-        setHost(event.host);
-        setLocation(event.location);
-        setNotes(event.notes);
+        setEvent(originalEvent);
+    };
+
+    const EventKit = {
+        save: async event => {
+            console.log("Save event", event.id, event.name);
+            try {
+                const res = await saveToDatabase(event);
+                console.log(res);
+                if (onSave) onSave(event);
+                return true;
+            } catch (err) {
+                console.error("Error:", err);
+                alert("Failed to save event to database. Check console for logs");
+                return false;
+            }
+        },
+        delete: async event => {
+            if (!window.confirm(`Are you sure you would like to delete the event: ${event.name} ${event.name}?`)) {
+                alert("Cancelled delete");
+                return false;
+            };
+            console.log("Remove event", event.id);
+            try {
+                const res = await deleteFromDatabase(event.id); // database
+                console.log(res);
+                if (onDelete) onDelete(event);
+                return true;
+            } catch (err) {
+                console.error("Error:", err);
+                alert("Failed to delete event from database. Check console for logs");
+                return false;
+            }
+        }
+    };
+
+    // const EventPlayerKit = {
+    //     updateStatus: (id, status) => {
+    //         const playerStatus = getPlayerInEvent(id).status;
+    //         const myNextStatus = nextStatus[playerStatus];
+    //         // TODO: update database and do this on success
+    //         if (myNextStatus === '<>') {
+    //             setEventPlayers(prev => prev.filter(p => p.id !== id)); // remove player
+    //         } else {
+    //             setEventPlayers(prev => prev.map(p => { // update player to next status
+    //                 if (p.id === id) {
+    //                     return {
+    //                         ...p,
+    //                         status: nextStatus[playerStatus]
+    //                     };
+    //                 } else {
+    //                     return p;
+    //                 }
+    //             }));
+    //         }
+    //     }
+    // };
+
+    const getTeams = () => {
+        const teams = {};
+        console.log('Event', event);
+        event.players.forEach(player => {
+            if (player.team in teams) {
+                teams[player.team].push(player.id);
+            } else {
+                teams[player.team] = [player.id];
+            }
+        });
+        return teams;
+    };
+
+    const handleAddTeam = () => {
+        setTeamNames(prev => (
+            [
+                ...prev,
+                newTeamNameInput
+            ]
+        ));
+        setNewTeamNameInput('');
     };
 
     const isDisabled = () => (!editMode || saveLoading || deleteLoading);
 
+    const setEventProp = (prop, value) => {
+        setEvent(prev => ({
+            ...prev,
+            [prop]: value
+        }));
+    };
+
     return (
         <div className="pt-3 pb-3">
-            <Row>
-                <Col>
-                    <fieldset disabled={isDisabled()}>
-                        <Form id="react-bootstrap-forms-event">
-                            <EventForm.Multipurpose.Name value={name} onChange={e => setName(e.target.value)} disabled={isDisabled()} />
-                            <EventForm.Multipurpose.Date value={date} onChange={e => setDate(e.target.value)} disabled={isDisabled()} />
-                            <EventForm.Multipurpose.Format value={format} onChange={e => setFormat(e.target.value)} disabled={isDisabled()} />
-                            <EventForm.Multipurpose.Host value={host} onChange={e => setHost(e.target.value)} disabled={isDisabled()} />
-                            <EventForm.Multipurpose.Location value={location} onChange={e => setLocation(e.target.value)} disabled={isDisabled()} />
-                            <EventForm.Multipurpose.Notes value={notes} onChange={e => setNotes(e.target.value)} disabled={isDisabled()} />
-                        </Form>
-                    </fieldset>
-                </Col>
-                <Col>
-                    <EventPlayers players={event.players} />
-                </Col>
-            </Row>
-            <hr />
-            {editMode ?
-            <div className="d-grid gap-2">
-                <div className="btn-group">
-                    <Button variant="success" size="lg" type="button" onClick={handleSaveButtonClicked}>
-                        {saveLoading ?
-                            <Spinner 
-                                as="span"
-                                animation="border"
-                                size="sm"
-                                role="status"
-                                aria-hidden="true"
-                            /> : (event === NEW_EVENT ? 'Create Event' : 'Save')}
-                    </Button>
-                    <Button variant="secondary" size="lg" type="button" onClick={handleCancelEditButtonClicked}>Cancel</Button>
-                    {event !== NEW_EVENT &&
-                    <Button variant="danger" size="lg" type="button" onClick={handleDeleteButtonClicked}>
-                        {deleteLoading ?
-                            <Spinner
-                                as="span"
-                                animation="border"
-                                size="sm"
-                                role="status"
-                                aria-hidden="true"
-                            /> : 'Delete'}
-                    </Button>}
-                </div>
-            </div> :
-            <div className="d-grid gap-2">
-                <div className="btn-group">
-                    <Button variant="warning" size="lg" type="button" onClick={handleEditButtonClicked}>Edit</Button>
-                    <Button variant="secondary" size="lg" type="button" onClick={onCancel}>Back</Button>
-                </div>
-            </div>}
+            {loaded ? <>
+                <Row>
+                    <Col>
+                        <fieldset disabled={isDisabled()}>
+                            <Form id="react-bootstrap-forms-event">
+                                <EventForm.Multipurpose.Name value={event.name} onChange={e => setEventProp('name', e.target.value)} disabled={isDisabled()} />
+                                <EventForm.Multipurpose.Date value={event.date} onChange={e => setEventProp('date', e.target.value)} disabled={isDisabled()} />
+                                <EventForm.Multipurpose.Format value={event.format} onChange={e => setEventProp('format', e.target.value)} disabled={isDisabled()} />
+                                <EventForm.Multipurpose.Host value={event.host} onChange={e => setEventProp('host', e.target.value)} disabled={isDisabled()} />
+                                <EventForm.Multipurpose.Location value={event.location} onChange={e => setEventProp('location', e.target.value)} disabled={isDisabled()} />
+                                <EventForm.Multipurpose.Notes value={event.notes} onChange={e => setEventProp('notes', e.target.value.trim())} disabled={isDisabled()} />
+                            </Form>
+                        </fieldset>
+                        <div>
+                            <label>New Team Name:</label>
+                            <input value={newTeamNameInput} onChange={e => setNewTeamNameInput(e.target.value)} />
+                            <button onClick={handleAddTeam}>Add</button>
+                        </div>
+                        <EventTeams teams={getTeams()} />
+                    </Col>
+                    <Col>
+                        <EventPlayers players={event.players} teamNames={teamNames} />
+                    </Col>
+                </Row>
+                <hr />
+                {editMode ?
+                <div className="d-grid gap-2">
+                    <div className="btn-group">
+                        <Button variant="success" size="lg" type="button" onClick={handleSaveButtonClicked}>
+                            {saveLoading ?
+                                <Spinner 
+                                    as="span"
+                                    animation="border"
+                                    size="sm"
+                                    role="status"
+                                    aria-hidden="true"
+                                /> : (event === NEW_EVENT ? 'Create Event' : 'Save')}
+                        </Button>
+                        <Button variant="secondary" size="lg" type="button" onClick={handleCancelEditButtonClicked}>Cancel</Button>
+                        {event !== NEW_EVENT &&
+                        <Button variant="danger" size="lg" type="button" onClick={handleDeleteButtonClicked}>
+                            {deleteLoading ?
+                                <Spinner
+                                    as="span"
+                                    animation="border"
+                                    size="sm"
+                                    role="status"
+                                    aria-hidden="true"
+                                /> : 'Delete'}
+                        </Button>}
+                    </div>
+                </div> :
+                <div className="d-grid gap-2">
+                    <div className="btn-group">
+                        <Button variant="warning" size="lg" type="button" onClick={handleEditButtonClicked}>Edit</Button>
+                        <Button variant="secondary" size="lg" type="button" onClick={onCancel}>Back</Button>
+                    </div>
+                </div>}
+            </> :
+            <Spinner className="center" animation="border" />}
         </div>
     );
 }

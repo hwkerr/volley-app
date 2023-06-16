@@ -3,14 +3,14 @@
 Events
 - Players section
     - Player properties (status, paid, team, etc.)
-        - Add Note textbox
         - Fix horizontal spacing
-    - Make Buttons update database
+    - Make Buttons update database (access database via EventDetails)
 - Event Details section
     - under details, add a collapsible folder for each team (shows team when opened)
     - add an input field that adds a new team: text box with + button
 - Events section
     - Add more search filters to EventTool
+    - EventTool should only pull id and name from database
 
 Players
 - When searching players, you can also search by Notes (added Name, Nicknames, Gender, Role, Contact Type, Affiliations)

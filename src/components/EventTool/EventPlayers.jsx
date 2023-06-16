@@ -5,7 +5,7 @@ import { Button, Col, Row, Spinner, Form, ButtonGroup, ToggleButton, DropdownBut
 import { BASE_URL_PLAYERS } from "../PeopleTool/PeopleTool";
 import { getFilteredPlayersList } from "../../search";
 
-export default function EventPlayers({ players, onUpdate }) {
+export default function EventPlayers({ players, teamNames, onUpdate }) {
     const [eventPlayers, setEventPlayers] = useState(players || []);
     const [allPlayers, setAllPlayers] = useState([]);
     const [filteredPlayers, setFilteredPlayers] = useState([]);
@@ -173,10 +173,10 @@ export default function EventPlayers({ players, onUpdate }) {
 
                                 <Form.Select aria-label="Team Select" className="custom-button-group">
                                     {/* <option>&#60;Team&#62;</option> */}
-                                    <option>Team</option>
-                                    <option value="1">One</option>
-                                    <option value="2">Two</option>
-                                    <option value="3">Three</option>
+                                    <option>Team...</option>
+                                    {teamNames.map(teamName => (
+                                        <option>{teamName}</option>
+                                    ))}
                                 </Form.Select>
                             </>}
                         </ButtonGroup>
