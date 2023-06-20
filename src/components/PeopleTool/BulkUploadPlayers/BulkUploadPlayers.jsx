@@ -4,8 +4,9 @@ import { newPlayerObj } from "../players";
 import { SKILL_TYPES } from "../PlayerFormFields";
 import axios from "axios";
 
-import { BASE_URL_PLAYERS } from "../PeopleTool";
 import { Button } from "react-bootstrap";
+import { getPlayerFromDatabase } from "../playersDB";
+const BASE_URL_PLAYERS = `https://9v2zi6tk3k.execute-api.us-east-2.amazonaws.com/dev/players`;
 
 const DISABLED = true;
 
@@ -14,7 +15,7 @@ export default function BulkUploadPlayers({}) {
     const [players, setPlayers] = useState([]);
     
     useEffect(() => {
-        getFromDatabase("all")
+        getPlayerFromDatabase("all")
         .then(res => {
             console.log(`Found ${res.data.Count} item(s) in database`);
             const playerMap = {};
@@ -24,11 +25,6 @@ export default function BulkUploadPlayers({}) {
             console.error(err);
         });
     }, []);
-
-    const getFromDatabase = async (id) => {
-        const url = BASE_URL_PLAYERS + "/" + id;
-        return await axios.get(url);
-    };
     
     const handleFileSelected = event => {
         const file = Array.from(event.target.files)[0];

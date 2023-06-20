@@ -3,7 +3,7 @@ import moment from 'moment';
 import { Spinner } from 'react-bootstrap';
 import { getFilteredEventsList } from '../../search';
 import EventDetails from './EventDetails';
-import { getFromDatabase } from './eventsDB';
+import { getEventFromDatabase } from './eventsDB';
 
 const TODAY = moment().format('YYYY-MM-DD');
 export const NEW_EVENT = {
@@ -38,7 +38,7 @@ export default function EventTool() {
     const loadItems = () => {
         if (loaded) setLoaded(false);
         // TODO: only need to get Event name and id
-        getFromDatabase("all")
+        getEventFromDatabase("all")
         .then(res => {
             console.log(`Found ${res.data.Count} item(s) in database`);
             setEvents(res.data.Items);

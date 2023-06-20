@@ -4,7 +4,7 @@ import PlayerDetails from './PlayerDetails';
 import PlayerSearch from './PlayerSearch';
 import { newPlayerObj } from './players';
 
-export const BASE_URL_PLAYERS = `https://9v2zi6tk3k.execute-api.us-east-2.amazonaws.com/dev/players`;
+import { getPlayerFromDatabase, savePlayerToDatabase, deletePlayerFromDatabase } from './playersDB';
 const ADDED_DELAY = 100;
 
 export default function PeopleTool() {
@@ -13,7 +13,7 @@ export default function PeopleTool() {
     const [loadedDetails, setLoadedDetails] = useState(false);
 
     useEffect(() => {
-        getFromDatabase("all")
+        getPlayerFromDatabase("all")
         .then(res => {
             console.log(`Found ${res.data.Count} item(s) in database`);
             setPlayers(res.data.Items);
@@ -32,26 +32,11 @@ export default function PeopleTool() {
         }
     };
 
-    const getFromDatabase = async (id) => {
-        const url = BASE_URL_PLAYERS + "/" + id;
-        return await axios.get(url);
-    };
-
-    const saveToDatabase = async (player) => {
-        const url = BASE_URL_PLAYERS;
-        return await axios.post(url, player);
-    };
-
-    const deleteFromDatabase = async (id) => {
-        const url = BASE_URL_PLAYERS + "/" + id;
-        return await axios.delete(url);
-    }
-
     const PlayerKit = {
         save: async player => {
             console.log("Save player", player.id, player.name);
             try {
-                const res = await saveToDatabase(player);
+                const res = await savePlayerToDatabase(player);
                 console.log(res);
                 addOrUpdatePlayer(player); // local
                 setSelectedPlayer(player);
@@ -73,7 +58,7 @@ export default function PeopleTool() {
             };
             console.log("Remove player", player.id);
             try {
-                const res = await deleteFromDatabase(player.id); // database
+                const res = await deletePlayerFromDatabase(player.id); // database
                 console.log(res);
                 removePlayer(player); // local
                 setSelectedPlayer({});

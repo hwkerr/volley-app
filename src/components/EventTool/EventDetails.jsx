@@ -5,20 +5,24 @@ import EventPlayers from './EventPlayers';
 import { NEW_EVENT } from './EventTool';
 import EventTeams from './EventTeams';
 
-import { deleteFromDatabase, getFromDatabase, saveToDatabase } from './eventsDB';
+import { getPlayerFromDatabase } from '../PeopleTool/playersDB';
+import { deleteEventFromDatabase, getEventFromDatabase, saveEventToDatabase } from './eventsDB';
 
 export default function EventDetails({ eventId, onCancel, onSave, onDelete }) {
     const [editMode, setEditMode] = useState(false);
 
     const [originalEvent, setOriginalEvent] = useState({});
     const [event, setEvent] = useState({});
+    const [allPlayers, setAllPlayers] = useState([]);
     const [teamNames, setTeamNames] = useState([]);
     const [newTeamNameInput, setNewTeamNameInput] = useState('');
 
     const [loaded, setLoaded] = useState(false); // page loaded
+    const [playersLoaded, setPlayersLoaded] = useState(false);
     const [saveLoading, setSaveLoading] = useState(false); // in saving process
     const [deleteLoading, setDeleteLoading] = useState(false); // in deleting process
 
+    const getPlayerObject = id => allPlayers.find(p => p.id === id);
 
     useEffect(() => {
         if (eventId === NEW_EVENT.id)
@@ -29,7 +33,7 @@ export default function EventDetails({ eventId, onCancel, onSave, onDelete }) {
 
     const loadEvent = (id) => {
         if (loaded) setLoaded(false);
-        getFromDatabase(id)
+        getEventFromDatabase(id)
         .then(res => {
             const loadedEvent = res.data;
             console.log('Loaded Event: ', loadedEvent);
@@ -51,6 +55,18 @@ export default function EventDetails({ eventId, onCancel, onSave, onDelete }) {
         setEditMode(true);
         setLoaded(true);
     };
+
+    useEffect(() => {
+        if (playersLoaded) setPlayersLoaded(false);
+        getPlayerFromDatabase("all")
+        .then(res => {
+            console.log(`Found ${res.data.Count} player(s) in database`);
+            setAllPlayers(res.data.Items);
+            setPlayersLoaded(true);
+        }).catch(err => {
+            console.error("Error while getting player list from database - err:", err);
+        });
+    }, []);
     
     const handleEditButtonClicked = e => {
         e.preventDefault();
@@ -96,7 +112,7 @@ export default function EventDetails({ eventId, onCancel, onSave, onDelete }) {
         save: async event => {
             console.log("Saving event:", event.id, event.name);
             try {
-                const res = await saveToDatabase(event);
+                const res = await saveEventToDatabase(event);
                 console.log(res);
                 if (onSave) onSave(event);
                 return true;
@@ -113,7 +129,7 @@ export default function EventDetails({ eventId, onCancel, onSave, onDelete }) {
             };
             console.log("Removing event", event.id);
             try {
-                const res = await deleteFromDatabase(event.id); // database
+                const res = await deleteEventFromDatabase(event.id); // database
                 console.log(res);
                 if (onDelete) onDelete(event);
                 return true;
@@ -150,10 +166,11 @@ export default function EventDetails({ eventId, onCancel, onSave, onDelete }) {
     const getTeams = () => {
         const teams = {};
         event.players.forEach(player => {
+            const playerInfo = getPlayerObject(player.id);
             if (player.team in teams) {
-                teams[player.team].push(player.id);
+                teams[player.team].push(playerInfo);
             } else {
-                teams[player.team] = [player.id];
+                teams[player.team] = [playerInfo];
             }
         });
         return teams;
@@ -214,7 +231,10 @@ export default function EventDetails({ eventId, onCancel, onSave, onDelete }) {
                             <input value={newTeamNameInput} onChange={e => setNewTeamNameInput(e.target.value)} />
                             <button onClick={handleAddTeam}>Add</button>
                         </div>
-                        <EventTeams teams={getTeams()} />
+                        {playersLoaded ?
+                            <EventTeams teams={getTeams()} /> :
+                            <Spinner className="center" animation="border" />
+                        }
                     </Col>
                     <Col>
                         <EventPlayers players={event.players} teamNames={teamNames} onChangeTeam={setPlayerTeam} />

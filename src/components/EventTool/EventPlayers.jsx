@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import axios from 'axios';
 import { Button, Col, Row, Spinner, Form, ButtonGroup, ToggleButton, DropdownButton, Dropdown } from "react-bootstrap";
 
-import { BASE_URL_PLAYERS } from "../PeopleTool/PeopleTool";
+import { getPlayerFromDatabase } from "../PeopleTool/playersDB";
 import { getFilteredPlayersList } from "../../search";
 
 export default function EventPlayers({ players, teamNames, onChangeTeam, onUpdate }) {
@@ -56,11 +55,6 @@ export default function EventPlayers({ players, teamNames, onChangeTeam, onUpdat
     const handleChangeSearchTerm = e => {
         setSearchTerm(e.target.value);
     }
-
-    const getPlayerFromDatabase = async (id) => {
-        const url = BASE_URL_PLAYERS + "/" + id;
-        return await axios.get(url);
-    };
 
     const setPlayerPaid = (id, paid) => {
         // TODO: update database and do this on success

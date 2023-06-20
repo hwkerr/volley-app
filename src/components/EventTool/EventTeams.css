@@ -1,0 +1,49 @@
+.teams-accordion .complex, .teams-accordion .simple {
+    transition: font-size 0.5s;
+}
+
+.teams-accordion .card {
+    transition: all 0.5s;
+}
+
+
+
+.teams-accordion .inactive {
+    font-size: 1rem;
+}
+
+.teams-accordion .inactive .team-name {
+    font-weight: 700;
+}
+
+.teams-accordion .inactive .players {
+    
+}
+
+.teams-accordion .active {
+    font-size: 1.5rem;
+}
+
+.teams-accordion .active .team-name {
+    font-weight: 700;
+}
+
+.teams-accordion .active .players {
+    
+}
+
+/* .teams-accordion .active .simple {
+    opacity: 0;
+}
+
+.teams-accordion .active .complex {
+    opacity: 1;
+}
+
+.teams-accordion .inactive .simple {
+    opacity: 1;
+}
+
+.teams-accordion .inactive .complex {
+    opacity: 0;
+} */
