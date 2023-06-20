@@ -40,7 +40,7 @@ export default function EventPlayers({ players, teamNames, onChangeTeam, onUpdat
             setAllPlayers(res.data.Items);
             setLoaded(true);
         }).catch(err => {
-            console.log(err);
+            console.error("Error while getting player list from database - err:", err);
         });
     }, []);
 
@@ -152,7 +152,7 @@ export default function EventPlayers({ players, teamNames, onChangeTeam, onUpdat
         return (
             <div key={i} className="list-item sm">
                 <Row>
-                    <Col sm={4} onClick={() => console.log(playerInEvent)}>
+                    <Col sm={4} onClick={() => playerInEvent && console.log(playerInEvent)}>
                         <p className="vertical-center">{player.name.first + ' ' + player.name.last}</p>
                     </Col>
                     <Col sm={8}>

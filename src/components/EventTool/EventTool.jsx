@@ -37,13 +37,14 @@ export default function EventTool() {
 
     const loadItems = () => {
         if (loaded) setLoaded(false);
+        // TODO: only need to get Event name and id
         getFromDatabase("all")
         .then(res => {
             console.log(`Found ${res.data.Count} item(s) in database`);
             setEvents(res.data.Items);
             setLoaded(true);
         }).catch(err => {
-            console.log(err);
+            console.log("Error while getting event list from database - err:", err);
             setLoaded(true);
         });
     };
@@ -116,7 +117,7 @@ export default function EventTool() {
         <div className="EventTool App-body">
             {!selection ? (
                 <>
-                    <h3 className="container" onClick={e => console.log(selection)}>Events ({resultsCount})</h3>
+                    <h3 className="container">Events ({resultsCount})</h3>
                     <div className="container scroll">
                         {!loaded ?
                         <div className={`list-item only-item`}>

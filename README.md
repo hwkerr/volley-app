@@ -10,7 +10,7 @@ Events
     - add styles for an input field that adds a new team: text box with + button
 - Events section
     - Add more search filters to EventTool
-    - EventTool should only pull id and name from database
+    - EventTool should only pull id and name from database (EventTool:loadItems)
 
 Players
 - When searching players, you can also search by Notes (added Name, Nicknames, Gender, Role, Contact Type, Affiliations)

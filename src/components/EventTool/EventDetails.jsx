@@ -32,14 +32,14 @@ export default function EventDetails({ eventId, onCancel, onSave, onDelete }) {
         getFromDatabase(id)
         .then(res => {
             const loadedEvent = res.data;
-            console.log('loadedEvent', loadedEvent);
+            console.log('Loaded Event: ', loadedEvent);
             setEvent(loadedEvent);
             setOriginalEvent(loadedEvent);
             setTeamNames([...new Set(loadedEvent.players.map(p => p.team))])
             setEditMode(loadedEvent === NEW_EVENT);
             setLoaded(true);
         }).catch(err => {
-            console.log(err);
+            console.error("Error while loading event - err:", err);
             setLoaded(true);
         });
     };
@@ -94,14 +94,14 @@ export default function EventDetails({ eventId, onCancel, onSave, onDelete }) {
 
     const EventKit = {
         save: async event => {
-            console.log("Save event", event.id, event.name);
+            console.log("Saving event:", event.id, event.name);
             try {
                 const res = await saveToDatabase(event);
                 console.log(res);
                 if (onSave) onSave(event);
                 return true;
             } catch (err) {
-                console.error("Error:", err);
+                console.error("Error while saving event - err:", err);
                 alert("Failed to save event to database. Check console for logs");
                 return false;
             }
@@ -111,14 +111,14 @@ export default function EventDetails({ eventId, onCancel, onSave, onDelete }) {
                 alert("Cancelled delete");
                 return false;
             };
-            console.log("Remove event", event.id);
+            console.log("Removing event", event.id);
             try {
                 const res = await deleteFromDatabase(event.id); // database
                 console.log(res);
                 if (onDelete) onDelete(event);
                 return true;
             } catch (err) {
-                console.error("Error:", err);
+                console.error("Error while removing event - err:", err);
                 alert("Failed to delete event from database. Check console for logs");
                 return false;
             }
@@ -149,7 +149,6 @@ export default function EventDetails({ eventId, onCancel, onSave, onDelete }) {
 
     const getTeams = () => {
         const teams = {};
-        console.log('Event', event);
         event.players.forEach(player => {
             if (player.team in teams) {
                 teams[player.team].push(player.id);
