@@ -157,14 +157,19 @@ label, body p,h1,h2,h3,h4,h5,h6 {
   border-bottom-right-radius: 0;
   border: none;
   background-color: inherit;
-  margin: 0 10px;
+  margin: 0 10px 0 0;
+}
+
+.list-item .custom-button-group.combo-box {
+  min-width: 6rem;
 }
 
 .list-item .player-note-input.custom-button-group,
 .list-item .player-note-input.custom-button-group:hover {
   background-color: white;
   color: black;
-  height: 100%;
+  height: inherit;
+  margin: 0 220px 0 0;
 }
 
 .list-item .custom-button-group:hover {

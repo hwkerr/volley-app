@@ -5,7 +5,7 @@ import { Button, Col, Row, Spinner, Form, ButtonGroup, ToggleButton, DropdownBut
 import { BASE_URL_PLAYERS } from "../PeopleTool/PeopleTool";
 import { getFilteredPlayersList } from "../../search";
 
-export default function EventPlayers({ players, teamNames, onUpdate }) {
+export default function EventPlayers({ players, teamNames, onChangeTeam, onUpdate }) {
     const [eventPlayers, setEventPlayers] = useState(players || []);
     const [allPlayers, setAllPlayers] = useState([]);
     const [filteredPlayers, setFilteredPlayers] = useState([]);
@@ -43,6 +43,10 @@ export default function EventPlayers({ players, teamNames, onUpdate }) {
             console.log(err);
         });
     }, []);
+
+    useEffect(() => {
+        setEventPlayers(players);
+    }, [players]);
 
     useEffect(() => {
         const newFilteredPlayersList = getFilteredPlayersList(allPlayers, searchTerm);
@@ -151,7 +155,7 @@ export default function EventPlayers({ players, teamNames, onUpdate }) {
                     <Col sm={4} onClick={() => console.log(playerInEvent)}>
                         <p className="vertical-center">{player.name.first + ' ' + player.name.last}</p>
                     </Col>
-                    <Col sm={5}>
+                    <Col sm={8}>
                         <ButtonGroup>
                             {active ?
                                 <Button variant="primary" className="custom-button-group inactive" onClick={() => updatePlayerStatus(player.id)}>{playerInEvent.status}</Button> :
@@ -170,21 +174,16 @@ export default function EventPlayers({ players, teamNames, onUpdate }) {
                                 >
                                     {playerInEvent.paid ? 'Paid' : 'Unpaid'}
                                 </ToggleButton>
-
-                                <Form.Select aria-label="Team Select" className="custom-button-group">
+                                <Form.Select aria-label="Team Select" className="custom-button-group combo-box" value={playerInEvent.team} onChange={e => onChangeTeam(player.id, e.target.value)}>
                                     {/* <option>&#60;Team&#62;</option> */}
                                     <option>Team...</option>
                                     {teamNames.map(teamName => (
-                                        <option>{teamName}</option>
+                                        <option key={teamName}>{teamName}</option>
                                     ))}
                                 </Form.Select>
+                                <input type="text" className="player-note-input custom-button-group" placeholder="Note" value={('note' in playerInEvent) ? playerInEvent.note : ''} onChange={e => updatePlayerNote(player.id, e.target.value)} />
                             </>}
                         </ButtonGroup>
-                    </Col>
-                    <Col sm={1}>
-                        {active && 
-                            <input type="text" size="10" className="player-note-input custom-button-group" placeholder="Note" value={('note' in playerInEvent) ? playerInEvent.note : ''} onChange={e => updatePlayerNote(player.id, e.target.value)} />
-                        }
                     </Col>
                 </Row>
             </div>

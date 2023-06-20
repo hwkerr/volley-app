@@ -3,7 +3,7 @@ export default function EventTeams({teams}) {
         <div>
             
             {Object.keys(teams).map(team => (
-                <p>{team}: {teams[team].join(', ')}</p>
+                <p key={team}>{team}: {teams[team].join(', ')}</p>
             ))}
         </div>
     );

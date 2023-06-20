@@ -170,6 +170,22 @@ export default function EventDetails({ eventId, onCancel, onSave, onDelete }) {
         setNewTeamNameInput('');
     };
 
+    const setPlayerTeam = (playerId, team) => {
+        setEvent(prev => {
+            return {
+                ...prev,
+                players: prev.players.map(p => {
+                    if (p.id === playerId)
+                        return {
+                            ...p,
+                            team: team
+                        };
+                    else return p;
+                })
+            };
+        });
+    };
+
     const isDisabled = () => (!editMode || saveLoading || deleteLoading);
 
     const setEventProp = (prop, value) => {
@@ -202,7 +218,7 @@ export default function EventDetails({ eventId, onCancel, onSave, onDelete }) {
                         <EventTeams teams={getTeams()} />
                     </Col>
                     <Col>
-                        <EventPlayers players={event.players} teamNames={teamNames} />
+                        <EventPlayers players={event.players} teamNames={teamNames} onChangeTeam={setPlayerTeam} />
                     </Col>
                 </Row>
                 <hr />

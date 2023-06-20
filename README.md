@@ -2,12 +2,12 @@
 
 Events
 - Players section
-    - Player properties (status, paid, team, etc.)
-        - Fix horizontal spacing
     - Make Buttons update database (access database via EventDetails)
+        - OR add a save button to save all changes
+    - add search filters for event-specific properties (paid, status, team)
 - Event Details section
     - under details, add a collapsible folder for each team (shows team when opened)
-    - add an input field that adds a new team: text box with + button
+    - add styles for an input field that adds a new team: text box with + button
 - Events section
     - Add more search filters to EventTool
     - EventTool should only pull id and name from database
