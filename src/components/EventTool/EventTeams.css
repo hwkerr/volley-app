@@ -8,42 +8,42 @@
 
 
 
-.teams-accordion .inactive {
+.teams-accordion .lowlight {
     font-size: 1rem;
 }
 
-.teams-accordion .inactive .team-name {
+.teams-accordion .lowlight .team-name {
     font-weight: 700;
 }
 
-.teams-accordion .inactive .players {
+.teams-accordion .lowlight .players {
     
 }
 
-.teams-accordion .active {
+.teams-accordion .highlight {
     font-size: 1.5rem;
 }
 
-.teams-accordion .active .team-name {
+.teams-accordion .highlight .team-name {
     font-weight: 700;
 }
 
-.teams-accordion .active .players {
+.teams-accordion .highlight .players {
     
 }
 
-/* .teams-accordion .active .simple {
+/* .teams-accordion .highlight .simple {
     opacity: 0;
 }
 
-.teams-accordion .active .complex {
+.teams-accordion .highlight .complex {
     opacity: 1;
 }
 
-.teams-accordion .inactive .simple {
+.teams-accordion .lowlight .simple {
     opacity: 1;
 }
 
-.teams-accordion .inactive .complex {
+.teams-accordion .lowlight .complex {
     opacity: 0;
 } */

@@ -3,6 +3,20 @@ import { Button, Col, Row, Spinner, Form, ButtonGroup, ToggleButton, DropdownBut
 
 import { getPlayerFromDatabase } from "../PeopleTool/playersDB";
 import { getFilteredPlayersList } from "../../search";
+import { NO_TEAM } from "./eventsDB";
+
+export const STATUS = {
+    NONE: '<>',
+    ASKED: '?',
+    IN: 'In',
+    OUT: 'Out',
+    NEXT: {
+        'Out': '<>',
+        '<>': '?',
+        '?': 'In',
+        'In': 'Out'
+    }
+};
 
 export default function EventPlayers({ players, teamNames, onAddPlayer, onUpdatePlayer, onRemovePlayer }) {
     const [candidatePlayers, setCandidatePlayers] = useState([]); // all players in player database (not necessarily in event)
@@ -46,24 +60,13 @@ export default function EventPlayers({ players, teamNames, onAddPlayer, onUpdate
         const newFilteredPlayersList = getFilteredPlayersList(candidatePlayers, searchTerm);
         setFilteredPlayers(newFilteredPlayersList);
     }, [candidatePlayers, players, searchTerm]);
-
-    const STATUS_NONE = '<>',
-          STATUS_ASKED = '?',
-          STATUS_IN = 'In',
-          STATUS_OUT = 'Out';
-    const nextStatus = {
-        [STATUS_OUT]: STATUS_NONE,
-        [STATUS_NONE]: STATUS_ASKED,
-        [STATUS_ASKED]: STATUS_IN,
-        [STATUS_IN]: STATUS_OUT
-    };
     
     const updatePlayerStatus = id => {
         const playerStatus = getPlayerInEvent(id).status;
-        const myNextStatus = nextStatus[playerStatus];
-        if (myNextStatus === STATUS_NONE) {
+        const myNextStatus = STATUS.NEXT[playerStatus];
+        if (myNextStatus === STATUS.NONE) {
             onRemovePlayer(id);
-        } else if (myNextStatus === STATUS_OUT) {
+        } else if (myNextStatus === STATUS.OUT) {
             onUpdatePlayer(id, {
                 status: myNextStatus,
                 team: undefined
@@ -76,9 +79,9 @@ export default function EventPlayers({ players, teamNames, onAddPlayer, onUpdate
     const addPlayerToEvent = (id, status) => {
         const playerToAdd = {
             id,
-            status: status || STATUS_IN,
+            status: status || STATUS.IN,
             paid: false,
-            team: null,
+            team: NO_TEAM,
             note: ''
         };
         onAddPlayer(playerToAdd);
@@ -97,11 +100,11 @@ export default function EventPlayers({ players, teamNames, onAddPlayer, onUpdate
                         <ButtonGroup>
                             {active ?
                                 <Button variant="primary" className="custom-button-group inactive" onClick={() => updatePlayerStatus(player.id)}>{playerInEvent.status}</Button> :
-                                <Button variant="primary" className="custom-button-group inactive" onClick={() => addPlayerToEvent(player.id, STATUS_ASKED)}>{"+"}</Button>
+                                <Button variant="primary" className="custom-button-group inactive" onClick={() => addPlayerToEvent(player.id, STATUS.ASKED)}>{"+"}</Button>
                             }
 
                             {active && <>
-                                {playerInEvent.status === STATUS_IN && <ToggleButton
+                                {playerInEvent.status === STATUS.IN && <ToggleButton
                                     id={`toggle-check-${player.id}`}
                                     className="custom-button-group"
                                     type="checkbox"
@@ -112,7 +115,7 @@ export default function EventPlayers({ players, teamNames, onAddPlayer, onUpdate
                                 >
                                     {playerInEvent.paid ? 'Paid' : 'Unpaid'}
                                 </ToggleButton>}
-                                {playerInEvent.status === STATUS_IN && <Form.Select aria-label="Team Select"
+                                {playerInEvent.status === STATUS.IN && <Form.Select aria-label="Team Select"
                                     className="custom-button-group combo-box"
                                     value={playerInEvent.team || undefined}
                                     onChange={e => onUpdatePlayer(player.id, { team: e.target.value })}
@@ -123,7 +126,7 @@ export default function EventPlayers({ players, teamNames, onAddPlayer, onUpdate
                                         <option key={teamName}>{teamName}</option>
                                     ))}
                                 </Form.Select>}
-                                {playerInEvent.status === STATUS_IN && <input type="text"
+                                {playerInEvent.status === STATUS.IN && <input type="text"
                                     className="player-note-input custom-button-group"
                                     placeholder="Note"
                                     value={('note' in playerInEvent) ? playerInEvent.note : ''}

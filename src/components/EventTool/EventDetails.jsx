@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Form, Button, Spinner, Row, Col } from 'react-bootstrap';
 import EventForm from "./EventFormFields";
-import EventPlayers from './EventPlayers';
+import EventPlayers, { STATUS } from './EventPlayers';
 import { NEW_EVENT } from './EventTool';
 import EventTeams from './EventTeams';
 
@@ -163,9 +163,10 @@ export default function EventDetails({ eventId, onCancel, onSave, onDelete }) {
     //     }
     // };
 
-    const getTeams = () => {
+    const getTeamsMap = () => {
         const teams = {};
         event.players.forEach(player => {
+            if (player.status === STATUS.OUT) return;
             const playerInfo = getPlayerObject(player.id);
             if (player.team in teams) {
                 teams[player.team].push(playerInfo);
@@ -240,7 +241,7 @@ export default function EventDetails({ eventId, onCancel, onSave, onDelete }) {
                             <button onClick={handleAddTeam}>Add</button>
                         </div>
                         {playersLoaded ?
-                            <EventTeams teams={getTeams()} /> :
+                            <EventTeams teams={getTeamsMap()} /> :
                             <Spinner className="center" animation="border" />
                         }
                     </Col>
