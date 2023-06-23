@@ -29,8 +29,8 @@ export default function EventPlayers({ players, teamNames, onAddPlayer, onUpdate
     const isPlayerInEvent = id => ((players.find(p => p.id === id)) ? true : false);
     
     const comparePlayersByName = (a, b) => {
-        const aActive = isPlayerInEvent(a.id);
-        const bActive = isPlayerInEvent(b.id);
+        const aActive = isPlayerInEvent(a);
+        const bActive = isPlayerInEvent(b);
 
         if (aActive === bActive) {
             if (a.name.first && b.name.first) {
@@ -40,8 +40,24 @@ export default function EventPlayers({ players, teamNames, onAddPlayer, onUpdate
                 if (a.name.last < b.name.last) return -1;
                 else if (a.name.last > b.name.last) return 1;
             } else return 0;
-        } else if (aActive) return -1;
-        else if (bActive) return 1;
+        } else if (aActive && !bActive) {
+            return -1;
+        } else if (!aActive && bActive) {
+            return 1;
+        } else {
+            const aStatus = getPlayerInEvent(a.id).status;
+            const bStatus = getPlayerInEvent(b.id).status;
+            console.log(aStatus, bStatus);
+            const statusValue = status => {
+                return {
+                    [STATUS.IN]: 0,
+                    [STATUS.ASKED]: 1,
+                    [STATUS.NONE]: 2,
+                    [STATUS.OUT]: 3
+                }[status];
+            };
+            return statusValue(aStatus) - statusValue(bStatus);
+        }
     };
     
     useEffect(() => {
