@@ -4,7 +4,9 @@ Events
 - Players section
     - Make Buttons update database (access database via EventDetails)
         - OR add a save button to save all changes
+        - AND/OR trigger save functionality on a delay after user is done editing
     - add search filters for event-specific properties (paid, status, team)
+    - after updating a player, highlight its row (and unhighlight any others)
 - Event Details section
     - under details, add a collapsible folder for each team (shows team when opened)
     - add styles for an input field that adds a new team: text box with + button

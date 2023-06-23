@@ -4,16 +4,15 @@ import { Button, Col, Row, Spinner, Form, ButtonGroup, ToggleButton, DropdownBut
 import { getPlayerFromDatabase } from "../PeopleTool/playersDB";
 import { getFilteredPlayersList } from "../../search";
 
-export default function EventPlayers({ players, teamNames, onChangeTeam, onUpdate }) {
-    const [eventPlayers, setEventPlayers] = useState(players || []);
-    const [allPlayers, setAllPlayers] = useState([]);
+export default function EventPlayers({ players, teamNames, onAddPlayer, onUpdatePlayer, onRemovePlayer }) {
+    const [candidatePlayers, setCandidatePlayers] = useState([]); // all players in player database (not necessarily in event)
     const [filteredPlayers, setFilteredPlayers] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [loaded, setLoaded] = useState(false);
 
-    const getPlayerObject = id => allPlayers.find(p => p.id === id);
-    const getPlayerInEvent = id => eventPlayers.find(p => p.id === id);
-    const isPlayerInEvent = id => ((eventPlayers.find(p => p.id === id)) ? true : false);
+    const getPlayerObject = id => candidatePlayers.find(p => p.id === id);
+    const getPlayerInEvent = id => players.find(p => p.id === id);
+    const isPlayerInEvent = id => ((players.find(p => p.id === id)) ? true : false);
     
     const comparePlayersByName = (a, b) => {
         const aActive = isPlayerInEvent(a.id);
@@ -36,7 +35,7 @@ export default function EventPlayers({ players, teamNames, onChangeTeam, onUpdat
         getPlayerFromDatabase("all")
         .then(res => {
             console.log(`Found ${res.data.Count} player(s) in database`);
-            setAllPlayers(res.data.Items);
+            setCandidatePlayers(res.data.Items);
             setLoaded(true);
         }).catch(err => {
             console.error("Error while getting player list from database - err:", err);
@@ -44,31 +43,9 @@ export default function EventPlayers({ players, teamNames, onChangeTeam, onUpdat
     }, []);
 
     useEffect(() => {
-        setEventPlayers(players);
-    }, [players]);
-
-    useEffect(() => {
-        const newFilteredPlayersList = getFilteredPlayersList(allPlayers, searchTerm);
+        const newFilteredPlayersList = getFilteredPlayersList(candidatePlayers, searchTerm);
         setFilteredPlayers(newFilteredPlayersList);
-    }, [allPlayers, eventPlayers, searchTerm]);
-
-    const handleChangeSearchTerm = e => {
-        setSearchTerm(e.target.value);
-    }
-
-    const setPlayerPaid = (id, paid) => {
-        // TODO: update database and do this on success
-        setEventPlayers(prev => prev.map(p => {
-            if (p.id === id) {
-                return {
-                    ...p,
-                    paid: paid
-                };
-            } else {
-                return p;
-            }
-        }));
-    };
+    }, [candidatePlayers, players, searchTerm]);
 
     const STATUS_NONE = '<>',
           STATUS_ASKED = '?',
@@ -84,60 +61,27 @@ export default function EventPlayers({ players, teamNames, onChangeTeam, onUpdat
     const updatePlayerStatus = id => {
         const playerStatus = getPlayerInEvent(id).status;
         const myNextStatus = nextStatus[playerStatus];
-        // TODO: update database and do this on success
-        if (myNextStatus === '<>') {
-            setEventPlayers(prev => prev.filter(p => p.id !== id)); // remove player
+        if (myNextStatus === STATUS_NONE) {
+            onRemovePlayer(id);
+        } else if (myNextStatus === STATUS_OUT) {
+            onUpdatePlayer(id, {
+                status: myNextStatus,
+                team: undefined
+            });
         } else {
-            setEventPlayers(prev => prev.map(p => { // update player to next status
-                if (p.id === id) {
-                    return {
-                        ...p,
-                        status: nextStatus[playerStatus]
-                    };
-                } else {
-                    return p;
-                }
-            }));
+            onUpdatePlayer(id, { status: myNextStatus });
         }
     };
     
     const addPlayerToEvent = (id, status) => {
-        // TODO: update database and do this on success
-        setEventPlayers(prev => {
-            if (prev.find(p => p.id === id)) return prev;
-            const playerToAdd = {
-                id,
-                status: status || "In",
-                paid: false,
-                team: null,
-                note: ''
-            };
-            return [
-                ...prev,
-                playerToAdd
-            ];
-        });
-    };
-
-    const removePlayerFromEvent = id => {
-        // TODO: update database and do this on success
-        setEventPlayers(prev => {
-            return prev.filter(p => p.id !== id);
-        });
-    };
-
-    const updatePlayerNote = (id, note) => {
-        // TODO: update database and do this on success
-        setEventPlayers(prev => prev.map(p => { // update player to next status
-            if (p.id === id) {
-                return {
-                    ...p,
-                    note: note
-                };
-            } else {
-                return p;
-            }
-        }));
+        const playerToAdd = {
+            id,
+            status: status || STATUS_IN,
+            paid: false,
+            team: null,
+            note: ''
+        };
+        onAddPlayer(playerToAdd);
     };
 
     const getRow = (player, i) => {
@@ -157,25 +101,34 @@ export default function EventPlayers({ players, teamNames, onChangeTeam, onUpdat
                             }
 
                             {active && <>
-                                <ToggleButton
+                                {playerInEvent.status === STATUS_IN && <ToggleButton
                                     id={`toggle-check-${player.id}`}
                                     className="custom-button-group"
                                     type="checkbox"
                                     variant="light"
                                     checked={playerInEvent.paid}
                                     value="1"
-                                    onChange={e => setPlayerPaid(player.id, e.currentTarget.checked)}
+                                    onChange={e => onUpdatePlayer(player.id, { paid: e.currentTarget.checked })}
                                 >
                                     {playerInEvent.paid ? 'Paid' : 'Unpaid'}
-                                </ToggleButton>
-                                <Form.Select aria-label="Team Select" className="custom-button-group combo-box" value={playerInEvent.team} onChange={e => onChangeTeam(player.id, e.target.value)}>
+                                </ToggleButton>}
+                                {playerInEvent.status === STATUS_IN && <Form.Select aria-label="Team Select"
+                                    className="custom-button-group combo-box"
+                                    value={playerInEvent.team || undefined}
+                                    onChange={e => onUpdatePlayer(player.id, { team: e.target.value })}
+                                >
                                     {/* <option>&#60;Team&#62;</option> */}
-                                    <option>Team...</option>
+                                    <option value={undefined}>Team...</option>
                                     {teamNames.map(teamName => (
                                         <option key={teamName}>{teamName}</option>
                                     ))}
-                                </Form.Select>
-                                <input type="text" className="player-note-input custom-button-group" placeholder="Note" value={('note' in playerInEvent) ? playerInEvent.note : ''} onChange={e => updatePlayerNote(player.id, e.target.value)} />
+                                </Form.Select>}
+                                {playerInEvent.status === STATUS_IN && <input type="text"
+                                    className="player-note-input custom-button-group"
+                                    placeholder="Note"
+                                    value={('note' in playerInEvent) ? playerInEvent.note : ''}
+                                    onChange={e => onUpdatePlayer(player.id, { note: e.target.value })}
+                                />}
                             </>}
                         </ButtonGroup>
                     </Col>
@@ -190,7 +143,7 @@ export default function EventPlayers({ players, teamNames, onChangeTeam, onUpdat
                 <Spinner className="center" animation="border" />
             </div> :
             <div className="list-item sm search-item">
-                <input placeholder="Search..." value={searchTerm} onChange={handleChangeSearchTerm} />
+                <input placeholder="Search..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
             </div>}
             {filteredPlayers.sort(comparePlayersByName).map(getRow)}
         </div>

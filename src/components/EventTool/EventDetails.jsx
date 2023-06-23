@@ -176,6 +176,30 @@ export default function EventDetails({ eventId, onCancel, onSave, onDelete }) {
         return teams;
     };
 
+    const addPlayerToEvent = playerToAdd => {
+        setEvent(prev => ({
+            ...prev,
+            players: [...prev.players, playerToAdd]
+        }));
+    };
+
+    const updatePlayerInEvent = (id, propsToUpdate) => {
+        setEvent(prev => ({
+            ...prev,
+            players: prev.players.map(p => {
+                if (p.id === id) return {...p, ...propsToUpdate};
+                else return p;
+            })
+        }));
+    };
+
+    const removePlayerFromEvent = id => {
+        setEvent(prev => ({
+            ...prev,
+            players: prev.players.filter(p => p.id !== id)
+        }));
+    };
+
     const handleAddTeam = () => {
         setTeamNames(prev => (
             [
@@ -186,28 +210,12 @@ export default function EventDetails({ eventId, onCancel, onSave, onDelete }) {
         setNewTeamNameInput('');
     };
 
-    const setPlayerTeam = (playerId, team) => {
-        setEvent(prev => {
-            return {
-                ...prev,
-                players: prev.players.map(p => {
-                    if (p.id === playerId)
-                        return {
-                            ...p,
-                            team: team
-                        };
-                    else return p;
-                })
-            };
-        });
-    };
-
     const isDisabled = () => (!editMode || saveLoading || deleteLoading);
 
-    const setEventProp = (prop, value) => {
+    const setEventProps = (propsToUpdate) => {
         setEvent(prev => ({
             ...prev,
-            [prop]: value
+            ...propsToUpdate
         }));
     };
 
@@ -218,12 +226,12 @@ export default function EventDetails({ eventId, onCancel, onSave, onDelete }) {
                     <Col>
                         <fieldset disabled={isDisabled()}>
                             <Form id="react-bootstrap-forms-event">
-                                <EventForm.Multipurpose.Name value={event.name} onChange={e => setEventProp('name', e.target.value)} disabled={isDisabled()} />
-                                <EventForm.Multipurpose.Date value={event.date} onChange={e => setEventProp('date', e.target.value)} disabled={isDisabled()} />
-                                <EventForm.Multipurpose.Format value={event.format} onChange={e => setEventProp('format', e.target.value)} disabled={isDisabled()} />
-                                <EventForm.Multipurpose.Host value={event.host} onChange={e => setEventProp('host', e.target.value)} disabled={isDisabled()} />
-                                <EventForm.Multipurpose.Location value={event.location} onChange={e => setEventProp('location', e.target.value)} disabled={isDisabled()} />
-                                <EventForm.Multipurpose.Notes value={event.notes} onChange={e => setEventProp('notes', e.target.value.trim())} disabled={isDisabled()} />
+                                <EventForm.Multipurpose.Name value={event.name} onChange={e => setEventProps({ name: e.target.value })} disabled={isDisabled()} />
+                                <EventForm.Multipurpose.Date value={event.date} onChange={e => setEventProps({ date: e.target.value })} disabled={isDisabled()} />
+                                <EventForm.Multipurpose.Format value={event.format} onChange={e => setEventProps({ format: e.target.value })} disabled={isDisabled()} />
+                                <EventForm.Multipurpose.Host value={event.host} onChange={e => setEventProps({ host: e.target.value })} disabled={isDisabled()} />
+                                <EventForm.Multipurpose.Location value={event.location} onChange={e => setEventProps({ location: e.target.value })} disabled={isDisabled()} />
+                                <EventForm.Multipurpose.Notes value={event.notes} onChange={e => setEventProps({ notes: e.target.value }.trim())} disabled={isDisabled()} />
                             </Form>
                         </fieldset>
                         <div>
@@ -237,7 +245,7 @@ export default function EventDetails({ eventId, onCancel, onSave, onDelete }) {
                         }
                     </Col>
                     <Col>
-                        <EventPlayers players={event.players} teamNames={teamNames} onChangeTeam={setPlayerTeam} />
+                        <EventPlayers players={event.players} teamNames={teamNames} onAddPlayer={addPlayerToEvent} onUpdatePlayer={updatePlayerInEvent} onRemovePlayer={removePlayerFromEvent} />
                     </Col>
                 </Row>
                 <hr />
