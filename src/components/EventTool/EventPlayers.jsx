@@ -19,20 +19,28 @@ export const STATUS = {
 };
 
 export default function EventPlayers({ players, teamNames, onAddPlayer, onUpdatePlayer, onRemovePlayer }) {
-    const [candidatePlayers, setCandidatePlayers] = useState([]); // all players in player database (not necessarily in event)
+    const [playersDB, setPlayersDB] = useState([]); // all players in player database (not necessarily in event)
     const [filteredPlayers, setFilteredPlayers] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [loaded, setLoaded] = useState(false);
 
-    const getPlayerObject = id => candidatePlayers.find(p => p.id === id);
+    const getPlayerObject = id => playersDB.find(p => p.id === id);
     const getPlayerInEvent = id => players.find(p => p.id === id);
     const isPlayerInEvent = id => ((players.find(p => p.id === id)) ? true : false);
     
     const comparePlayersByName = (a, b) => {
-        const aActive = isPlayerInEvent(a);
-        const bActive = isPlayerInEvent(b);
-
-        if (aActive === bActive) {
+        const playerA = getPlayerInEvent(a.id);
+        const playerB = getPlayerInEvent(b.id);
+        const statusValue = player => {
+            return {
+                [STATUS.IN]: 0,
+                [STATUS.ASKED]: 1,
+                [STATUS.NONE]: 2,
+                [STATUS.OUT]: 3
+            }[player ? player.status : STATUS.NONE];
+        };
+        const cmp = statusValue(playerA) - statusValue(playerB);
+        if (cmp === 0) {
             if (a.name.first && b.name.first) {
                 if (a.name.first < b.name.first) return -1;
                 else if (a.name.first > b.name.first) return 1;
@@ -40,24 +48,7 @@ export default function EventPlayers({ players, teamNames, onAddPlayer, onUpdate
                 if (a.name.last < b.name.last) return -1;
                 else if (a.name.last > b.name.last) return 1;
             } else return 0;
-        } else if (aActive && !bActive) {
-            return -1;
-        } else if (!aActive && bActive) {
-            return 1;
-        } else {
-            const aStatus = getPlayerInEvent(a.id).status;
-            const bStatus = getPlayerInEvent(b.id).status;
-            console.log(aStatus, bStatus);
-            const statusValue = status => {
-                return {
-                    [STATUS.IN]: 0,
-                    [STATUS.ASKED]: 1,
-                    [STATUS.NONE]: 2,
-                    [STATUS.OUT]: 3
-                }[status];
-            };
-            return statusValue(aStatus) - statusValue(bStatus);
-        }
+        } else return cmp;
     };
     
     useEffect(() => {
@@ -65,7 +56,7 @@ export default function EventPlayers({ players, teamNames, onAddPlayer, onUpdate
         getPlayerFromDatabase("all")
         .then(res => {
             console.log(`Found ${res.data.Count} player(s) in database`);
-            setCandidatePlayers(res.data.Items);
+            setPlayersDB(res.data.Items);
             setLoaded(true);
         }).catch(err => {
             console.error("Error while getting player list from database - err:", err);
@@ -73,9 +64,9 @@ export default function EventPlayers({ players, teamNames, onAddPlayer, onUpdate
     }, []);
 
     useEffect(() => {
-        const newFilteredPlayersList = getFilteredPlayersList(candidatePlayers, searchTerm);
+        const newFilteredPlayersList = getFilteredPlayersList(playersDB, searchTerm);
         setFilteredPlayers(newFilteredPlayersList);
-    }, [candidatePlayers, players, searchTerm]);
+    }, [playersDB, players, searchTerm]);
     
     const updatePlayerStatus = id => {
         const playerStatus = getPlayerInEvent(id).status;
