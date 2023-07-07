@@ -6,7 +6,7 @@ Events
         - OR add a save button to save all changes
         - AND/OR trigger save functionality on a delay after user is done editing
     - add search filters for event-specific properties (paid, status, team)
-    - after updating a player, highlight its row (and unhighlight any others)
+    - clicking with other mouse buttons can skip to a specific status
 - Event Details section
     - under details, add a collapsible folder for each team (shows team when opened)
     - add styles for an input field that adds a new team: text box with + button

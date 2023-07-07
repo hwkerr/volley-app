@@ -21,6 +21,7 @@ export const STATUS = {
 export default function EventPlayers({ players, teamNames, onAddPlayer, onUpdatePlayer, onRemovePlayer }) {
     const [playersDB, setPlayersDB] = useState([]); // all players in player database (not necessarily in event)
     const [filteredPlayers, setFilteredPlayers] = useState([]);
+    const [highlightedPlayer, setHighlightedPlayer] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [loaded, setLoaded] = useState(false);
 
@@ -94,20 +95,29 @@ export default function EventPlayers({ players, teamNames, onAddPlayer, onUpdate
         onAddPlayer(playerToAdd);
     };
 
+    const rowSelected = playerId => {
+        return highlightedPlayer === playerId ? 'selected' : '';
+    };
+
+    const clickRow = playerId => {
+        console.log('click row');
+        setHighlightedPlayer(playerId);
+    };
+
     const getRow = (player, i) => {
         const active = isPlayerInEvent(player.id);
         const playerInEvent = getPlayerInEvent(player.id);
         return (
-            <div key={i} className="list-item sm">
+            <div key={i} className={`list-item sm ${rowSelected(player.id)}`}>
                 <Row>
-                    <Col sm={4} onClick={() => playerInEvent && console.log(playerInEvent)}>
+                    <Col sm={4} onClick={() => clickRow(null) || playerInEvent && console.log(playerInEvent)}>
                         <p className="vertical-center">{player.name.first + ' ' + player.name.last}</p>
                     </Col>
                     <Col sm={8}>
                         <ButtonGroup>
                             {active ?
-                                <Button variant="primary" className="custom-button-group inactive" onClick={() => updatePlayerStatus(player.id)}>{playerInEvent.status}</Button> :
-                                <Button variant="primary" className="custom-button-group inactive" onClick={() => addPlayerToEvent(player.id, STATUS.ASKED)}>{"+"}</Button>
+                                <Button variant="primary" className="custom-button-group inactive" onClick={() => clickRow(player.id) || updatePlayerStatus(player.id)}>{playerInEvent.status}</Button> :
+                                <Button variant="primary" className="custom-button-group inactive" onClick={() => clickRow(player.id) || addPlayerToEvent(player.id, STATUS.ASKED)}>{"+"}</Button>
                             }
 
                             {active && <>
@@ -118,14 +128,14 @@ export default function EventPlayers({ players, teamNames, onAddPlayer, onUpdate
                                     variant="light"
                                     checked={playerInEvent.paid}
                                     value="1"
-                                    onChange={e => onUpdatePlayer(player.id, { paid: e.currentTarget.checked })}
+                                    onChange={e => clickRow(player.id) || onUpdatePlayer(player.id, { paid: e.currentTarget.checked })}
                                 >
                                     {playerInEvent.paid ? 'Paid' : 'Unpaid'}
                                 </ToggleButton>}
                                 {playerInEvent.status === STATUS.IN && <Form.Select aria-label="Team Select"
                                     className="custom-button-group combo-box"
                                     value={playerInEvent.team || undefined}
-                                    onChange={e => onUpdatePlayer(player.id, { team: e.target.value })}
+                                    onChange={e => clickRow(player.id) || onUpdatePlayer(player.id, { team: e.target.value })}
                                 >
                                     {/* <option>&#60;Team&#62;</option> */}
                                     <option value={undefined}>Team...</option>
@@ -137,7 +147,7 @@ export default function EventPlayers({ players, teamNames, onAddPlayer, onUpdate
                                     className="player-note-input custom-button-group"
                                     placeholder="Note"
                                     value={('note' in playerInEvent) ? playerInEvent.note : ''}
-                                    onChange={e => onUpdatePlayer(player.id, { note: e.target.value })}
+                                    onChange={e => clickRow(player.id) || onUpdatePlayer(player.id, { note: e.target.value })}
                                 />}
                             </>}
                         </ButtonGroup>
@@ -152,7 +162,7 @@ export default function EventPlayers({ players, teamNames, onAddPlayer, onUpdate
             {!loaded ? <div className="list-item sm only-item">
                 <Spinner className="center" animation="border" />
             </div> :
-            <div className="list-item sm search-item">
+            <div className="list-item sm search-item" onClick={() => clickRow(null)}>
                 <input placeholder="Search..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
             </div>}
             {filteredPlayers.sort(comparePlayersByName).map(getRow)}

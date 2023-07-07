@@ -141,7 +141,7 @@ label, body p,h1,h2,h3,h4,h5,h6 {
   color: #CED3DC;
 }
 
-.list-item.item.selected {
+.list-item.selected {
   background-color: #333333;
 }
 
