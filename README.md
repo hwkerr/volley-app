@@ -5,10 +5,13 @@ Events
     - Make Buttons update database (access database via EventDetails)
         - OR add a save button to save all changes
         - AND/OR trigger save functionality on a delay after user is done editing
+        - Event Players should save when saving an event with the save button
+            - ERROR: see ./TESTING.txt
     - add search filters for event-specific properties (paid, status, team)
     - clicking with other mouse buttons can skip to a specific status
 - Event Details section
     - under details, add a collapsible folder for each team (shows team when opened)
+        - hides players with these statuses: OUT, ASKED, NONE
     - add styles for an input field that adds a new team: text box with + button
 - Events section
     - Add more search filters to EventTool

@@ -13,7 +13,7 @@ export default function EventDetails({ eventId, onCancel, onSave, onDelete }) {
 
     const [originalEvent, setOriginalEvent] = useState({});
     const [event, setEvent] = useState({});
-    const [allPlayers, setAllPlayers] = useState([]);
+    const [playersDB, setPlayersDB] = useState([]);
     const [teamNames, setTeamNames] = useState([]);
     const [newTeamNameInput, setNewTeamNameInput] = useState('');
 
@@ -22,7 +22,7 @@ export default function EventDetails({ eventId, onCancel, onSave, onDelete }) {
     const [saveLoading, setSaveLoading] = useState(false); // in saving process
     const [deleteLoading, setDeleteLoading] = useState(false); // in deleting process
 
-    const getPlayerObject = id => allPlayers.find(p => p.id === id);
+    const getPlayerObject = id => playersDB.find(p => p.id === id);
 
     useEffect(() => {
         if (eventId === NEW_EVENT.id)
@@ -61,7 +61,7 @@ export default function EventDetails({ eventId, onCancel, onSave, onDelete }) {
         getPlayerFromDatabase("all")
         .then(res => {
             console.log(`Found ${res.data.Count} player(s) in database`);
-            setAllPlayers(res.data.Items);
+            setPlayersDB(res.data.Items);
             setPlayersLoaded(true);
         }).catch(err => {
             console.error("Error while getting player list from database - err:", err);
@@ -85,17 +85,30 @@ export default function EventDetails({ eventId, onCancel, onSave, onDelete }) {
 
     const handleSaveButtonClicked = e => {
         e.preventDefault();
-        const newEvent = {
+        const newOrUpdatedEvent = {
             ...event,
             id: (event.id === NEW_EVENT.id ? event.date : event.id)
         };
         setSaveLoading(true);
-        EventKit.save(newEvent)
+        EventKit.save(newOrUpdatedEvent)
         .finally(() => {
             setSaveLoading(false);
             setEditMode(false);
         });
     };
+
+    const handleSavePlayerChanges = e => {
+        e.preventDefault();
+        const newOrUpdatedEvent = {
+            ...event,
+            id: (event.id === NEW_EVENT.id ? event.date : event.id)
+        };
+        setSaveLoading(true);
+        EventKit.save(newOrUpdatedEvent)
+        .finally(() => {
+            setSaveLoading(false);
+        })
+    }
 
     const handleDeleteButtonClicked = e => {
         e.preventDefault();
@@ -109,12 +122,12 @@ export default function EventDetails({ eventId, onCancel, onSave, onDelete }) {
     };
 
     const EventKit = {
-        save: async event => {
-            console.log("Saving event:", event.id, event.name);
+        save: async targetEvent => {
+            console.log("Saving event:", targetEvent.id, targetEvent);
             try {
-                const res = await saveEventToDatabase(event);
+                const res = await saveEventToDatabase(targetEvent);
                 console.log(res);
-                if (onSave) onSave(event);
+                if (onSave) onSave(targetEvent);
                 return true;
             } catch (err) {
                 console.error("Error while saving event - err:", err);
@@ -122,16 +135,16 @@ export default function EventDetails({ eventId, onCancel, onSave, onDelete }) {
                 return false;
             }
         },
-        delete: async event => {
-            if (!window.confirm(`Are you sure you would like to delete the event: ${event.name} ${event.name}?`)) {
+        delete: async targetEvent => {
+            if (!window.confirm(`Are you sure you would like to delete the event: ${targetEvent.name} ${targetEvent.name}?`)) {
                 alert("Cancelled delete");
                 return false;
             };
-            console.log("Removing event", event.id);
+            console.log("Removing event", targetEvent.id);
             try {
-                const res = await deleteEventFromDatabase(event.id); // database
+                const res = await deleteEventFromDatabase(targetEvent.id); // database
                 console.log(res);
-                if (onDelete) onDelete(event);
+                if (onDelete) onDelete(targetEvent);
                 return true;
             } catch (err) {
                 console.error("Error while removing event - err:", err);
@@ -247,6 +260,20 @@ export default function EventDetails({ eventId, onCancel, onSave, onDelete }) {
                     </Col>
                     <Col>
                         <EventPlayers players={event.players} teamNames={teamNames} onAddPlayer={addPlayerToEvent} onUpdatePlayer={updatePlayerInEvent} onRemovePlayer={removePlayerFromEvent} />
+                        <div className="d-grid gap-2">
+                            <div className="btn-group">
+                                <Button variant="success" size="lg" type="button" onClick={handleSaveButtonClicked}>
+                                    {saveLoading ?
+                                        <Spinner 
+                                            as="span"
+                                            animation="border"
+                                            size="sm"
+                                            role="status"
+                                            aria-hidden="true"
+                                        /> : 'Save Changes'}
+                                </Button>
+                            </div>
+                        </div>
                     </Col>
                 </Row>
                 <hr />
@@ -263,7 +290,7 @@ export default function EventDetails({ eventId, onCancel, onSave, onDelete }) {
                                     aria-hidden="true"
                                 /> : (event === NEW_EVENT ? 'Create Event' : 'Save')}
                         </Button>
-                        <Button variant="secondary" size="lg" type="button" onClick={handleCancelEditButtonClicked}>Cancel</Button>
+                        <Button variant="secondary" size="lg" type="button" onClick={handleCancelEditButtonClicked}>Reset</Button>
                         {event !== NEW_EVENT &&
                         <Button variant="danger" size="lg" type="button" onClick={handleDeleteButtonClicked}>
                             {deleteLoading ?
