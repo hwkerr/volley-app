@@ -8,12 +8,15 @@ Events
 - Event Details section
     - under details, add a collapsible folder for each team (shows team when opened)
     - add styles for an input field that adds a new team: text box with + button
+    - BUG: can't type a space at the end of the Note's input
 - Events section
     - Add more search filters to EventTool
     - EventTool should only pull id and name from database (EventTool:loadItems)
 
 Players
-- When searching players, you can also search by Notes (added Name, Nicknames, Gender, Role, Contact Type, Affiliations)
+- When searching players
+    - you can also search by Notes (added Name, Nicknames, Gender, Role, Contact Type, Affiliations)
+    - can add a minus at the beginning of a filter to filter out certain players
 - EditablePlayerForm: Create separate state variables for Contact Info and Contact Phone Number (when saving player, pick one to save based on Contact Type)
 - PlayerFormFields: work on form validation
 - PlayerSearchResults: Spinner goes forever if 0 results returned. Fix it by adding a timeout
