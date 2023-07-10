@@ -1,21 +1,22 @@
 import { useState } from "react";
 import './EventTeams.css';
 import { Card, Col, Row } from "react-bootstrap";
+import { NO_TEAM } from "./eventsDB";
 
 export default function EventTeams({ teams }) {
-    const [activeStates, setActiveStates] = useState({});
+    const [highlightedStates, setHighlightedStates] = useState({});
 
-    const isActive = teamName => {
-        return teamName in activeStates && activeStates[teamName];
+    const isCardHighlighted = teamName => {
+        return teamName in highlightedStates && highlightedStates[teamName];
     };
     
     const toggleCard = (teamName, closeOthers=false) => {
         if (closeOthers) {
-            setActiveStates(prev => ({
+            setHighlightedStates(prev => ({
                 [teamName]: !prev[teamName]
             }));
         } else {
-            setActiveStates(prev => ({
+            setHighlightedStates(prev => ({
                 ...prev,
                 [teamName]: !prev[teamName]
             }));
@@ -25,7 +26,7 @@ export default function EventTeams({ teams }) {
     const getTeamSimple = (teamName, team) => (
         <div className="simple">
             <span className="team-name">
-                {teamName}
+                {teamName !== NO_TEAM ? teamName : 'No Team'}
             </span>
             {`: `}
             <span className="players">
@@ -37,7 +38,7 @@ export default function EventTeams({ teams }) {
     const getTeamComplex = (teamName, team) => (
         <div className="complex">
             <span className="team-name">
-                {teamName}
+                {teamName !== NO_TEAM ? teamName : 'No Team'}
             </span>
             {`: `}
             <span className="players">
@@ -47,12 +48,12 @@ export default function EventTeams({ teams }) {
     );
     
     const getTeamCard = (teamName, team) => {
-        const active = isActive(teamName);
+        const highlight = isCardHighlighted(teamName);
         return (
             <Card key={teamName} className="card" onClick={() => toggleCard(teamName, true)}>
                 <Card.Body>
-                    <div className={active ? "active" : "inactive"}>
-                        {active ?
+                    <div className={highlight ? "highlight" : "lowlight"}>
+                        {highlight ?
                             getTeamComplex(teamName, team) :
                             getTeamSimple(teamName, team)
                         }

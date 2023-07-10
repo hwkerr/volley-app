@@ -1,0 +1,40 @@
+Error: Save Event Players
+Description: Lambda sometimes fails to save records
+Hypothesis: Occurs if attempting to change 2 or more players at once
+
+CASE 1
+Initial: Craig NONE, Zane NONE
+Updated: Craig ASKED, Zane ASKED
+Result: Success
+
+CASE 2
+Initial: Craig ASKED, Zane ASKED
+Updated: Craig NONE, Zane NONE
+Result: Success
+
+CASE 3
+Initial: Andrew NONE, Kristin NONE
+Updated: Andrew ASKED, Kristin OUT
+Result: Error
+
+CASE 4
+Initial: Andrew NONE, Kristin NONE
+Updated: Andrew ASKED, Kristin ASKED
+Result: Success
+
+CASE 5
+Initial: Andrew ASKED, Kristin ASKED
+Updated: Andrew NONE, Kristin NONE
+Result: Success
+
+CASE 6
+Initial: Kristin NONE
+Updated: Kristin OUT
+Result: Error
+
+New Hypothesis: error occurs when adding a new player as status OUT
+
+CASE 7
+Initial: Zane NONE
+Updated: Zane IN
+Result: ?

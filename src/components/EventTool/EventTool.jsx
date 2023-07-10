@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import moment from 'moment';
-import { Spinner } from 'react-bootstrap';
+import { Alert, Spinner } from 'react-bootstrap';
 import { getFilteredEventsList } from '../../search';
 import EventDetails from './EventDetails';
 import { getEventFromDatabase } from './eventsDB';
@@ -24,6 +24,7 @@ export default function EventTool() {
     const [selection, setSelection] = useState(null); // stores an eventId
     const [searchTerm, setSearchTerm] = useState('');
     const [loaded, setLoaded] = useState(false);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         loadItems();
@@ -36,16 +37,20 @@ export default function EventTool() {
     }, [searchTerm, events]);
 
     const loadItems = () => {
-        if (loaded) setLoaded(false);
+        setLoaded(false);
         // TODO: only need to get Event name and id
         getEventFromDatabase("all")
         .then(res => {
+            setError(null);
             console.log(`Found ${res.data.Count} item(s) in database`);
             setEvents(res.data.Items);
             setLoaded(true);
         }).catch(err => {
-            console.log("Error while getting event list from database - err:", err);
+            const errorMessage = "Error getting event list from database";
+            console.error(errorMessage, err);
+            setError(errorMessage);
             setLoaded(true);
+            setTimeout(() => loadItems(), 5000)
         });
     };
 
@@ -117,6 +122,7 @@ export default function EventTool() {
         <div className="EventTool App-body">
             {!selection ? (
                 <>
+                    {error && <Alert className="container" variant='danger'>{error}</Alert>}
                     <h3 className="container">Events ({resultsCount})</h3>
                     <div className="container scroll">
                         {!loaded ?

@@ -1,5 +1,6 @@
 import axios from "axios";
 
+export const NO_TEAM = 'null';
 const BASE_URL_EVENTS = `https://9v2zi6tk3k.execute-api.us-east-2.amazonaws.com/dev/events`;
 
 export const getEventFromDatabase = async (id) => {

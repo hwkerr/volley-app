@@ -3,23 +3,45 @@ import { Button, Col, Row, Spinner, Form, ButtonGroup, ToggleButton, DropdownBut
 
 import { getPlayerFromDatabase } from "../PeopleTool/playersDB";
 import { getFilteredPlayersList } from "../../search";
+import { NO_TEAM } from "./eventsDB";
 
-export default function EventPlayers({ players, teamNames, onChangeTeam, onUpdate }) {
-    const [eventPlayers, setEventPlayers] = useState(players || []);
-    const [allPlayers, setAllPlayers] = useState([]);
+export const STATUS = {
+    NONE: '<>',
+    ASKED: '?',
+    IN: 'In',
+    OUT: 'Out',
+    NEXT: {
+        'Out': '<>',
+        '<>': '?',
+        '?': 'In',
+        'In': 'Out'
+    }
+};
+
+export default function EventPlayers({ players, teamNames, onAddPlayer, onUpdatePlayer, onRemovePlayer }) {
+    const [playersDB, setPlayersDB] = useState([]); // all players in player database (not necessarily in event)
     const [filteredPlayers, setFilteredPlayers] = useState([]);
+    const [highlightedPlayer, setHighlightedPlayer] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [loaded, setLoaded] = useState(false);
 
-    const getPlayerObject = id => allPlayers.find(p => p.id === id);
-    const getPlayerInEvent = id => eventPlayers.find(p => p.id === id);
-    const isPlayerInEvent = id => ((eventPlayers.find(p => p.id === id)) ? true : false);
+    const getPlayerObject = id => playersDB.find(p => p.id === id);
+    const getPlayerInEvent = id => players.find(p => p.id === id);
+    const isPlayerInEvent = id => ((players.find(p => p.id === id)) ? true : false);
     
     const comparePlayersByName = (a, b) => {
-        const aActive = isPlayerInEvent(a.id);
-        const bActive = isPlayerInEvent(b.id);
-
-        if (aActive === bActive) {
+        const playerA = getPlayerInEvent(a.id);
+        const playerB = getPlayerInEvent(b.id);
+        const statusValue = player => {
+            return {
+                [STATUS.IN]: 0,
+                [STATUS.ASKED]: 1,
+                [STATUS.NONE]: 2,
+                [STATUS.OUT]: 3
+            }[player ? player.status : STATUS.NONE];
+        };
+        const cmp = statusValue(playerA) - statusValue(playerB);
+        if (cmp === 0) {
             if (a.name.first && b.name.first) {
                 if (a.name.first < b.name.first) return -1;
                 else if (a.name.first > b.name.first) return 1;
@@ -27,8 +49,7 @@ export default function EventPlayers({ players, teamNames, onChangeTeam, onUpdat
                 if (a.name.last < b.name.last) return -1;
                 else if (a.name.last > b.name.last) return 1;
             } else return 0;
-        } else if (aActive) return -1;
-        else if (bActive) return 1;
+        } else return cmp;
     };
     
     useEffect(() => {
@@ -36,7 +57,7 @@ export default function EventPlayers({ players, teamNames, onChangeTeam, onUpdat
         getPlayerFromDatabase("all")
         .then(res => {
             console.log(`Found ${res.data.Count} player(s) in database`);
-            setAllPlayers(res.data.Items);
+            setPlayersDB(res.data.Items);
             setLoaded(true);
         }).catch(err => {
             console.error("Error while getting player list from database - err:", err);
@@ -44,138 +65,90 @@ export default function EventPlayers({ players, teamNames, onChangeTeam, onUpdat
     }, []);
 
     useEffect(() => {
-        setEventPlayers(players);
-    }, [players]);
-
-    useEffect(() => {
-        const newFilteredPlayersList = getFilteredPlayersList(allPlayers, searchTerm);
+        const newFilteredPlayersList = getFilteredPlayersList(playersDB, searchTerm);
         setFilteredPlayers(newFilteredPlayersList);
-    }, [allPlayers, eventPlayers, searchTerm]);
-
-    const handleChangeSearchTerm = e => {
-        setSearchTerm(e.target.value);
-    }
-
-    const setPlayerPaid = (id, paid) => {
-        // TODO: update database and do this on success
-        setEventPlayers(prev => prev.map(p => {
-            if (p.id === id) {
-                return {
-                    ...p,
-                    paid: paid
-                };
-            } else {
-                return p;
-            }
-        }));
-    };
-
-    const STATUS_NONE = '<>',
-          STATUS_ASKED = '?',
-          STATUS_IN = 'In',
-          STATUS_OUT = 'Out';
-    const nextStatus = {
-        [STATUS_OUT]: STATUS_NONE,
-        [STATUS_NONE]: STATUS_ASKED,
-        [STATUS_ASKED]: STATUS_IN,
-        [STATUS_IN]: STATUS_OUT
-    };
+    }, [playersDB, players, searchTerm]);
     
     const updatePlayerStatus = id => {
         const playerStatus = getPlayerInEvent(id).status;
-        const myNextStatus = nextStatus[playerStatus];
-        // TODO: update database and do this on success
-        if (myNextStatus === '<>') {
-            setEventPlayers(prev => prev.filter(p => p.id !== id)); // remove player
+        const myNextStatus = STATUS.NEXT[playerStatus];
+        if (myNextStatus === STATUS.NONE) {
+            onRemovePlayer(id);
+        } else if (myNextStatus === STATUS.OUT) {
+            onUpdatePlayer(id, {
+                status: myNextStatus,
+                team: undefined
+            });
         } else {
-            setEventPlayers(prev => prev.map(p => { // update player to next status
-                if (p.id === id) {
-                    return {
-                        ...p,
-                        status: nextStatus[playerStatus]
-                    };
-                } else {
-                    return p;
-                }
-            }));
+            onUpdatePlayer(id, { status: myNextStatus });
         }
     };
     
     const addPlayerToEvent = (id, status) => {
-        // TODO: update database and do this on success
-        setEventPlayers(prev => {
-            if (prev.find(p => p.id === id)) return prev;
-            const playerToAdd = {
-                id,
-                status: status || "In",
-                paid: false,
-                team: null,
-                note: ''
-            };
-            return [
-                ...prev,
-                playerToAdd
-            ];
-        });
+        const playerToAdd = {
+            id,
+            status: status || STATUS.IN,
+            paid: false,
+            team: NO_TEAM,
+            note: ''
+        };
+        onAddPlayer(playerToAdd);
     };
 
-    const removePlayerFromEvent = id => {
-        // TODO: update database and do this on success
-        setEventPlayers(prev => {
-            return prev.filter(p => p.id !== id);
-        });
+    const rowSelected = playerId => {
+        return highlightedPlayer === playerId ? 'selected' : '';
     };
 
-    const updatePlayerNote = (id, note) => {
-        // TODO: update database and do this on success
-        setEventPlayers(prev => prev.map(p => { // update player to next status
-            if (p.id === id) {
-                return {
-                    ...p,
-                    note: note
-                };
-            } else {
-                return p;
-            }
-        }));
+    const clickRow = playerId => {
+        console.log('click row');
+        setHighlightedPlayer(playerId);
     };
 
     const getRow = (player, i) => {
         const active = isPlayerInEvent(player.id);
         const playerInEvent = getPlayerInEvent(player.id);
         return (
-            <div key={i} className="list-item sm">
+            <div key={i} className={`list-item sm ${rowSelected(player.id)}`}>
                 <Row>
-                    <Col sm={4} onClick={() => playerInEvent && console.log(playerInEvent)}>
+                    <Col sm={4} onClick={() => clickRow(null) || playerInEvent && console.log(playerInEvent)}>
                         <p className="vertical-center">{player.name.first + ' ' + player.name.last}</p>
                     </Col>
                     <Col sm={8}>
                         <ButtonGroup>
                             {active ?
-                                <Button variant="primary" className="custom-button-group inactive" onClick={() => updatePlayerStatus(player.id)}>{playerInEvent.status}</Button> :
-                                <Button variant="primary" className="custom-button-group inactive" onClick={() => addPlayerToEvent(player.id, STATUS_ASKED)}>{"+"}</Button>
+                                <Button variant="primary" className="custom-button-group inactive" onClick={() => clickRow(player.id) || updatePlayerStatus(player.id)}>{playerInEvent.status}</Button> :
+                                <Button variant="primary" className="custom-button-group inactive" onClick={() => clickRow(player.id) || addPlayerToEvent(player.id, STATUS.ASKED)}>{"+"}</Button>
                             }
 
                             {active && <>
-                                <ToggleButton
+                                {playerInEvent.status === STATUS.IN && <ToggleButton
                                     id={`toggle-check-${player.id}`}
                                     className="custom-button-group"
                                     type="checkbox"
                                     variant="light"
                                     checked={playerInEvent.paid}
                                     value="1"
-                                    onChange={e => setPlayerPaid(player.id, e.currentTarget.checked)}
+                                    onChange={e => clickRow(player.id) || onUpdatePlayer(player.id, { paid: e.currentTarget.checked })}
                                 >
                                     {playerInEvent.paid ? 'Paid' : 'Unpaid'}
-                                </ToggleButton>
-                                <Form.Select aria-label="Team Select" className="custom-button-group combo-box" value={playerInEvent.team} onChange={e => onChangeTeam(player.id, e.target.value)}>
+                                </ToggleButton>}
+                                {playerInEvent.status === STATUS.IN && <Form.Select aria-label="Team Select"
+                                    className="custom-button-group combo-box"
+                                    value={playerInEvent.team || undefined}
+                                    onChange={e => clickRow(player.id) || onUpdatePlayer(player.id, { team: e.target.value })}
+                                >
                                     {/* <option>&#60;Team&#62;</option> */}
-                                    <option>Team...</option>
+                                    <option value={undefined}>Team...</option>
                                     {teamNames.map(teamName => (
                                         <option key={teamName}>{teamName}</option>
                                     ))}
-                                </Form.Select>
-                                <input type="text" className="player-note-input custom-button-group" placeholder="Note" value={('note' in playerInEvent) ? playerInEvent.note : ''} onChange={e => updatePlayerNote(player.id, e.target.value)} />
+                                </Form.Select>}
+                                {playerInEvent.status === STATUS.IN && <input type="text"
+                                    className="player-note-input custom-button-group"
+                                    placeholder="Note"
+                                    value={('note' in playerInEvent) ? playerInEvent.note : ''}
+                                    onChange={e => clickRow(player.id) || onUpdatePlayer(player.id, { note: e.target.value })}
+                                />}
                             </>}
                         </ButtonGroup>
                     </Col>
@@ -189,8 +162,8 @@ export default function EventPlayers({ players, teamNames, onChangeTeam, onUpdat
             {!loaded ? <div className="list-item sm only-item">
                 <Spinner className="center" animation="border" />
             </div> :
-            <div className="list-item sm search-item">
-                <input placeholder="Search..." value={searchTerm} onChange={handleChangeSearchTerm} />
+            <div className="list-item sm search-item" onClick={() => clickRow(null)}>
+                <input placeholder="Search..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
             </div>}
             {filteredPlayers.sort(comparePlayersByName).map(getRow)}
         </div>
