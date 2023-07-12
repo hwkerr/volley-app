@@ -32,7 +32,7 @@ Initial: Kristin NONE
 Updated: Kristin OUT
 Result: Error
 
-New Hypothesis: error occurs when adding a new player as status OUT
+New Hypothesis: error occurs when setting a player's status to OUT
 
 CASE 7
 Initial: Zane NONE

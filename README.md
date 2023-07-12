@@ -9,12 +9,15 @@ Events
             - ERROR: see ./TESTING.txt
     - add search filters for event-specific properties (paid, status, team)
     - clicking with other mouse buttons can skip to a specific status
+    - only filter after saving changes
 - Event Details section
     - under details, add a collapsible folder for each team (shows team when opened)
         - hides players with these statuses: OUT, ASKED, NONE
     - add styles for an input field that adds a new team: text box with + button
-    - BUG: can't type a space at the end of the Note's input
+    - BUG: can't type in Note's input (or space at the end)
+    - can indicate if an event requires payment or is organized by teams
 - Events section
+    - sort by date with newest at the top
     - Add more search filters to EventTool
     - EventTool should only pull id and name from database (EventTool:loadItems)
 
